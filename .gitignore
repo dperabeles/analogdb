@@ -1,0 +1,19 @@
+# Backups — no los subimos al repo
+*.backup-*.html
+
+# Claude Code internals
+.claude/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Supabase local config (si tuviera secretos)
+supabase/.temp/
+supabase/config.toml
+
+# Editor
+*.swp
+*.swo
+.vscode/settings.json
