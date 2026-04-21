@@ -592,8 +592,8 @@ td { padding: 9px 13px; white-space: nowrap; font-size: 12px; color: var(--text)
   color: rgba(26,21,16,0.6);
 }
 .ed-mast-main {
-  display: flex; justify-content: space-between; align-items: flex-end;
-  padding: 22px 0 18px;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0 0;
 }
 .ed-mast-title {
   margin: 6px 0 0;
@@ -2395,16 +2395,15 @@ h1, h2 {
       <header class="ed-masthead">
         <div class="ed-mast-toprow" style="display:none;"></div>
         <div class="ed-mast-main">
-          <div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
             <h1 style="margin:0;font-size:52px;font-weight:800;letter-spacing:-0.035em;font-family:'Inter',sans-serif;line-height:1;color:#e8dfd1;">Cuaderno de <em style="font-style:italic;color:#d94a2a;font-family:'Inter',sans-serif;font-weight:800;">laboratorio</em></h1>
+            <div id="edMastheadSummary" style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.04em;color:rgba(232,223,209,0.45);line-height:1.5;"></div>
           </div>
-          <div style="text-align:right;padding-bottom:4px;">
-            <div style="font-size:10px;letter-spacing:2px;opacity:0.55;font-family:'Inter',sans-serif;margin-bottom:6px;">RESUMEN EJECUTIVO</div>
-            <div id="edMastheadSummary" style="font-family:'Fraunces',serif;font-size:15px;line-height:1.6;max-width:300px;color:#1a1510;"></div>
-            <button class="ed-btn-primary" onclick="openRollEditor(null)" style="margin-top:14px;">+ Cargar rollo nuevo</button>
+          <div style="padding-bottom:4px;flex-shrink:0;">
+            <button class="ed-btn-primary" onclick="openRollEditor(null)">+ Cargar rollo nuevo</button>
           </div>
         </div>
-        <div style="height:1px;background:#1a1510;"></div>
+        <div style="height:1px;background:rgba(244,237,226,0.1);margin-top:14px;"></div>
       </header>
 
       <!-- ── Section I: Índice ── -->
@@ -2482,6 +2481,7 @@ h1, h2 {
         <div style="height:1px;background:#1a1510;margin-bottom:12px;"></div>
         <div class="ed-colophon-inner">
           <span id="edColophonSync">v2.0 · —</span>
+          <span>creado por diego y berna</span>
         </div>
       </footer>
 
@@ -2843,7 +2843,7 @@ async function upsertRollRemote(flat) {
     code: flat['#'],
     film_stock_id: stock_id,
     iso_pushed: toInt(flat['ISO @']),
-    format: toInt(flat['FORMAT']),
+    format: String(flat['FORMAT'] || '').toLowerCase() === 'super8' ? 8 : toInt(flat['FORMAT']),
     exp_count: toInt(flat['EXP']),
     exp_taken: toInt(flat['# EXP']),
     fresh,
@@ -2895,6 +2895,8 @@ async function loadData() {
     const clean = (data || []).filter(r => r['#']).map(r => {
       const { id, updated_at, ...rest } = r;
       rest['PUSH/PULL'] = normalizePushPull(rest['PUSH/PULL']);
+      // FORMAT: 8 en Supabase = Super8 (integer no puede almacenar string)
+      if (rest['FORMAT'] === 8 || rest['FORMAT'] === '8') rest['FORMAT'] = 'Super8';
       return rest;
     });
     try { localStorage.setItem(LS_KEY, JSON.stringify(clean)); } catch(e) {}
@@ -3814,6 +3816,10 @@ function renderKPIs() {
   const inDev    = DATA.filter(r => r.STATUS === 'In Development').length;
   const developed = DATA.filter(r => r.STATUS === 'Developed').length;
 
+  // Oldest roll year
+  const dates = DATA.map(r => r.STARTED).filter(Boolean).map(d => new Date(d)).filter(d => !isNaN(d));
+  const oldestYear = dates.length ? Math.min(...dates.map(d => d.getFullYear())) : new Date().getFullYear();
+
   // Top stocks leaderboard
   const stockMap = {};
   DATA.forEach(r => { if (r['FILM STOCK']) stockMap[r['FILM STOCK']] = (stockMap[r['FILM STOCK']] || 0) + 1; });
@@ -3836,10 +3842,10 @@ function renderKPIs() {
     <div class="ed-index-grid">
       <div>
         <div class="ed-index-kicker">EN NÚMEROS</div>
-        <div style="display:flex;align-items:baseline;gap:16px;margin-top:8px;">
+        <div style="display:flex;align-items:flex-end;gap:16px;margin-top:8px;">
           <div class="ed-big-num">${total}</div>
-          <div style="font-family:'Fraunces',serif;font-size:14px;font-style:italic;line-height:1.4;max-width:200px;color:#1a1510;opacity:0.7;">
-            rollos desde la primera entrada en el archivo
+          <div style="font-family:'DM Mono',monospace;font-size:12px;line-height:1.5;max-width:180px;color:rgba(232,223,209,0.5);letter-spacing:0.02em;">
+            rollos desde ${oldestYear}
           </div>
         </div>
         <div class="ed-format-boxes">
