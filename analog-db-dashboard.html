@@ -4907,19 +4907,46 @@ function refreshStockDropdown(man) {
 
 // When a stock is picked, auto-fill ISO and FILM TYPE from the catalog if empty
 function autoFillFromStock(stock) {
-  const modal = document.getElementById('modal');
+  if (!stock || stock === '__add__') return;
+  const modal = document.querySelector('#modalOverlay .modal');
   if (!modal) return;
+
+  // Find the stock across ALL manufacturers (start with current if set)
   const manSel = document.getElementById('sel_ss_MANUFACTURER');
-  const man = manSel ? manSel.value : '';
-  const list = FILM_CATALOG[man];
-  if (!list) return;
-  const hit = list.find(e => e[0] === stock);
+  const currentMan = manSel ? manSel.value : '';
+  let hit = null, hitMan = '';
+  if (currentMan && FILM_CATALOG[currentMan]) {
+    hit = FILM_CATALOG[currentMan].find(e => e[0] === stock);
+    if (hit) hitMan = currentMan;
+  }
+  if (!hit) {
+    for (const [man, list] of Object.entries(FILM_CATALOG)) {
+      const found = list.find(e => e[0] === stock);
+      if (found) { hit = found; hitMan = man; break; }
+    }
+  }
   if (!hit) return;
+
   const [, iso, type] = hit;
+
+  // ISO — always overwrite when stock changes
   const isoInp = modal.querySelector('input[data-k="ISO"]');
-  if (isoInp && !isoInp.value) isoInp.value = iso;
+  if (isoInp) isoInp.value = iso;
+
+  // FILM TYPE — always overwrite
   const typeSel = modal.querySelector('select[data-k="FILM TYPE"]');
-  if (typeSel && !typeSel.value) typeSel.value = type;
+  if (typeSel) typeSel.value = type;
+
+  // MANUFACTURER — set if empty or different from the stock's manufacturer
+  if (manSel && hitMan && manSel.value !== hitMan) {
+    // Make sure the option exists in the select
+    const exists = [...manSel.options].some(o => o.value === hitMan);
+    if (exists) manSel.value = hitMan;
+  }
+
+  // ISO @ — prefill with the base ISO if the user hasn't set it yet
+  const isoAtInp = modal.querySelector('input[data-k="ISO @"]');
+  if (isoAtInp && !isoAtInp.value) isoAtInp.value = iso;
 }
 
 // ═══════════════════════════════════════════
