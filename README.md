@@ -2,7 +2,7 @@
 
 A personal analog film roll tracker and archive dashboard. Built as a single-file web app backed by Supabase.
 
-![Dark dashboard with film grain, sidebar navigation, KPI cards and roll table]
+Dark dashboard with film grain, sidebar navigation, KPI cards and roll table
 
 ---
 
