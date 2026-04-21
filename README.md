@@ -2,7 +2,7 @@
 
 A personal analog film roll tracker and archive dashboard. Built as a single-file web app backed by Supabase.
 
-![Dark dashboard with film grain, sidebar navigation, KPI cards and roll table](screenshot-placeholder.png)
+![Dark dashboard with film grain, sidebar navigation, KPI cards and roll table]
 
 ---
 
@@ -105,7 +105,7 @@ No frameworks, no bundlers, no dependencies beyond the Supabase JS client loaded
 
 ## Roadmap
 
-The project is being migrated to a full web application. See [`analog_film_tracker_sprint_board.md`](analog_film_tracker_sprint_board.md) for the full sprint plan.
+The project is being migrated to a full web application.
 
 **Planned stack:**
 - **Web app** — Next.js + Supabase (same database)
