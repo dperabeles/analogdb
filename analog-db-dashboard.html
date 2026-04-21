@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Analog Database</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Special+Elite&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg:         #1e1a15;
@@ -936,8 +936,8 @@ td { padding: 9px 13px; white-space: nowrap; font-size: 12px; color: var(--text)
   color: var(--text-dim); margin-bottom: 4px; font-weight: 500;
 }
 .modal-roll-id {
-  font-family: 'Inter', 'DM Mono', system-ui, sans-serif;
-  font-style: normal; font-weight: 800;
+  font-family: 'Special Elite', serif;
+  font-style: normal; font-weight: 400;
   font-size: 52px; line-height: .95;
   color: var(--amber-dark);
   letter-spacing: -.02em;
@@ -994,15 +994,17 @@ td { padding: 9px 13px; white-space: nowrap; font-size: 12px; color: var(--text)
   line-height: 1;
 }
 .modal-roll-id {
-  font-family: 'DM Mono', monospace;
-  font-weight: 700;
+  font-family: 'Special Elite', serif;
+  font-weight: 400;
   font-size: 36px;
   color: #e8dfd1;
   letter-spacing: -0.02em;
   line-height: 1;
-  margin-bottom: 0;
+  margin: 0;
+  padding-top: 8px;
   white-space: nowrap;
   flex-shrink: 0;
+  align-self: center;
 }
 .modal-roll-name {
   font-family: 'DM Mono', monospace;
@@ -1299,7 +1301,7 @@ td { padding: 9px 13px; white-space: nowrap; font-size: 12px; color: var(--text)
 .modal .chip-add:hover { background: rgba(217,74,42,0.1); }
 .modal .chip-add-input input { background: rgba(244,237,226,0.04); border: 1px solid rgba(217,74,42,0.38); color: #e8dfd1; border-radius: 0; font-family: 'DM Mono', monospace; }
 /* Star rating */
-.modal .star-rating .star { color: rgba(244,237,226,0.15); font-size: 14px; }
+.modal .star-rating .star { color: rgba(244,237,226,0.15); font-size: 22px; }
 .modal .star-rating .star.on { color: #e0a03a; }
 .modal .star-rating .star.hover { color: #e8b84a; }
 /* Notes section */
@@ -2146,6 +2148,10 @@ td { color: #e8dfd1 !important; }
 .editor-key { color: rgba(232,223,209,0.45) !important; }
 .editor-val input, .editor-val select, .editor-val textarea { background: rgba(244,237,226,0.04) !important; border-color: rgba(244,237,226,0.14) !important; color: #e8dfd1 !important; }
 .editor-val input:focus, .editor-val select:focus, .editor-val textarea:focus { border-color: #d94a2a !important; background: rgba(217,74,42,0.05) !important; }
+.editor-val input::placeholder { color: rgba(232,223,209,0.25) !important; font-style: italic; font-size: 10px; }
+.editor-val select option, .editor-val select optgroup,
+.smart-select-wrap select option, .smart-select-wrap select optgroup,
+.modal select option, .modal select optgroup { background: #1c1612 !important; color: #e8dfd1 !important; }
 .editor-val input[type="date"] { color-scheme: dark !important; }
 .editor-val input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.8) !important; opacity: 0.6 !important; }
 .editor-actions { border-top-color: rgba(244,237,226,0.1) !important; }
@@ -2169,11 +2175,14 @@ td { color: #e8dfd1 !important; }
 .cam-modal-title,
 .cam-card-model,
 .stat-card-title,
-.modal-roll-id,
 .roll-card-name,
 .empty-state .es-title,
 h1, h2 {
   font-family: 'Inter', system-ui, sans-serif !important;
+  font-style: normal !important;
+}
+.modal-roll-id {
+  font-family: 'Special Elite', serif !important;
   font-style: normal !important;
 }
 
@@ -2530,8 +2539,8 @@ h1, h2 {
                 <th onclick="sortTable('ISO')">ISO</th>
                 <th onclick="sortTable('MODEL NAME')">Cámara</th>
                 <th onclick="sortTable('LENS')">Lente</th>
-                <th onclick="sortTable('LOCATIONS')">Lugares</th>
-                <th onclick="sortTable('PHOTO TYPE')">Tipo Foto</th>
+                <th onclick="sortTable('LOCATIONS')">Ubicación</th>
+                <th onclick="sortTable('PHOTO TYPE')">Tags</th>
                 <th onclick="sortTable('STARTED')">Fecha</th>
                 <th onclick="sortTable('# EXP')"># Exp</th>
                 <th onclick="sortTable('PUSH/PULL')">Push/Pull</th>
@@ -3283,7 +3292,7 @@ function buildEditorForm(rec) {
       ${row('Fabricante',   smartManufacturerSel())}
       ${row('Film Stock',   smartStockSel())}
       ${row('ISO',          inp('ISO','number'))}
-      ${row('Exposiciones', inp('EXP','number'))}
+      ${row('Exposiciones', `<input type="number" data-k="EXP" value="${escAttr(rec['EXP'] != null ? rec['EXP'] : '')}" placeholder="Exposiciones del rollo">`)}
       ${row('Estado',       sel('EXP/FRESH', ['FRESH','EXPIRED']))}
     </div>
 
@@ -3297,13 +3306,18 @@ function buildEditorForm(rec) {
     </div>
 
     <div class="editor-section">
-      <div class="editor-sec-title">Sesión</div>
-      ${rowFull('Lugares',   locationsDropdown('LOCATIONS'))}
-      ${rowFull('Tipo foto', multiChips('PHOTO TYPE','Nuevo tipo de foto'))}
-      ${row('ISO @',         inp('ISO @','number'))}
+      <div class="editor-sec-title">Ubicación</div>
+      <div class="editor-row" style="align-items:flex-start;flex-direction:column;gap:6px">
+        <div style="width:100%">${locationsDropdown('LOCATIONS')}</div>
+      </div>
+      <div class="editor-sec-title" style="margin-top:10px;">Tags</div>
+      <div class="editor-row" style="align-items:flex-start;flex-direction:column;gap:6px">
+        <div style="width:100%">${multiChips('PHOTO TYPE','Nuevo tag')}</div>
+      </div>
+      ${row('ISO @',       `<input type="number" data-k="ISO @" value="${escAttr(rec['ISO @'] != null ? rec['ISO @'] : '')}" placeholder="ISO al que fue tomado el rollo">`)}
       ${row('Inicio',        inp('STARTED','date'))}
       ${row('Fin',           inp('FINISHED','date'))}
-      ${row('# Exp tomadas', inp('# EXP','number'))}
+      ${row('Exp finales', `<input type="number" data-k="# EXP" value="${escAttr(rec['# EXP'] != null ? rec['# EXP'] : '')}" placeholder="Exposiciones finales del rollo">`)}
       ${row('Push/Pull',     sel('PUSH/PULL', ['+5','+4','+3','+2','+1','0','-1','-2','-3','-4','-5']))}
     </div>
 
@@ -3496,15 +3510,16 @@ function openModal(r) {
         <div class="ed-modal-row"><span class="ed-modal-key">Estado</span><span class="ed-modal-val">${freshBadge(r['EXP/FRESH'])}</span></div>
       </div>
 
-      <!-- Sesión -->
+      <!-- Ubicación -->
       <div class="ed-modal-section">
-        <div class="ed-modal-sec-title">Sesión</div>
-        <div class="ed-modal-row"><span class="ed-modal-key">Lugares</span><span class="ed-modal-val">${escAttr(r['LOCATIONS'] || '—')}</span></div>
-        <div class="ed-modal-row"><span class="ed-modal-key">Tipo foto</span><span class="ed-modal-val">${escAttr(r['PHOTO TYPE'] || '—')}</span></div>
+        <div class="ed-modal-sec-title">Ubicación</div>
+        <div class="ed-modal-row"><span class="ed-modal-val" style="font-style:italic;opacity:0.8;">${escAttr(r['LOCATIONS'] || '—')}</span></div>
+        <div class="ed-modal-sec-title" style="margin-top:8px;">Tags</div>
+        <div class="ed-modal-row"><span class="ed-modal-val" style="font-style:italic;opacity:0.8;">${escAttr(r['PHOTO TYPE'] || '—')}</span></div>
         <div class="ed-modal-row"><span class="ed-modal-key">ISO @</span><span class="ed-modal-val">${r['ISO @'] || '—'}</span></div>
         <div class="ed-modal-row"><span class="ed-modal-key">Inicio</span><span class="ed-modal-val">${fmtDate(r['STARTED'])}</span></div>
         <div class="ed-modal-row"><span class="ed-modal-key">Fin</span><span class="ed-modal-val">${fmtDate(r['FINISHED'])}</span></div>
-        <div class="ed-modal-row"><span class="ed-modal-key"># Exp tomadas</span><span class="ed-modal-val">${r['# EXP'] != null ? r['# EXP'] : '—'}</span></div>
+        <div class="ed-modal-row"><span class="ed-modal-key">Exp finales</span><span class="ed-modal-val">${r['# EXP'] != null ? r['# EXP'] : '—'}</span></div>
         <div class="ed-modal-row"><span class="ed-modal-key">Push/Pull</span><span class="ed-modal-val">${pushPullLabel(r['PUSH/PULL'])}</span></div>
       </div>
 
@@ -4018,7 +4033,7 @@ function renderStats() {
     barSection('Cámaras', cameras, '#7c5cbf') +
     typeCard +
     formatCard +
-    barSection('Lugares más visitados', locs, 'var(--green)') +
+    barSection('Ubicaciones más visitadas', locs, 'var(--green)') +
     barSection('Tipos de fotografía', ptypes, '#c07a30');
 }
 
