@@ -1486,6 +1486,58 @@ td { padding: 9px 13px; white-space: nowrap; font-size: 12px; color: var(--text)
   border-color: #d94a2a !important;
   background-color: rgba(217,74,42,0.06) !important;
 }
+
+/* ═══════════════════════════════════════════
+   TAG DROPDOWN — slate/blue, distinct from locations (red) and categories
+═══════════════════════════════════════════ */
+.tagdrop-chips { display: flex; flex-wrap: wrap; gap: 4px; min-height: 0; }
+.tagdrop-chips:not(:empty) { margin-bottom: 8px; }
+.tagdrop-chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 6px 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 10px; letter-spacing: .06em; font-family: 'DM Mono', monospace;
+  background: rgba(106,157,224,0.14); color: var(--slide);
+  border: 1px solid rgba(106,157,224,0.28); transition: border-color .12s;
+}
+.tagdrop-chip:hover { border-color: rgba(106,157,224,0.55); }
+.tagdrop-rm {
+  cursor: pointer; opacity: 0.45; font-size: 12px; line-height: 1;
+  padding: 0 1px; transition: opacity .1s; font-family: system-ui;
+}
+.tagdrop-rm:hover { opacity: 1; }
+.tagdrop-select {
+  width: 100%;
+  background: var(--surface2); border: 1px solid rgba(232,223,209,0.14); color: var(--text);
+  padding: 5px 24px 5px 8px; font-family: 'DM Mono', monospace; font-size: 11px;
+  border-radius: var(--radius-sm); outline: none; cursor: pointer;
+  appearance: none; transition: border-color .15s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a89880'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 8px center;
+}
+.tagdrop-select:focus { border-color: var(--slide); background-color: var(--surface); }
+.tagdrop-select option, .tagdrop-select optgroup { background: var(--surface2); color: var(--text); }
+
+/* Modal darkroom overrides for tags */
+.modal .tagdrop-chip {
+  background: rgba(106,157,224,0.1); color: #6a9de0;
+  border: 1px solid rgba(106,157,224,0.32); border-radius: 2px;
+}
+.modal .tagdrop-chip:hover { border-color: rgba(106,157,224,0.55); }
+.modal .tagdrop-rm { color: #6a9de0; }
+.modal .tagdrop-select {
+  background: rgba(244,237,226,0.04) !important;
+  border: 1px solid rgba(244,237,226,0.14) !important;
+  color: #e8dfd1 !important; font-family: 'DM Mono', monospace !important;
+  font-size: 12px !important; border-radius: 0 !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23a89880'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important; background-position: right 8px center !important;
+}
+.modal .tagdrop-select:focus {
+  border-color: #6a9de0 !important;
+  background-color: rgba(106,157,224,0.06) !important;
+}
+
 .chip-add-input input {
   flex: 1; padding: 4px 8px;
   background: var(--surface); border: 1px solid var(--amber-dim); color: var(--text);
@@ -2540,7 +2592,7 @@ h1, h2 {
                 <th onclick="sortTable('MODEL NAME')">Cámara</th>
                 <th onclick="sortTable('LENS')">Lente</th>
                 <th onclick="sortTable('LOCATIONS')">Ubicación</th>
-                <th onclick="sortTable('PHOTO TYPE')">Tags</th>
+                <th onclick="sortTable('PHOTO TYPE')">Category</th>
                 <th onclick="sortTable('STARTED')">Fecha</th>
                 <th onclick="sortTable('# EXP')"># Exp</th>
                 <th onclick="sortTable('PUSH/PULL')">Push/Pull</th>
@@ -2852,6 +2904,7 @@ async function upsertRollRemote(flat) {
     lens: flat['LENS'] || null,
     locations: toArr(flat['LOCATIONS']),
     photo_types: toArr(flat['PHOTO TYPE']),
+    tags: toArr(flat['TAGS']),
     started: toDate(flat['STARTED']),
     finished: toDate(flat['FINISHED']),
     status: flat['STATUS'] || null,
@@ -2955,7 +3008,7 @@ function emptyRoll() {
     'FILM TYPE': 'COLOR', 'FORMAT': 35, 'EXP/FRESH': 'FRESH',
     'FILM STOCK': '', 'MANUFACTURER': '', 'ISO': null, 'EXP': null,
     'MAKER': '', 'MODEL NAME': '', 'C. FORMAT': '', 'C. TYPE': '', 'LENS': '',
-    'LOCATIONS': '', 'PHOTO TYPE': '', 'ISO @': null,
+    'LOCATIONS': '', 'PHOTO TYPE': '', 'TAGS': '', 'ISO @': null,
     'STARTED': '', 'FINISHED': '', '# EXP': null, 'PUSH/PULL': '0',
     'DEV': '', 'SCAN': '', 'STATUS': 'In Camera', 'RATING': 0, 'NOTES': ''
   };
@@ -3242,6 +3295,45 @@ function buildEditorForm(rec) {
       </div>`;
   }
 
+  // Tags dropdown — hashtag-style free-form, top 3 most used first
+  function tagsDropdown(key) {
+    const id = 'tagdrop_' + key.replace(/[^a-zA-Z0-9]/g,'_');
+    const cur = rec[key] ? String(rec[key]).split(',').map(v=>v.trim()).filter(Boolean) : [];
+    const counts = {};
+    DATA.forEach(r => {
+      const vals = r[key] ? (r[key].includes('|') ? r[key].split('|') : r[key].split(',')) : [];
+      vals.forEach(v => { const t = v.trim(); if (t) counts[t] = (counts[t] || 0) + 1; });
+    });
+    const topThree = Object.entries(counts).sort((a,b) => b[1]-a[1]).slice(0,3).map(([v]) => v);
+    const allExisting = [...new Set(Object.keys(counts))].filter(v => !topThree.includes(v)).sort((a,b) => a.localeCompare(b));
+    const chipsHtml = cur.map(v =>
+      `<span class="tagdrop-chip">${v}<span class="tagdrop-rm" onclick="tagDropRemove('${id}','${escAttr(v)}')">×</span></span>`
+    ).join('');
+    const topOpts = topThree.length
+      ? `<optgroup label="★ Más usados">${topThree.map(v => `<option value="${escAttr(v)}">★ ${v}</option>`).join('')}</optgroup>`
+      : '';
+    const restOpts = allExisting.length
+      ? `<optgroup label="Todos">${allExisting.map(v => `<option value="${escAttr(v)}">${v}</option>`).join('')}</optgroup>`
+      : '';
+    return `
+      <div style="width:100%" id="tagwrap_${id}">
+        <input type="hidden" data-k="${escAttr(key)}" id="hidden_${id}" value="${escAttr(cur.join(', '))}">
+        <div class="tagdrop-chips" id="tchips_${id}">${chipsHtml}</div>
+        <select class="tagdrop-select" id="tsel_${id}" onchange="tagDropAdd('${id}','${escAttr(key)}')">
+          <option value="">— Agregar tag —</option>
+          ${topOpts}
+          ${restOpts}
+          <option value="__nuevo__">+ Nuevo tag...</option>
+        </select>
+        <div class="chip-add-input" id="tagnew_${id}">
+          <input type="text" placeholder="#tag" id="tagtext_${id}"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();tagDropNewConfirm('${id}','${escAttr(key)}');}">
+          <button type="button" class="smart-add-btn" onclick="tagDropNewConfirm('${id}','${escAttr(key)}')">OK</button>
+          <button type="button" class="smart-add-cancel" onclick="tagDropCancelNew('${id}')">✕</button>
+        </div>
+      </div>`;
+  }
+
   // Star rating widget
   function starRating() {
     const cur = parseInt(rec['RATING']) || 0;
@@ -3312,9 +3404,9 @@ function buildEditorForm(rec) {
       <div class="editor-row" style="align-items:flex-start;flex-direction:column;gap:6px">
         <div style="width:100%">${locationsDropdown('LOCATIONS')}</div>
       </div>
-      <div class="editor-sec-title" style="margin-top:10px;">Tags</div>
+      <div class="editor-sec-title" style="margin-top:10px;">Categories</div>
       <div class="editor-row" style="align-items:flex-start;flex-direction:column;gap:6px">
-        <div style="width:100%">${multiChips('PHOTO TYPE','Nuevo tag')}</div>
+        <div style="width:100%">${multiChips('PHOTO TYPE','Nueva categoría')}</div>
       </div>
       ${row('ISO @',       `<input type="number" data-k="ISO @" value="${escAttr(rec['ISO @'] != null ? rec['ISO @'] : '')}" placeholder="ISO al que fue tomado el rollo">`)}
       ${row('Inicio',        inp('STARTED','date'))}
@@ -3329,6 +3421,10 @@ function buildEditorForm(rec) {
       ${row('Scan',        smartSel('SCAN', 'Nuevo scan lab'))}
       ${row('Status',      sel('STATUS', ['In Camera','To Develop','In Development','Developed']))}
       ${row('Rating',  starRating())}
+      <div class="editor-row" style="align-items:flex-start;flex-direction:column;gap:6px;padding-top:6px;">
+        <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:2px;">Tags</div>
+        <div style="width:100%">${tagsDropdown('TAGS')}</div>
+      </div>
       ${row('ID (#)',       `<span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--amber-dark);font-weight:500">${rec['#']}</span><input type="hidden" data-k="#" value="${escAttr(rec['#'])}">`)}
     </div>
 
@@ -3359,7 +3455,7 @@ function collectEditorRecord() {
   if (!form) return null;
 
   // Two passes: first visible inputs, then hidden inputs override
-  // Hidden inputs are the source of truth for chips (LOCATIONS, PHOTO TYPE)
+  // Hidden inputs are the source of truth for chips (LOCATIONS, PHOTO TYPE, TAGS)
   // and star rating (RATING) and read-only ID (#)
   const byKey = {};
 
@@ -3516,8 +3612,10 @@ function openModal(r) {
       <div class="ed-modal-section">
         <div class="ed-modal-sec-title">Ubicación</div>
         <div class="ed-modal-row"><span class="ed-modal-val" style="font-style:italic;opacity:0.8;">${escAttr(r['LOCATIONS'] || '—')}</span></div>
-        <div class="ed-modal-sec-title" style="margin-top:8px;">Tags</div>
+        <div class="ed-modal-sec-title" style="margin-top:8px;">Categories</div>
         <div class="ed-modal-row"><span class="ed-modal-val" style="font-style:italic;opacity:0.8;">${escAttr(r['PHOTO TYPE'] || '—')}</span></div>
+        <div class="ed-modal-sec-title" style="margin-top:8px;">Tags</div>
+        <div class="ed-modal-row"><span class="ed-modal-val" style="font-style:italic;opacity:0.8;color:#6a9de0;">${escAttr(r['TAGS'] || '—')}</span></div>
         <div class="ed-modal-row"><span class="ed-modal-key">ISO @</span><span class="ed-modal-val">${r['ISO @'] || '—'}</span></div>
         <div class="ed-modal-row"><span class="ed-modal-key">Inicio</span><span class="ed-modal-val">${fmtDate(r['STARTED'])}</span></div>
         <div class="ed-modal-row"><span class="ed-modal-key">Fin</span><span class="ed-modal-val">${fmtDate(r['FINISHED'])}</span></div>
@@ -3989,6 +4087,7 @@ function renderStats() {
   const cameras = count(DATA, 'MODEL NAME').slice(0,6);
   const locs    = count(DATA, 'LOCATIONS', v => splitLocs(v)).slice(0,8);
   const ptypes  = count(DATA, 'PHOTO TYPE', v => v ? v.split(',').map(t=>t.trim()) : null).slice(0,8);
+  const tags    = count(DATA, 'TAGS', v => v ? v.split(',').map(t=>t.trim()).filter(Boolean) : null).slice(0,10);
 
   const typeColor = DATA.filter(r=>r['FILM TYPE']==='COLOR').length;
   const typeBW    = DATA.filter(r=>r['FILM TYPE']==='B/W').length;
@@ -4040,7 +4139,8 @@ function renderStats() {
     typeCard +
     formatCard +
     barSection('Ubicaciones más visitadas', locs, 'var(--green)') +
-    barSection('Tipos de fotografía', ptypes, '#c07a30');
+    barSection('Categorías', ptypes, '#c07a30') +
+    (tags.length ? barSection('Tags', tags, 'var(--slide)') : '');
 }
 
 // ═══════════════════════════════════════════
@@ -4236,7 +4336,7 @@ function renderTable() {
 }
 
 function sortTable(col) {
-  const COLS = ['#','FILM STOCK','FILM TYPE','FORMAT','EXP/FRESH','ISO','MODEL NAME','LENS','LOCATIONS','PHOTO TYPE','STARTED','# EXP','PUSH/PULL','DEV','RATING'];
+  const COLS = ['#','FILM STOCK','FILM TYPE','FORMAT','EXP/FRESH','ISO','MODEL NAME','LENS','LOCATIONS','PHOTO TYPE','TAGS','STARTED','# EXP','PUSH/PULL','DEV','RATING'];
   if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
   document.querySelectorAll('thead th').forEach((th, i) => {
     th.classList.remove('sort-asc','sort-desc');
@@ -4264,7 +4364,7 @@ function applyFilters() {
     if (cam && r['MODEL NAME'] !== cam) return false;
     if (lab && r['DEV'] !== lab) return false;
     if (q) {
-      const hay = [r['FILM STOCK'],r['MANUFACTURER'],r['LOCATIONS'],r['PHOTO TYPE'],r['NOTES'],r['MODEL NAME'],r['DEV'],r['#']].join(' ').toLowerCase();
+      const hay = [r['FILM STOCK'],r['MANUFACTURER'],r['LOCATIONS'],r['PHOTO TYPE'],r['TAGS'],r['NOTES'],r['MODEL NAME'],r['DEV'],r['#']].join(' ').toLowerCase();
       if (!hay.includes(q)) return false;
     }
     return true;
@@ -5068,6 +5168,107 @@ function locDropCancelNew(id) {
   document.getElementById('locnew_' + id).classList.remove('visible');
   document.getElementById('loctext_' + id).value = '';
 }
+
+// ═══════════════════════════════════════════
+//  TAG DROPDOWN HELPERS
+//  Parallel to locDrop* but uses tagdrop-chip CSS class and auto-prefixes #
+// ═══════════════════════════════════════════
+function tagNormalize(v) {
+  // Ensure every tag starts with #
+  const t = v.trim();
+  return t.startsWith('#') ? t : '#' + t;
+}
+
+function tagDropAdd(id, key) {
+  const sel = document.getElementById('tsel_' + id);
+  const raw = sel.value;
+  sel.value = '';
+  if (!raw) return;
+  if (raw === '__nuevo__') {
+    document.getElementById('tagnew_' + id).classList.add('visible');
+    document.getElementById('tagtext_' + id).focus();
+    return;
+  }
+  const val = tagNormalize(raw);
+  const hidden = document.getElementById('hidden_' + id);
+  let cur = hidden.value ? hidden.value.split(',').map(v => v.trim()).filter(Boolean) : [];
+  if (cur.includes(val)) return;
+  cur.push(val);
+  hidden.value = cur.join(', ');
+  const chipsDiv = document.getElementById('tchips_' + id);
+  const chip = document.createElement('span');
+  chip.className = 'tagdrop-chip';
+  chip.innerHTML = val + `<span class="tagdrop-rm" onclick="tagDropRemove('${id}','${val.replace(/'/g,"\\'")}')">×</span>`;
+  chipsDiv.appendChild(chip);
+}
+
+function tagDropRemove(id, val) {
+  const hidden = document.getElementById('hidden_' + id);
+  let cur = hidden.value ? hidden.value.split(',').map(v => v.trim()).filter(Boolean) : [];
+  cur = cur.filter(v => v !== val);
+  hidden.value = cur.join(', ');
+  const chipsDiv = document.getElementById('tchips_' + id);
+  chipsDiv.querySelectorAll('.tagdrop-chip').forEach(chip => {
+    if (chip.childNodes[0]?.textContent?.trim() === val) chip.remove();
+  });
+}
+
+function tagDropNewConfirm(id, key) {
+  const inp = document.getElementById('tagtext_' + id);
+  const val = tagNormalize(inp.value);
+  if (!val || val === '#') return;
+  document.getElementById('tagnew_' + id).classList.remove('visible');
+  inp.value = '';
+  const hidden = document.getElementById('hidden_' + id);
+  let cur = hidden.value ? hidden.value.split(',').map(v => v.trim()).filter(Boolean) : [];
+  if (cur.includes(val)) return;
+  cur.push(val);
+  hidden.value = cur.join(', ');
+  const chipsDiv = document.getElementById('tchips_' + id);
+  const chip = document.createElement('span');
+  chip.className = 'tagdrop-chip';
+  chip.innerHTML = val + `<span class="tagdrop-rm" onclick="tagDropRemove('${id}','${val.replace(/'/g,"\\'")}')">×</span>`;
+  chipsDiv.appendChild(chip);
+  const selEl = document.getElementById('tsel_' + id);
+  const nuevoOpt = selEl.querySelector('option[value="__nuevo__"]');
+  const opt = document.createElement('option');
+  opt.value = val; opt.textContent = val;
+  selEl.insertBefore(opt, nuevoOpt);
+}
+
+function tagDropCancelNew(id) {
+  document.getElementById('tagnew_' + id).classList.remove('visible');
+  document.getElementById('tagtext_' + id).value = '';
+}
+
+// ═══════════════════════════════════════════
+//  FUTURE: FRAME-LEVEL TAGS SCHEMA (Supabase)
+//
+//  When the photo gallery feature is implemented, per-frame tagging
+//  should use a separate `frame_tags` table — NOT modify the rolls table.
+//  Roll-level TAGS (above) and frame_tags coexist without conflict.
+//
+//  CREATE TABLE frame_tags (
+//    id          uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+//    roll_id     text NOT NULL REFERENCES rolls(code) ON DELETE CASCADE,
+//    frame_start integer NOT NULL,  -- first frame in range (1-indexed)
+//    frame_end   integer NOT NULL,  -- last frame in range (inclusive)
+//    tag         text NOT NULL,     -- e.g. '#monterrey'
+//    created_at  timestamptz DEFAULT now()
+//  );
+//  CREATE INDEX ON frame_tags (roll_id);
+//  CREATE INDEX ON frame_tags (tag);
+//
+//  Search query pattern (future):
+//    "landscape #monterrey" →
+//      CATEGORY ILIKE '%landscape%'
+//      AND (
+//        TAGS ILIKE '%#monterrey%'                         -- roll-level
+//        OR roll_id IN (                                    -- frame-level
+//          SELECT roll_id FROM frame_tags WHERE tag = '#monterrey'
+//        )
+//      )
+// ═══════════════════════════════════════════
 
 // ═══════════════════════════════════════════
 //  STAR RATING HELPERS
