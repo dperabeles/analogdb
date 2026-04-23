@@ -1,123 +1,110 @@
 # Analog Archive Database
 
-A personal analog film roll tracker and archive dashboard. Built as a single-file web app backed by Supabase.
+Single-file dashboard for tracking, developing, and archiving analog film rolls.
 
-Dark dashboard with film grain, sidebar navigation, KPI cards and roll table
-
----
-
-## Overview
-
-Analog Archive is a personal tool for photographers who shoot on film. It tracks every roll from the moment it's loaded into a camera through development and into the archive — with stats, timelines, and a full inventory of cameras and film stocks.
-
-The current version is a single HTML file (`analog-db-dashboard.html`) that runs directly in the browser with no build step. The roadmap includes a migration to Next.js with a companion Expo mobile app for field use.
+The current product is a self-contained `analog-db-dashboard.html` file backed by Supabase. It opens directly in the browser and includes dashboard views, roll editing, statistics, a timeline, and a camera catalog.
 
 ---
 
-## Features
+## What It Is
+
+Analog Archive is a personal archive system for film photographers. It is designed to track a roll from the moment it is loaded into a camera through development and into the archive, while keeping the interface editorial, darkroom-inspired, and lightweight.
+
+This version is intentionally simple from an engineering standpoint:
+
+- one HTML file
+- vanilla CSS and JavaScript
+- Supabase as the backend
+- no build step
+- no framework
+
+---
+
+## Current Features
 
 ### Dashboard
-- **KPI cards** — total rolls shot, rolls in progress (in camera / to develop / in development), format breakdown (35mm / 120 / Super 8)
-- **Activity chart** — rolls loaded over time, switchable between monthly, quarterly, and yearly views
-- **Workflow kanban** — rolls grouped by status in a compact column view
-- **Film stock ranking** — top stocks by rolls shot, with mini usage bars
+- Editorial dashboard with archive counts and recent activity
+- Format breakdown cards
+- Workflow sections for rolls in progress
+- Top film stock ranking
 
 ### Roll Database
-- Full sortable table of all rolls
-- Filter by status, format, and film stock
-- Live search across roll ID, film, camera, and location
-- Click any row to open the roll detail view
+- Sortable table of rolls
+- Filters for film type, format, freshness, camera, and lab
+- Search across roll ID, film, camera, location, tags, and notes
+- Detail modal for each roll
 
-### Roll Editor — Simple & Advanced modes
+### Roll Editor
+- Create and edit rolls in a darkroom-themed modal
+- Smart selects for film stock, manufacturer, camera maker, model, labs, and lens
+- Auto-fill for ISO, film type, and manufacturer based on stock
+- Multi-select categories and hashtag-style tags
+- Rating, push/pull, notes, and timeline metadata
 
-New rolls can be created in two modes, accessible from the same "+" button:
+### Supported Film Formats
+- `35`
+- `120`
+- `Super8`
+- `110`
+- `16mm`
+- `Large Format`
 
-**Simple mode** — designed for beginners and field use
-- 3 fields only: film stock, camera, format
-- One tap to load — done in under 5 seconds
-- No prior knowledge of ISO, push/pull, or lab workflows required
-- Saves with the same data structure; missing fields can be filled in later
-
-**Advanced mode** — full control for experienced users
-- **Smart camera selector** — autocomplete filtered by maker and format; auto-fills maker and format when a model is selected
-- **Smart film stock selector** — autocomplete filtered by manufacturer; auto-fills ISO and type when a stock is selected
-- **Locations dropdown** — top 3 most-used locations shown first, then alphabetical, with an inline "add new" option at the bottom
-- **Star rating** (1–5) for the roll
-- **Push/pull** tracking
-- Date fields for each stage: loaded, shot, sent to lab, developed, scanned
-- Notes field
-- Delete with confirmation
-
-Both modes write to the same roll record. A roll created in Simple mode can always be expanded later using Advanced mode via the edit button in the detail view.
-
-### Roll Detail View
-- Full read-only summary of a roll's data
-- Inline status change buttons to advance the roll through the workflow
-
-### Status Workflow
-```
-In Camera → To Develop → In Development → Developed
-```
-Each transition is tracked with a date and reflected immediately in the dashboard.
-
-### Stats Page
-- Usage breakdown by film stock, camera, format, and location
-- Bar charts ranked by roll count
-
-### Timeline
-- Chronological view of all rolls grouped by month
-- Each roll shown as a card with status, film, camera, and format
+### Stats and Timeline
+- Statistics by stock, lab, camera, location, categories, tags, and format
+- Timeline view grouped chronologically
+- Dashboard and stats views reflect the current format set
 
 ### Cameras
-- Full inventory of cameras with maker, model, format, and type
-- Add and delete cameras
-- Usage charts by format and type
+- Camera catalog with maker, model, format, and type
+- Add and delete camera entries
+- Usage summaries and charts
 
-### Data
-- **Supabase backend** — all rolls, cameras, and film stocks are stored and synced remotely
-- **Export** — download all rolls as JSON
-- Sync status toast on every save/update
+### Data and Sync
+- Supabase-backed data storage
+- LocalStorage fallback for offline resilience
+- JSON export
 
 ---
 
-## Tech Stack
+## Stack
 
 | Layer | Technology |
 |---|---|
-| Frontend | Vanilla HTML + CSS + JavaScript |
-| Database | [Supabase](https://supabase.com) (PostgreSQL) |
-| Fonts | DM Mono, Playfair Display, Fraunces, Inter |
-| Hosting | Open directly in browser (no build step) |
-
-No frameworks, no bundlers, no dependencies beyond the Supabase JS client loaded via CDN.
+| Frontend | HTML + CSS + Vanilla JavaScript |
+| Backend | [Supabase](https://supabase.com) |
+| UI Fonts | DM Mono, Playfair Display, Fraunces, Inter, Special Elite |
+| Runtime | Browser, no build step |
 
 ---
 
-## Design
+## Design Direction
 
-- **Darkroom theme** — deep brown-blacks (`#1e1a15`) with safelight red (`#d94a2a`) as the accent
-- **Film grain overlay** — subtle SVG noise layer over the entire UI
-- **Filmstrip perforations** on the active nav item
-- Status pills with color-coded states and a pulsing animation for rolls currently in camera
-- Format badges: terracotta for 35mm, steel blue for 120, ochre for Super 8
+- Darkroom palette with warm browns and safelight red accents
+- Editorial structure rather than app-dashboard chrome
+- Monospace technical UI mixed with serif display typography
+- Film grain and filmstrip-inspired details
 
 ---
 
 ## Roadmap
 
-The project is being migrated to a full web application.
+Short-term roadmap:
 
-**Planned stack:**
-- **Web app** — Next.js + Supabase (same database)
-- **Mobile app** — Expo (iOS field companion for quick roll logging)
+1. Fix camera metrics so usage is grouped by `maker + model`, not just model name.
+2. Continue refining the roll editor layout and responsive behavior.
+3. Improve offline robustness and sync clarity.
+4. Explore frame-level tagging/gallery using the existing `frame_tags` table.
 
-The mobile app is scoped to field use only: create roll, change status, check inventory. No light meter — dedicated apps already handle that better.
+Longer-term roadmap:
 
-The **Simple/Advanced roll creation modes** are especially relevant for mobile — the Simple mode becomes the primary screen in the field, with Advanced available for users who want to fill in all the metadata.
+- proper auth
+- web app migration if the single-file version reaches its limits
+- possible mobile companion for fast field logging
 
 ---
 
 ## Project Status
 
-> Active development — prototype phase.  
-> Single-file version is fully functional with real data.  
+Active development.
+
+The single-file version is the primary product right now and remains the source of truth for ongoing feature work.
