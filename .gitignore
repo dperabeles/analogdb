@@ -1,5 +1,6 @@
 # Backups — no los subimos al repo
 *.backup-*.html
+HANDOFF.md
 
 # Claude Code internals
 .claude/
