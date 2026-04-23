@@ -557,6 +557,9 @@ td { padding: 9px 13px; white-space: nowrap; font-size: 12px; color: var(--text)
 .badge-35     { background: rgba(217,113,80,.1);  color: #d97150; border: 1px solid rgba(217,113,80,.28); }
 .badge-120    { background: rgba(90,138,173,.1);  color: #5a8aad; border: 1px solid rgba(90,138,173,.28); }
 .badge-super8 { background: rgba(200,160,72,.1);  color: #c8a048; border: 1px solid rgba(200,160,72,.28); }
+.badge-110    { background: rgba(184,92,0,.1);    color: #b85c00; border: 1px solid rgba(184,92,0,.28); }
+.badge-16mm   { background: rgba(42,122,74,.1);   color: #2a7a4a; border: 1px solid rgba(42,122,74,.28); }
+.badge-large  { background: rgba(124,92,191,.08); color: #7c5cbf; border: 1px solid rgba(124,92,191,.25); }
 
 /* ═══════════════════════════════════════════
    EDITORIAL DESIGN SYSTEM — Analog Quarterly
@@ -647,14 +650,16 @@ td { padding: 9px 13px; white-space: nowrap; font-size: 12px; color: var(--text)
   font-weight: 400; line-height: 0.9; letter-spacing: -0.04em; color: #1a1510;
 }
 .ed-format-boxes {
-  display: flex; margin-top: 22px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 22px;
   border: 1px solid rgba(26,21,16,0.15);
 }
 .ed-format-box {
-  flex: 1; padding: 12px 14px;
+  padding: 12px 14px;
   border-left: 1px solid rgba(26,21,16,0.15);
+  border-top: 1px solid rgba(26,21,16,0.15);
 }
-.ed-format-box:first-child { border-left: none; }
+.ed-format-box:nth-child(3n+1) { border-left: none; }
+.ed-format-box:nth-child(-n+3) { border-top: none; }
 .ed-format-box-label {
   font-size: 9px; letter-spacing: 2px;
   font-family: 'Inter', sans-serif; font-weight: 700;
@@ -1680,6 +1685,9 @@ td { padding: 9px 13px; white-space: nowrap; font-size: 12px; color: var(--text)
 .roll-card-chip.fmt35    { background: rgba(217,113,80,.1);  color: #d97150; border-color: rgba(217,113,80,.28); }
 .roll-card-chip.fmt120   { background: rgba(90,138,173,.1);  color: #5a8aad; border-color: rgba(90,138,173,.28); }
 .roll-card-chip.fmtsuper { background: rgba(200,160,72,.1);  color: #c8a048; border-color: rgba(200,160,72,.28); }
+.roll-card-chip.fmt110   { background: rgba(184,92,0,.1);    color: #b85c00; border-color: rgba(184,92,0,.28); }
+.roll-card-chip.fmt16    { background: rgba(42,122,74,.1);   color: #2a7a4a; border-color: rgba(42,122,74,.28); }
+.roll-card-chip.fmtlarge { background: rgba(124,92,191,.08); color: #7c5cbf; border-color: rgba(124,92,191,.25); }
 
 .roll-card-meta { display: flex; flex-direction: column; gap: 4px; }
 .roll-card-meta-row {
@@ -2568,6 +2576,10 @@ h1, h2 {
           <option value="">Todos los formatos</option>
           <option value="35">35mm</option>
           <option value="120">120</option>
+          <option value="Super8">Super8</option>
+          <option value="110">110</option>
+          <option value="16mm">16mm</option>
+          <option value="Large Format">Large Format</option>
         </select>
         <select class="filter-select" id="filterFresh" onchange="applyFilters()">
           <option value="">Exp / Fresh</option>
@@ -2824,6 +2836,55 @@ function normalizeRoll(r) {
   return r;
 }
 
+const FILM_FORMAT_OPTIONS = ['35', '120', 'Super8', '110', '16mm', 'Large Format'];
+const FILM_FORMAT_META = {
+  '35':           { label: '35mm',         badgeClass: 'badge-35',     chipClass: 'fmt35',    color: '#d97150', bg: 'rgba(217,113,80,.1)',  border: 'rgba(217,113,80,.28)' },
+  '120':          { label: '120',          badgeClass: 'badge-120',    chipClass: 'fmt120',   color: '#5a8aad', bg: 'rgba(90,138,173,.1)',  border: 'rgba(90,138,173,.28)' },
+  'Super8':       { label: 'Super8',       badgeClass: 'badge-super8', chipClass: 'fmtsuper', color: '#c8a048', bg: 'rgba(200,160,72,.1)',  border: 'rgba(200,160,72,.28)' },
+  '110':          { label: '110',          badgeClass: 'badge-110',    chipClass: 'fmt110',   color: '#b85c00', bg: 'rgba(184,92,0,.1)',    border: 'rgba(184,92,0,.28)' },
+  '16mm':         { label: '16mm',         badgeClass: 'badge-16mm',   chipClass: 'fmt16',    color: '#2a7a4a', bg: 'rgba(42,122,74,.1)',   border: 'rgba(42,122,74,.28)' },
+  'Large Format': { label: 'Large Format', badgeClass: 'badge-large',  chipClass: 'fmtlarge', color: '#7c5cbf', bg: 'rgba(124,92,191,.08)', border: 'rgba(124,92,191,.25)' },
+};
+
+function normalizeFormatValue(v) {
+  if (v == null || v === '') return null;
+  if (v === 8 || v === '8') return 'Super8';
+  if (v === 16 || v === '16') return '16mm';
+  if (v === 35 || v === '35') return 35;
+  if (v === 45 || v === '45') return 'Large Format';
+  if (v === 110 || v === '110') return '110';
+  if (v === 120 || v === '120') return 120;
+  const s = String(v).trim();
+  if (/^35(mm)?$/i.test(s)) return 35;
+  if (/^120$/i.test(s)) return 120;
+  if (/^super\s*8$/i.test(s)) return 'Super8';
+  if (/^110$/i.test(s)) return '110';
+  if (/^16mm$/i.test(s)) return '16mm';
+  if (/^large format$/i.test(s)) return 'Large Format';
+  return s;
+}
+
+function formatKey(v) {
+  const norm = normalizeFormatValue(v);
+  if (norm === 35) return '35';
+  if (norm === 120) return '120';
+  return norm ? String(norm) : '';
+}
+
+function formatMeta(v) {
+  return FILM_FORMAT_META[formatKey(v)] || null;
+}
+
+function formatStorageValue(v) {
+  const norm = normalizeFormatValue(v);
+  if (norm === 35 || norm === 120) return norm;
+  if (norm === 'Super8') return 8;
+  if (norm === '110') return 110;
+  if (norm === '16mm') return 16;
+  if (norm === 'Large Format') return 45;
+  return null;
+}
+
 // ═══════════════════════════════════════════
 //  SUPABASE CLIENT
 // ═══════════════════════════════════════════
@@ -2895,7 +2956,7 @@ async function upsertRollRemote(flat) {
     code: flat['#'],
     film_stock_id: stock_id,
     iso_pushed: toInt(flat['ISO @']),
-    format: String(flat['FORMAT'] || '').toLowerCase() === 'super8' ? 8 : toInt(flat['FORMAT']),
+    format: formatStorageValue(flat['FORMAT']),
     exp_count: toInt(flat['EXP']),
     exp_taken: toInt(flat['# EXP']),
     fresh,
@@ -2948,8 +3009,7 @@ async function loadData() {
     const clean = (data || []).filter(r => r['#']).map(r => {
       const { id, updated_at, ...rest } = r;
       rest['PUSH/PULL'] = normalizePushPull(rest['PUSH/PULL']);
-      // FORMAT: 8 en Supabase = Super8 (integer no puede almacenar string)
-      if (rest['FORMAT'] === 8 || rest['FORMAT'] === '8') rest['FORMAT'] = 'Super8';
+      rest['FORMAT'] = normalizeFormatValue(rest['FORMAT']);
       return rest;
     });
     try { localStorage.setItem(LS_KEY, JSON.stringify(clean)); } catch(e) {}
@@ -2962,10 +3022,10 @@ async function loadData() {
       const s = localStorage.getItem(LS_KEY);
       if (s) {
         const arr = JSON.parse(s);
-        if (Array.isArray(arr) && arr.length) return arr.filter(r => r['#']).map(r => { r['PUSH/PULL'] = normalizePushPull(r['PUSH/PULL']); return r; });
+        if (Array.isArray(arr) && arr.length) return arr.filter(r => r['#']).map(r => { r['PUSH/PULL'] = normalizePushPull(r['PUSH/PULL']); r['FORMAT'] = normalizeFormatValue(r['FORMAT']); return r; });
       }
     } catch(_) {}
-    return RAW.filter(r => r['#']).map(r => { const c = {...r}; c['PUSH/PULL'] = normalizePushPull(c['PUSH/PULL']); return c; });
+    return RAW.filter(r => r['#']).map(r => { const c = {...r}; c['PUSH/PULL'] = normalizePushPull(c['PUSH/PULL']); c['FORMAT'] = normalizeFormatValue(c['FORMAT']); return c; });
   }
 }
 
@@ -3382,7 +3442,7 @@ function buildEditorForm(rec) {
     <div class="editor-section">
       <div class="editor-sec-title">Film</div>
       ${row('Tipo',         sel('FILM TYPE', ['COLOR','B/W','SLIDE']))}
-      ${row('Formato',      sel('FORMAT',    ['35','120','Super8']))}
+      ${row('Formato',      sel('FORMAT', FILM_FORMAT_OPTIONS))}
       ${row('Fabricante',   smartManufacturerSel())}
       ${row('Film Stock',   smartStockSel())}
       ${row('ISO',          inp('ISO','number'))}
@@ -3408,11 +3468,12 @@ function buildEditorForm(rec) {
       <div class="editor-row" style="align-items:flex-start;flex-direction:column;gap:6px">
         <div style="width:100%">${multiChips('PHOTO TYPE','Nueva categoría')}</div>
       </div>
-      ${row('ISO @',       `<input type="number" data-k="ISO @" value="${escAttr(rec['ISO @'] != null ? rec['ISO @'] : '')}" placeholder="ISO al que fue tomado el rollo">`)}
+      <div class="editor-row" style="align-items:flex-start;flex-direction:column;gap:6px;padding-top:6px;">
+        <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:2px;">Tags</div>
+        <div style="width:100%">${tagsDropdown('TAGS')}</div>
+      </div>
       ${row('Inicio',        inp('STARTED','date'))}
       ${row('Fin',           inp('FINISHED','date'))}
-      ${row('Exp finales', `<input type="number" data-k="# EXP" value="${escAttr(rec['# EXP'] != null ? rec['# EXP'] : '')}" placeholder="Exposiciones finales del rollo">`)}
-      ${row('Push/Pull',     sel('PUSH/PULL', ['+5','+4','+3','+2','+1','0','-1','-2','-3','-4','-5']))}
     </div>
 
     <div class="editor-section">
@@ -3420,11 +3481,10 @@ function buildEditorForm(rec) {
       ${row('Revelado',    smartSel('DEV',  'Nuevo laboratorio'))}
       ${row('Scan',        smartSel('SCAN', 'Nuevo scan lab'))}
       ${row('Status',      sel('STATUS', ['In Camera','To Develop','In Development','Developed']))}
+      ${row('ISO @',       `<input type="number" data-k="ISO @" value="${escAttr(rec['ISO @'] != null ? rec['ISO @'] : '')}" placeholder="ISO al que fue tomado el rollo">`)}
+      ${row('Push/Pull',     sel('PUSH/PULL', ['+5','+4','+3','+2','+1','0','-1','-2','-3','-4','-5']))}
+      ${row('Exp finales', `<input type="number" data-k="# EXP" value="${escAttr(rec['# EXP'] != null ? rec['# EXP'] : '')}" placeholder="Exposiciones finales del rollo">`)}
       ${row('Rating',  starRating())}
-      <div class="editor-row" style="align-items:flex-start;flex-direction:column;gap:6px;padding-top:6px;">
-        <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-bottom:2px;">Tags</div>
-        <div style="width:100%">${tagsDropdown('TAGS')}</div>
-      </div>
       ${row('ID (#)',       `<span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--amber-dark);font-weight:500">${rec['#']}</span><input type="hidden" data-k="#" value="${escAttr(rec['#'])}">`)}
     </div>
 
@@ -3474,7 +3534,7 @@ function collectEditorRecord() {
   const out = {};
   Object.entries(byKey).forEach(([key, raw]) => {
     if (key === 'FORMAT') {
-      out[key] = (raw === 'Super8') ? 'Super8' : (parseInt(raw, 10) || 35);
+      out[key] = normalizeFormatValue(raw) || 35;
     } else if (['ISO', 'EXP', 'ISO @'].includes(key)) {
       const n = parseFloat(raw);
       out[key] = Number.isFinite(n) ? n : null;
@@ -3751,7 +3811,7 @@ function buildBuckets() {
 
   if (chartPeriod === 'yearly') {
     const years = [...new Set(DATA.map(r => (r.STARTED || '').slice(0,4)).filter(Boolean))].sort();
-    years.forEach(y => buckets.push({ label: y, r35: 0, r120: 0,
+    years.forEach(y => buckets.push({ label: y, r35: 0, r120: 0, rOther: 0,
       match: r => (r.STARTED || '').slice(0,4) === y }));
 
   } else if (chartPeriod === 'quarterly') {
@@ -3761,7 +3821,7 @@ function buildBuckets() {
       const ms = q * 3;
       const yCopy = y, msCopy = ms;
       buckets.unshift({
-        label: `Q${q+1} ${y}`, r35: 0, r120: 0,
+        label: `Q${q+1} ${y}`, r35: 0, r120: 0, rOther: 0,
         match: r => {
           if (!r.STARTED) return false;
           const rd = new Date(r.STARTED);
@@ -3777,7 +3837,7 @@ function buildBuckets() {
     for (let i = 0; i < 12; i++) {
       const y = d.getFullYear(), m = d.getMonth();
       buckets.unshift({
-        label: MO[m], r35: 0, r120: 0,
+        label: MO[m], r35: 0, r120: 0, rOther: 0,
         match: r => {
           if (!r.STARTED) return false;
           const rd = new Date(r.STARTED);
@@ -3790,7 +3850,11 @@ function buildBuckets() {
 
   DATA.forEach(r => {
     buckets.forEach(b => {
-      if (b.match(r)) { if (r.FORMAT == 35) b.r35++; else b.r120++; }
+      if (!b.match(r)) return;
+      const fk = formatKey(r.FORMAT);
+      if (fk === '35') b.r35++;
+      else if (fk === '120') b.r120++;
+      else b.rOther++;
     });
   });
 
@@ -3811,7 +3875,7 @@ function drawChart() {
   ctx.scale(dpr, dpr);
 
   const buckets = buildBuckets();
-  const maxVal  = Math.max(...buckets.map(b => b.r35 + b.r120), 1);
+  const maxVal  = Math.max(...buckets.map(b => b.r35 + b.r120 + b.rOther), 1);
   const n       = buckets.length;
   const PL = 32, PR = 8, PT = 12, PB = 4;
   const CW = W - PL - PR;
@@ -3841,9 +3905,10 @@ function drawChart() {
   // Bars
   buckets.forEach((b, i) => {
     const cx  = PL + i * GW + GW / 2;
-    const h35  = (b.r35  / maxVal) * CH;
-    const h120 = (b.r120 / maxVal) * CH;
-    const tot  = b.r35 + b.r120;
+    const h35    = (b.r35    / maxVal) * CH;
+    const h120   = (b.r120   / maxVal) * CH;
+    const hOther = (b.rOther / maxVal) * CH;
+    const tot    = b.r35 + b.r120 + b.rOther;
 
     if (b.r120 > 0) {
       ctx.fillStyle = '#c0b898';
@@ -3857,11 +3922,17 @@ function drawChart() {
       ctx.roundRect(cx + 1, PT + CH - h35, BW, h35, [2,2,0,0]);
       ctx.fill();
     }
+    if (b.rOther > 0) {
+      ctx.fillStyle = '#7c5cbf';
+      ctx.beginPath();
+      ctx.roundRect(cx + BW + 3, PT + CH - hOther, BW, hOther, [2,2,0,0]);
+      ctx.fill();
+    }
     if (tot > 0) {
       ctx.fillStyle = '#9c9284';
       ctx.textAlign = 'center';
       ctx.font = '9px DM Mono, monospace';
-      const topY = PT + CH - Math.max(h35, h120) - 4;
+      const topY = PT + CH - Math.max(h35, h120, hOther) - 4;
       ctx.fillText(tot, cx, topY);
     }
   });
@@ -3872,8 +3943,8 @@ function drawChart() {
 
   // Summary
   document.getElementById('chartTotal').textContent = DATA.length;
-  document.getElementById('c35').textContent = DATA.filter(r => r.FORMAT == 35).length;
-  document.getElementById('c120').textContent = DATA.filter(r => r.FORMAT == 120).length;
+  document.getElementById('c35').textContent = DATA.filter(r => formatKey(r.FORMAT) === '35').length;
+  document.getElementById('c120').textContent = DATA.filter(r => formatKey(r.FORMAT) === '120').length;
 }
 
 // ═══════════════════════════════════════════
@@ -3906,9 +3977,11 @@ function monthCounts(filterFn) {
 
 function renderKPIs() {
   const total    = DATA.length;
-  const r35      = DATA.filter(r => r.FORMAT == 35).length;
-  const r120     = DATA.filter(r => r.FORMAT == 120).length;
-  const rSuper8  = DATA.filter(r => String(r.FORMAT).toLowerCase() === 'super8').length;
+  const formatCounts = FILM_FORMAT_OPTIONS.map(fmt => ({
+    key: fmt,
+    meta: formatMeta(fmt),
+    count: DATA.filter(r => formatKey(r.FORMAT) === formatKey(fmt)).length
+  }));
   const inCam    = DATA.filter(r => r.STATUS === 'In Camera').length;
   const toDev    = DATA.filter(r => r.STATUS === 'To Develop').length;
   const inDev    = DATA.filter(r => r.STATUS === 'In Development').length;
@@ -3947,21 +4020,12 @@ function renderKPIs() {
           </div>
         </div>
         <div class="ed-format-boxes">
-          <div class="ed-format-box" style="border-top:2px solid #d97150;">
-            <div class="ed-format-box-label" style="color:#d97150;">35MM</div>
-            <div class="ed-format-num">${r35}</div>
-            <div class="ed-format-pct">${total ? Math.round(r35/total*100) : 0}% del archivo</div>
-          </div>
-          <div class="ed-format-box" style="border-top:2px solid #5a8aad;">
-            <div class="ed-format-box-label" style="color:#5a8aad;">120</div>
-            <div class="ed-format-num">${r120}</div>
-            <div class="ed-format-pct">${total ? Math.round(r120/total*100) : 0}% del archivo</div>
-          </div>
-          <div class="ed-format-box" style="border-top:2px solid #c8a048;">
-            <div class="ed-format-box-label" style="color:#c8a048;">SUPER 8</div>
-            <div class="ed-format-num">${rSuper8}</div>
-            <div class="ed-format-pct">${total ? Math.round(rSuper8/total*100) : 0}% del archivo</div>
-          </div>
+          ${formatCounts.map(({ meta, count }) => `
+          <div class="ed-format-box" style="border-top:2px solid ${meta.color};">
+            <div class="ed-format-box-label" style="color:${meta.color};">${meta.label.toUpperCase()}</div>
+            <div class="ed-format-num">${count}</div>
+            <div class="ed-format-pct">${total ? Math.round(count/total*100) : 0}% del archivo</div>
+          </div>`).join('')}
         </div>
       </div>
       <div>
@@ -4092,9 +4156,10 @@ function renderStats() {
   const typeColor = DATA.filter(r=>r['FILM TYPE']==='COLOR').length;
   const typeBW    = DATA.filter(r=>r['FILM TYPE']==='B/W').length;
   const typeSL    = DATA.filter(r=>r['FILM TYPE']==='SLIDE').length;
-  const fmt35     = DATA.filter(r=>r.FORMAT==35).length;
-  const fmt120    = DATA.filter(r=>r.FORMAT==120).length;
-  const fmtSuper8 = DATA.filter(r=>String(r.FORMAT).toLowerCase()==='super8').length;
+  const formatEntries = FILM_FORMAT_OPTIONS.map(fmt => {
+    const meta = formatMeta(fmt);
+    return { key: fmt, meta, count: DATA.filter(r => formatKey(r.FORMAT) === formatKey(fmt)).length };
+  });
 
   const typeCard = `<div class="stat-card">
     <div class="stat-card-title">Tipo de Rollo</div>
@@ -4117,18 +4182,11 @@ function renderStats() {
   const formatCard = `<div class="stat-card">
     <div class="stat-card-title">Formato</div>
     <div class="pill-row">
+      ${formatEntries.map(({ meta, count }) => `
       <div class="pill-item">
-        <div class="pill-circle" style="background:rgba(217,113,80,.1);color:#d97150;border:1px solid rgba(217,113,80,.28)">${fmt35}</div>
-        <span class="pill-label">35mm</span>
-      </div>
-      <div class="pill-item">
-        <div class="pill-circle" style="background:rgba(90,138,173,.1);color:#5a8aad;border:1px solid rgba(90,138,173,.28)">${fmt120}</div>
-        <span class="pill-label">120</span>
-      </div>
-      <div class="pill-item">
-        <div class="pill-circle" style="background:rgba(124,92,191,.08);color:#7c5cbf;border:1px solid rgba(124,92,191,.25)">${fmtSuper8}</div>
-        <span class="pill-label">Super8</span>
-      </div>
+        <div class="pill-circle" style="background:${meta.bg};color:${meta.color};border:1px solid ${meta.border}">${count}</div>
+        <span class="pill-label">${meta.label}</span>
+      </div>`).join('')}
     </div>
   </div>`;
 
@@ -4235,10 +4293,8 @@ function typeBadge(t) {
   return `<span class="badge ${cls}">${t}</span>`;
 }
 function formatBadge(f) {
-  return f==35          ? '<span class="badge badge-35">35mm</span>'
-       : f==120         ? '<span class="badge badge-120">120</span>'
-       : String(f).toLowerCase()==='super8' ? '<span class="badge badge-super8">Super8</span>'
-       : (f||'');
+  const meta = formatMeta(f);
+  return meta ? `<span class="badge ${meta.badgeClass}">${meta.label}</span>` : (f || '');
 }
 function freshBadge(s) {
   return s==='FRESH'
@@ -4336,7 +4392,7 @@ function renderTable() {
 }
 
 function sortTable(col) {
-  const COLS = ['#','FILM STOCK','FILM TYPE','FORMAT','EXP/FRESH','ISO','MODEL NAME','LENS','LOCATIONS','PHOTO TYPE','TAGS','STARTED','# EXP','PUSH/PULL','DEV','RATING'];
+  const COLS = ['#','FILM STOCK','FILM TYPE','FORMAT','EXP/FRESH','ISO','MODEL NAME','LENS','LOCATIONS','PHOTO TYPE','STARTED','# EXP','PUSH/PULL','DEV','RATING'];
   if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
   document.querySelectorAll('thead th').forEach((th, i) => {
     th.classList.remove('sort-asc','sort-desc');
@@ -4359,7 +4415,7 @@ function applyFilters() {
   const lab = document.getElementById('filterLab').value;
   filtered = DATA.filter(r => {
     if (typ && r['FILM TYPE'] !== typ) return false;
-    if (fmt && String(r.FORMAT) !== fmt) return false;
+    if (fmt && formatKey(r.FORMAT) !== formatKey(fmt)) return false;
     if (fsh && r['EXP/FRESH'] !== fsh) return false;
     if (cam && r['MODEL NAME'] !== cam) return false;
     if (lab && r['DEV'] !== lab) return false;
@@ -4521,13 +4577,12 @@ function renderStatusSections() {
     return v ? new Date(v+'T12:00:00').toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}) : '—';
   }
   function fmtChip(r) {
-    const fmtClass = r.FORMAT == 35 ? 'fmt35' : r.FORMAT == 120 ? 'fmt120' : 'fmtsuper';
-    const fmtLabel = r.FORMAT == 35 ? '35mm' : r.FORMAT == 120 ? '120' : 'Super8';
+    const meta = formatMeta(r.FORMAT) || { chipClass: 'fmtsuper', label: String(r.FORMAT || '—') };
     const freshClass = r['EXP/FRESH'] === 'FRESH' ? 'fresh' : 'expired';
     const freshLabel = r['EXP/FRESH'] === 'FRESH' ? 'Fresh' : 'Expired';
     return `
       <span class="roll-card-chip ${freshClass}">${freshLabel}</span>
-      <span class="roll-card-chip ${fmtClass}">${fmtLabel}</span>
+      <span class="roll-card-chip ${meta.chipClass}">${meta.label}</span>
       ${r.ISO ? `<span class="roll-card-chip">ISO ${r.ISO}</span>` : ''}
     `;
   }
@@ -4804,10 +4859,12 @@ function renderCameraCharts() {
   DATA.forEach(r => {
     const key = r['MODEL NAME'];
     if (!key) return;
-    if (!camData[key]) camData[key] = { maker: r['MAKER']||'', total: 0, r35: 0, r120: 0, types: {}, formats: {} };
+    if (!camData[key]) camData[key] = { maker: r['MAKER']||'', total: 0, r35: 0, r120: 0, rOther: 0, types: {}, formats: {} };
     camData[key].total++;
-    if (r.FORMAT == 35)  camData[key].r35++;
-    if (r.FORMAT == 120) camData[key].r120++;
+    const fk = formatKey(r.FORMAT);
+    if (fk === '35') camData[key].r35++;
+    else if (fk === '120') camData[key].r120++;
+    else camData[key].rOther++;
     const ct = r['C. TYPE'] || 'Otro';
     camData[key].types[ct] = (camData[key].types[ct] || 0) + 1;
   });
@@ -4834,6 +4891,7 @@ function renderCameraCharts() {
         <div class="cam-bar-meta">
           ${d.r35  > 0 ? `<span class="cam-bar-segment"><span class="cam-seg-dot" style="background:#18160f"></span>${d.r35} × 35mm</span>` : ''}
           ${d.r120 > 0 ? `<span class="cam-bar-segment"><span class="cam-seg-dot" style="background:#c0b898"></span>${d.r120} × 120</span>` : ''}
+          ${d.rOther > 0 ? `<span class="cam-bar-segment"><span class="cam-seg-dot" style="background:#7c5cbf"></span>${d.rOther} × otros</span>` : ''}
         </div>
       </div>
       <div class="cam-bar-count">${d.total}</div>
@@ -4860,6 +4918,7 @@ function renderCameraCharts() {
         <div style="height:100%;display:flex;border-radius:3px;overflow:hidden">
           <div style="width:${d.r35/d.total*100}%;background:#18160f"></div>
           <div style="width:${d.r120/d.total*100}%;background:#c0b898"></div>
+          <div style="width:${d.rOther/d.total*100}%;background:#7c5cbf"></div>
         </div>
       </div>
       <span class="bar-num">${d.total}</span>
