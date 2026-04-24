@@ -90,21 +90,22 @@ This version is intentionally simple from an engineering standpoint:
 
 Short-term roadmap:
 
-1. Fix camera metrics so usage is grouped by `maker + model`, not just model name.
-2. Continue refining the roll editor layout and responsive behavior.
-3. Improve offline robustness and sync clarity.
-4. Explore frame-level tagging/gallery using the existing `frame_tags` table.
+1. Proper auth
+2. Web app migration to next.js
+3. Closed beta
+4. Mobile app (ios only for short time)
+5. Switching betweem Easy and Advanced mode for new entries
 
 Longer-term roadmap:
 
-- proper auth
-- web app migration if the single-file version reaches its limits
-- possible mobile companion for fast field logging
+- Full gallery for each film roll taken, with tagging system working in every photo.
+- Full scale analitics
+- Full sync between all platforms
+- System for adding film stock each user has
+- User added examples for each film stock and its different settings
 
 ---
 
 ## Project Status
 
 Active development.
-
-The single-file version is the primary product right now and remains the source of truth for ongoing feature work.
