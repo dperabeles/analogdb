@@ -458,6 +458,7 @@ grant select, insert, update, delete on public.rolls to authenticated;
 grant select on public.admin_actions to authenticated;
 grant select on public.admin_action_approvals to authenticated;
 grant select on public.rolls_flat to authenticated;
+revoke all on public.frame_tags from anon, authenticated;
 
 alter table public.profiles enable row level security;
 alter table public.user_roles enable row level security;
@@ -467,7 +468,7 @@ alter table public.cameras enable row level security;
 alter table public.rolls enable row level security;
 alter table public.admin_actions enable row level security;
 alter table public.admin_action_approvals enable row level security;
-alter table public.frame_tags disable row level security;
+alter table public.frame_tags enable row level security;
 
 create policy profiles_self_insert
 on public.profiles
@@ -475,6 +476,7 @@ for insert
 to public
 with check (
   user_id = auth.uid()
+  and email = auth.jwt() ->> 'email'
   and status = 'pending'
   and approved_at is null
   and approved_by is null
@@ -533,8 +535,8 @@ create policy shared_film_stocks_update
 on public.film_stocks
 for update
 to public
-using (auth.role() = 'authenticated')
-with check (auth.role() = 'authenticated');
+using (public.app_is_admin(auth.uid()))
+with check (public.app_is_admin(auth.uid()));
 
 create policy shared_labs_select
 on public.labs
@@ -552,8 +554,8 @@ create policy shared_labs_update
 on public.labs
 for update
 to public
-using (auth.role() = 'authenticated')
-with check (auth.role() = 'authenticated');
+using (public.app_is_admin(auth.uid()))
+with check (public.app_is_admin(auth.uid()));
 
 create policy cameras_owner_select
 on public.cameras

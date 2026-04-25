@@ -3103,12 +3103,30 @@ function assertApprovedSession() {
 async function upsertStockRemote(man, name, iso, type) {
   if (!man && !name) return null;
   const safeType = ['COLOR','B/W','SLIDE'].includes(type) ? type : null;
-  const { data, error } = await sb.from('film_stocks').upsert(
-    { manufacturer: man || '', name: name || '', iso: iso || null, type: safeType, in_catalog: false },
-    { onConflict: 'manufacturer,name', ignoreDuplicates: false }
-  ).select('id').single();
-  if (error) throw error;
-  return data.id;
+  const manufacturer = man || '';
+  const stockName = name || '';
+  const existing = await sb.from('film_stocks')
+    .select('id')
+    .eq('manufacturer', manufacturer)
+    .eq('name', stockName)
+    .maybeSingle();
+  if (existing.error) throw existing.error;
+  if (existing.data?.id) return existing.data.id;
+
+  const inserted = await sb.from('film_stocks')
+    .insert({ manufacturer, name: stockName, iso: iso || null, type: safeType, in_catalog: false })
+    .select('id')
+    .single();
+  if (!inserted.error) return inserted.data.id;
+  if (inserted.error.code !== '23505') throw inserted.error;
+
+  const retry = await sb.from('film_stocks')
+    .select('id')
+    .eq('manufacturer', manufacturer)
+    .eq('name', stockName)
+    .maybeSingle();
+  if (retry.error) throw retry.error;
+  return retry.data?.id || null;
 }
 
 async function upsertCameraRemote(maker, model, fmt, ctype) {
@@ -3124,11 +3142,26 @@ async function upsertCameraRemote(maker, model, fmt, ctype) {
 
 async function upsertLabRemote(name) {
   if (!name) return null;
-  const { data, error } = await sb.from('labs').upsert(
-    { name }, { onConflict: 'name', ignoreDuplicates: false }
-  ).select('id').single();
-  if (error) throw error;
-  return data.id;
+  const existing = await sb.from('labs')
+    .select('id')
+    .eq('name', name)
+    .maybeSingle();
+  if (existing.error) throw existing.error;
+  if (existing.data?.id) return existing.data.id;
+
+  const inserted = await sb.from('labs')
+    .insert({ name })
+    .select('id')
+    .single();
+  if (!inserted.error) return inserted.data.id;
+  if (inserted.error.code !== '23505') throw inserted.error;
+
+  const retry = await sb.from('labs')
+    .select('id')
+    .eq('name', name)
+    .maybeSingle();
+  if (retry.error) throw retry.error;
+  return retry.data?.id || null;
 }
 
 // Convert flat app-shape row → normalized DB row, upserting FKs
@@ -5399,9 +5432,10 @@ async function handleRegister() {
     const { data, error } = await sb.auth.signUp({ email, password });
     if (error) throw error;
     if (!data.user?.id) throw new Error('No user id returned from Supabase Auth.');
+    const profileEmail = data.user.email || email;
     const { error: profileErr } = await sb.from('profiles').insert({
       user_id: data.user.id,
-      email,
+      email: profileEmail,
       display_name: displayName,
       status: 'pending',
       approved_at: null,
@@ -5794,11 +5828,11 @@ function renderCamerasPage() {
   const badge  = document.getElementById('camCountBadge');
   if (!grid) return;
 
-  // Count rolls per camera model
-  const rollsByModel = {};
+  // Count rolls per camera maker/model pair
+  const rollsByCamera = {};
   DATA.forEach(r => {
-    const k = (r['MODEL NAME'] || '').toLowerCase();
-    if (k) rollsByModel[k] = (rollsByModel[k] || 0) + 1;
+    const k = cameraUsageKey(r['MAKER'], r['MODEL NAME']);
+    if (k) rollsByCamera[k] = (rollsByCamera[k] || 0) + 1;
   });
 
   if (CAMERAS_CATALOG.length === 0) {
@@ -5810,17 +5844,17 @@ function renderCamerasPage() {
       </div>`;
   } else {
     badge.textContent = `${CAMERAS_CATALOG.length} ${CAMERAS_CATALOG.length === 1 ? 'cámara' : 'cámaras'}`;
-    // Build last-used date per model from roll history
+    // Build last-used date per maker/model pair from roll history
     const lastUsed = {};
     DATA.forEach(r => {
-      const k = (r['MODEL NAME'] || '').toLowerCase();
+      const k = cameraUsageKey(r['MAKER'], r['MODEL NAME']);
       const d = r['FINISHED'] || r['STARTED'];
       if (k && d && (!lastUsed[k] || d > lastUsed[k])) lastUsed[k] = d;
     });
 
     grid.innerHTML = CAMERAS_CATALOG.map(c => {
-      const k     = (c.model||'').toLowerCase();
-      const rolls = rollsByModel[k] || 0;
+      const k     = cameraUsageKey(c.maker, c.model);
+      const rolls = rollsByCamera[k] || 0;
       const last  = lastUsed[k];
       const lastStr = last
         ? new Date(last + 'T12:00:00').toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'numeric' })
@@ -5852,6 +5886,12 @@ function renderCamerasPage() {
 // ═══════════════════════════════════════════
 function renderCameras() { renderCamerasPage(); }
 
+function cameraUsageKey(maker, model) {
+  const m = String(maker || '').trim().toLowerCase();
+  const mod = String(model || '').trim().toLowerCase();
+  return mod ? `${m}::${mod}` : '';
+}
+
 function renderCameraCharts() {
   const barsEl = document.getElementById('camBarsContainer');
   const typeEl = document.getElementById('camTypeChart');
@@ -5861,9 +5901,9 @@ function renderCameraCharts() {
   // Count rolls per camera
   const camData = {};
   DATA.forEach(r => {
-    const key = r['MODEL NAME'];
+    const key = cameraUsageKey(r['MAKER'], r['MODEL NAME']);
     if (!key) return;
-    if (!camData[key]) camData[key] = { maker: r['MAKER']||'', total: 0, r35: 0, r120: 0, rOther: 0, types: {}, formats: {} };
+    if (!camData[key]) camData[key] = { maker: r['MAKER']||'', model: r['MODEL NAME'] || '—', total: 0, r35: 0, r120: 0, rOther: 0, types: {}, formats: {} };
     camData[key].total++;
     const fk = formatKey(r.FORMAT);
     if (fk === '35') camData[key].r35++;
@@ -5879,13 +5919,13 @@ function renderCameraCharts() {
   const COLORS = ['#18160f','#c8922a','#5b9bd5','#7c5cbf','#2a7a4a','#c07a30','#c0392b','#16a085'];
 
   // Main bars
-  barsEl.innerHTML = sorted.map(([model, d], i) => {
+  barsEl.innerHTML = sorted.map(([, d], i) => {
     const color = COLORS[i % COLORS.length];
     const pct = (d.total / maxVal * 100).toFixed(1);
     return `
     <div class="cam-bar-row">
       <div class="cam-bar-label">
-        <div class="cam-bar-model">${model}</div>
+        <div class="cam-bar-model">${d.model}</div>
         <div class="cam-bar-maker">${d.maker}</div>
       </div>
       <div class="cam-bar-area">
@@ -5915,9 +5955,9 @@ function renderCameraCharts() {
     </div>`).join('');
 
   // Format by camera (stacked text)
-  formatEl.innerHTML = sorted.slice(0,6).map(([model, d]) => `
+  formatEl.innerHTML = sorted.slice(0,6).map(([, d]) => `
     <div class="bar-row">
-      <span class="bar-lbl">${model}</span>
+      <span class="bar-lbl">${d.model}</span>
       <div class="bar-track">
         <div style="height:100%;display:flex;border-radius:3px;overflow:hidden">
           <div style="width:${d.r35/d.total*100}%;background:#18160f"></div>
@@ -6023,7 +6063,11 @@ function refreshModelDropdown(maker) {
 
 // Auto-fill C.FORMAT and C.TYPE when a model is selected from the catalog
 function autoFillFromCamera(model) {
-  const cam = CAMERAS_CATALOG.find(c => (c.model||'').toLowerCase() === (model||'').toLowerCase());
+  const maker = document.getElementById('sel_ss_MAKER')?.value || '';
+  const cam = CAMERAS_CATALOG.find(c =>
+    (c.model||'').toLowerCase() === (model||'').toLowerCase() &&
+    (!maker || (c.maker||'').toLowerCase() === maker.toLowerCase())
+  );
   if (!cam) return;
   const modal = document.getElementById('modal');
   if (!modal) return;
