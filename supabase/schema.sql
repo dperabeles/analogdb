@@ -12,6 +12,7 @@ drop view if exists public.rolls_flat cascade;
 
 drop function if exists public.landing_metrics() cascade;
 drop function if exists public.notify_pending_signup() cascade;
+drop function if exists public.handle_new_auth_user() cascade;
 drop function if exists public.cast_admin_action_vote(uuid, text) cascade;
 drop function if exists public.request_admin_action(text, uuid) cascade;
 drop function if exists public.admin_set_profile_status(uuid, text) cascade;
@@ -215,6 +216,72 @@ after insert on public.profiles
 for each row
 when (new.status = 'pending')
 execute function public.notify_pending_signup();
+
+create or replace function public.handle_new_auth_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, auth
+as $$
+declare
+  requested_display_name text;
+begin
+  requested_display_name := btrim(coalesce(new.raw_user_meta_data ->> 'display_name', ''));
+
+  if char_length(requested_display_name) < 3 then
+    requested_display_name := btrim(split_part(coalesce(new.email, 'user'), '@', 1));
+  end if;
+
+  if char_length(requested_display_name) < 3 then
+    requested_display_name := 'User';
+  end if;
+
+  requested_display_name := left(requested_display_name, 20);
+
+  insert into public.profiles (
+    user_id,
+    email,
+    display_name,
+    status,
+    approved_at,
+    approved_by,
+    rejected_at,
+    rejected_by
+  )
+  values (
+    new.id,
+    new.email,
+    requested_display_name,
+    'pending',
+    null,
+    null,
+    null,
+    null
+  )
+  on conflict (user_id) do nothing;
+
+  insert into public.user_roles (
+    user_id,
+    role,
+    is_founder,
+    granted_by
+  )
+  values (
+    new.id,
+    'user',
+    false,
+    null
+  )
+  on conflict (user_id) do nothing;
+
+  return new;
+end;
+$$;
+
+create trigger on_auth_user_created_create_profile
+after insert on auth.users
+for each row
+execute function public.handle_new_auth_user();
 
 create or replace function public.app_is_admin(p_user_id uuid default auth.uid())
 returns boolean

@@ -5429,28 +5429,15 @@ async function handleRegister() {
     if (displayName.length < 3 || displayName.length > 20) {
       throw new Error('Display name must be 3-20 characters.');
     }
-    const { data, error } = await sb.auth.signUp({ email, password });
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { display_name: displayName }
+      }
+    });
     if (error) throw error;
     if (!data.user?.id) throw new Error('No user id returned from Supabase Auth.');
-    const profileEmail = data.user.email || email;
-    const { error: profileErr } = await sb.from('profiles').insert({
-      user_id: data.user.id,
-      email: profileEmail,
-      display_name: displayName,
-      status: 'pending',
-      approved_at: null,
-      approved_by: null,
-      rejected_at: null,
-      rejected_by: null
-    });
-    if (profileErr) throw profileErr;
-    const { error: roleErr } = await sb.from('user_roles').insert({
-      user_id: data.user.id,
-      role: 'user',
-      is_founder: false,
-      granted_by: null
-    });
-    if (roleErr) throw roleErr;
     setGateMessage('Solicitud enviada. Tu acceso quedará en revisión hasta aprobación manual.');
     await bootstrapApp();
   } catch (err) {
