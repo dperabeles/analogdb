@@ -221,13 +221,6 @@ body::before {
   min-width: 22px;
   text-align: center;
 }
-.nav-badge.is-hidden { display: none; }
-.nav-badge.nav-badge-alert {
-  background: rgba(217,74,42,0.16);
-  color: #ff8e72;
-  border: 1px solid rgba(217,74,42,0.28);
-  box-shadow: 0 0 0 1px rgba(217,74,42,0.08) inset;
-}
 
 .sidebar-footer {
   margin-top: auto;
@@ -2719,14 +2712,14 @@ h1, h2 {
 
   <!-- ── ESTADÍSTICAS ── -->
   <div class="page" id="page-stats">
-    <div class="page-inner ed-page-inner">
+    <div class="page-inner" style="padding:28px 48px 60px;">
       <div class="ed-page-header">
         <div class="ed-page-header-kicker">PÁG·05 &nbsp;·&nbsp; ANÁLISIS</div>
         <h1 class="ed-page-header-title">Estadísticas</h1>
         <div class="ed-page-header-sub">Métricas y tendencias del archivo fotográfico</div>
         <div style="height:1px;background:#1a1510;margin-top:12px;"></div>
       </div>
-      <div id="statsGrid"></div>
+      <div class="stats-grid" id="statsGrid"></div>
     </div>
   </div>
 
@@ -4035,14 +4028,6 @@ function isAdmin() {
   return USER_ROLE === 'admin';
 }
 
-function setAdminNavBadge(count) {
-  const badge = document.getElementById('navBadgeAdmin');
-  if (!badge) return;
-  const total = Math.max(0, Number(count) || 0);
-  badge.textContent = String(total);
-  badge.classList.toggle('is-hidden', total === 0);
-}
-
 function ensureAdminNav() {
   const existing = document.getElementById('nav-admin');
   if (!isAdmin()) {
@@ -4055,10 +4040,9 @@ function ensureAdminNav() {
   const adminNav = document.createElement('div');
   adminNav.className = 'nav-item';
   adminNav.id = 'nav-admin';
-  adminNav.innerHTML = `<span class="ed-nav-num">06</span>Admin<span class="nav-badge nav-badge-alert is-hidden" id="navBadgeAdmin">0</span>`;
+  adminNav.innerHTML = `<span class="ed-nav-num">06</span>Admin`;
   adminNav.onclick = () => goPage('admin');
   statsNav.parentNode.appendChild(adminNav);
-  setAdminNavBadge(0);
 }
 
 function ensureAdminPage() {
@@ -4106,22 +4090,6 @@ async function loadAdminActions() {
   return data || [];
 }
 
-async function updateAdminNavBadge() {
-  if (!isAdmin()) return;
-  try {
-    const [pendingUsersRes, pendingActionsRes] = await Promise.all([
-      sb.from('profiles').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-      sb.from('admin_actions').select('*', { count: 'exact', head: true }).eq('status', 'pending')
-    ]);
-    if (pendingUsersRes.error) throw pendingUsersRes.error;
-    if (pendingActionsRes.error) throw pendingActionsRes.error;
-    setAdminNavBadge((pendingUsersRes.count || 0) + (pendingActionsRes.count || 0));
-  } catch (err) {
-    console.warn('admin badge update failed:', err);
-    setAdminNavBadge(0);
-  }
-}
-
 async function approveUser(userId) {
   const { error } = await sb.rpc('admin_set_profile_status', { p_target_user_id: userId, p_status: 'approved' });
   if (error) throw error;
@@ -4167,7 +4135,6 @@ async function renderAdminPage() {
       loadAdminRoster(),
       loadAdminActions()
     ]);
-    setAdminNavBadge(pending.length + actions.filter(action => action.status === 'pending').length);
     const adminIds = new Set(roster.map(r => r.user_id));
     const founderIds = new Set(roster.filter(r => r.is_founder).map(r => r.user_id));
     const pendingHtml = pending.length
@@ -4568,7 +4535,19 @@ function renderDashPanels() {
 // ═══════════════════════════════════════════
 function renderStats() {
   const grid = document.getElementById('statsGrid');
-  if (!grid) return;
+
+  function barSection(title, entries, color) {
+    const mx = entries[0]?.[1] || 1;
+    return `<div class="stat-card">
+      <div class="stat-card-title">${title}</div>
+      ${entries.map(([k,v]) => `
+        <div class="bar-row">
+          <span class="bar-lbl">${k}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${(v/mx*100).toFixed(1)}%;background:${color||'var(--text)'}"></div></div>
+          <span class="bar-num">${v}</span>
+        </div>`).join('')}
+    </div>`;
+  }
 
   function count(arr, key, transform) {
     const m = {};
@@ -4589,208 +4568,57 @@ function renderStats() {
 
   const stocks  = count(DATA, 'FILM STOCK').slice(0,10);
   const labs    = count(DATA, 'DEV').slice(0,8);
+  const cameras = count(DATA, 'MODEL NAME').slice(0,6);
   const locs    = count(DATA, 'LOCATIONS', v => splitLocs(v)).slice(0,8);
   const ptypes  = count(DATA, 'PHOTO TYPE', v => v ? v.split(',').map(t=>t.trim()) : null).slice(0,8);
   const tags    = count(DATA, 'TAGS', v => v ? v.split(',').map(t=>t.trim()).filter(Boolean) : null).slice(0,10);
 
-  const total     = DATA.length || 1;
-  const typeColor = DATA.filter(r => r['FILM TYPE']==='COLOR').length;
-  const typeBW    = DATA.filter(r => r['FILM TYPE']==='B/W').length;
-  const typeSL    = DATA.filter(r => r['FILM TYPE']==='SLIDE').length;
-  const typeRows  = [
-    { label: 'COLOR', n: typeColor, color: '#d94a2a' },
-    { label: 'B / W', n: typeBW, color: '#9a9080' },
-    { label: 'SLIDE', n: typeSL, color: '#6a9de0' },
-  ];
-
-  const formatCounts = FILM_FORMAT_OPTIONS.map(fmt => ({
-    key: fmt,
-    meta: formatMeta(fmt),
-    count: DATA.filter(r => formatKey(r.FORMAT) === formatKey(fmt)).length
-  }));
-
-  function sectionHead(num, title, sub) {
-    return `
-      <div class="ed-section-head">
-        <div class="ed-section-num">${num}.</div>
-        <div style="flex:1;">
-          <h2 class="ed-section-title">${title}</h2>
-          <div class="ed-section-sub">${sub}</div>
-        </div>
-      </div>`;
-  }
-
-  function leaderboard(entries, opts) {
-    const mx = entries[0]?.count || 1;
-    const swatch = opts?.swatch || (() => '#9c9284');
-    const subFn  = opts?.sub || (() => '');
-    const barColor = opts?.barColor || '#d94a2a';
-    return entries.map((entry, i) => {
-      const label = entry.label;
-      const sub = subFn(entry);
-      return `
-        <div class="ed-stock-row">
-          <span class="ed-stock-num">${String(i + 1).padStart(2, '0')}</span>
-          <span class="ed-stock-swatch" style="background:${swatch(entry)};"></span>
-          <span style="flex:0 0 220px;min-width:0;">
-            <div class="ed-stock-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${label}</div>
-            ${sub ? `<div class="ed-stock-brand">${sub}</div>` : ''}
-          </span>
-          <span class="ed-stock-bar-wrap"><span class="ed-stock-bar" style="width:${(entry.count / mx * 100).toFixed(1)}%;background:${barColor};"></span></span>
-          <span class="ed-stock-count">${entry.count}</span>
-        </div>`;
-    }).join('');
-  }
-
-  function entriesFromPairs(pairs) {
-    return pairs.map(([label, count]) => ({ label, count }));
-  }
-
-  const typeSection = `
-    <section style="margin-top:36px;">
-      ${sectionHead('I', 'Tipo de Rollo', 'Distribución por emulsión del archivo')}
-      <div class="ed-format-boxes" style="margin-top:20px;">
-        ${typeRows.map(({ label, n, color }) => `
-          <div class="ed-format-box" style="border-top:2px solid ${color};">
-            <div class="ed-format-box-label" style="color:${color};">${label}</div>
-            <div class="ed-format-num">${n}</div>
-            <div class="ed-format-pct">${total ? Math.round(n / total * 100) : 0}% del archivo</div>
-          </div>`).join('')}
-      </div>
-    </section>`;
-
-  const formatSection = `
-    <section style="margin-top:40px;">
-      ${sectionHead('II', 'Formatos', 'Películas por tamaño físico')}
-      <div class="ed-format-boxes" style="margin-top:20px;grid-template-columns:repeat(${formatCounts.length},minmax(0,1fr));">
-        ${formatCounts.map(({ meta, count }) => `
-          <div class="ed-format-box" style="border-top:2px solid ${meta.color};">
-            <div class="ed-format-box-label" style="color:${meta.color};">${meta.label.toUpperCase()}</div>
-            <div class="ed-format-num">${count}</div>
-            <div class="ed-format-pct">${total ? Math.round(count / total * 100) : 0}% del archivo</div>
-          </div>`).join('')}
-      </div>
-    </section>`;
-
-  const stocksSection = `
-    <section style="margin-top:44px;">
-      ${sectionHead('III', 'Stocks favoritos', 'Top 10 de películas más usadas')}
-      <div style="margin-top:16px;">
-        ${leaderboard(entriesFromPairs(stocks), {
-          swatch: entry => swatchColor(entry.label),
-          sub: entry => (entry.label.split(' ')[0] || '').toUpperCase(),
-          barColor: '#d94a2a',
-        })}
-      </div>
-    </section>`;
-
-  const LAB_SWATCH = {
-    'FOTOGRAMA': '#d4a050',
-    'F. HERCULES': '#c47a8a',
-    'BENGALA': '#5b9bd5',
-    'PANTERA': '#c25444',
-    'ABORIGEN': '#6a9a72',
-    'GIVE FILM': '#d6cdb8',
-    'LABTANK': '#8a9050',
-    'EN CASA': '#9c8a72',
-    'FOTO RICARDO': '#a07a4a',
-    'DICHROIC': '#7c5cbf',
-    'MEXICANA ANÁLOGA': '#b06030',
-    'NIGHTMARES IN FILM': '#6a5a8a',
-    'FOTO CITLALI': '#c08a40',
-    'LABORATORIO ESPIRAL': '#5a8a8a',
-    'LABOFILM': '#a05050',
-    'FOTO VIDA': '#7a9a40',
-    'EL PETATE': '#9a6c2a',
-    'EXPENDIO FOTOGRÁFICO': '#5a7aa0',
-  };
-  function labSwatch(name) {
-    return LAB_SWATCH[(name || '').toUpperCase()] || '#9c9284';
-  }
-  const labsSection = labs.length ? `
-    <section style="margin-top:44px;">
-      ${sectionHead('IV', 'Laboratorios', 'Dónde se reveló cada rollo')}
-      <div style="margin-top:16px;">
-        ${leaderboard(entriesFromPairs(labs), {
-          swatch: entry => labSwatch(entry.label),
-          barColor: '#5b9bd5',
-        })}
-      </div>
-    </section>` : '';
-
-  const cameraCounts = {};
-  const cameraFormats = {};
-  DATA.forEach(r => {
-    const key = cameraUsageKey(r['MAKER'], r['MODEL NAME']);
-    if (!key) return;
-    if (!cameraCounts[key]) {
-      cameraCounts[key] = {
-        label: r['MODEL NAME'] || '—',
-        maker: (r['MAKER'] || '').toUpperCase(),
-        count: 0,
-      };
-    }
-    cameraCounts[key].count++;
-    const fk = formatKey(r.FORMAT);
-    if (!fk) return;
-    if (!cameraFormats[key]) cameraFormats[key] = {};
-    cameraFormats[key][fk] = (cameraFormats[key][fk] || 0) + 1;
+  const typeColor = DATA.filter(r=>r['FILM TYPE']==='COLOR').length;
+  const typeBW    = DATA.filter(r=>r['FILM TYPE']==='B/W').length;
+  const typeSL    = DATA.filter(r=>r['FILM TYPE']==='SLIDE').length;
+  const formatEntries = FILM_FORMAT_OPTIONS.map(fmt => {
+    const meta = formatMeta(fmt);
+    return { key: fmt, meta, count: DATA.filter(r => formatKey(r.FORMAT) === formatKey(fmt)).length };
   });
-  const cameraEntries = Object.values(cameraCounts)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 8);
-  function cameraSwatch(entry) {
-    const counts = cameraFormats[cameraUsageKey(entry.maker, entry.label)];
-    if (!counts) return '#9c9284';
-    const topFmt = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
-    return FILM_FORMAT_META[topFmt]?.color || '#9c9284';
-  }
-  const camerasSection = cameraEntries.length ? `
-    <section style="margin-top:44px;">
-      ${sectionHead('V', 'Cámaras', 'Equipo más utilizado · color por formato')}
-      <div style="margin-top:16px;">
-        ${leaderboard(cameraEntries, {
-          swatch: cameraSwatch,
-          sub: entry => entry.maker,
-          barColor: '#9b72cf',
-        })}
-      </div>
-    </section>` : '';
 
-  const locsSection = locs.length ? `
-    <section style="margin-top:44px;">
-      ${sectionHead('VI', 'Ubicaciones', 'Lugares más visitados con la cámara')}
-      <div style="margin-top:16px;">
-        ${leaderboard(entriesFromPairs(locs), {
-          swatch: () => '#5aaf7a',
-          barColor: '#5aaf7a',
-        })}
+  const typeCard = `<div class="stat-card">
+    <div class="stat-card-title">Tipo de Rollo</div>
+    <div class="pill-row">
+      <div class="pill-item">
+        <div class="pill-circle" style="background:rgba(200,146,42,.12);color:var(--amber-dark)">${typeColor}</div>
+        <span class="pill-label">Color</span>
       </div>
-    </section>` : '';
-
-  const ptypesSection = ptypes.length ? `
-    <section style="margin-top:44px;">
-      ${sectionHead('VII', 'Categorías', 'Tipos de fotografía documentada')}
-      <div style="margin-top:16px;">
-        ${leaderboard(entriesFromPairs(ptypes), {
-          swatch: () => '#c07a30',
-          barColor: '#c07a30',
-        })}
+      <div class="pill-item">
+        <div class="pill-circle" style="background:rgba(85,85,85,.1);color:var(--bw)">${typeBW}</div>
+        <span class="pill-label">B/W</span>
       </div>
-    </section>` : '';
-
-  const tagsSection = tags.length ? `
-    <section style="margin-top:44px;">
-      ${sectionHead('VIII', 'Tags', 'Etiquetas más repetidas en el archivo')}
-      <div style="margin-top:16px;">
-        ${leaderboard(entriesFromPairs(tags), {
-          swatch: () => '#6a9de0',
-          barColor: '#6a9de0',
-        })}
+      <div class="pill-item">
+        <div class="pill-circle" style="background:rgba(30,82,160,.1);color:var(--slide)">${typeSL}</div>
+        <span class="pill-label">Slide</span>
       </div>
-    </section>` : '';
+    </div>
+  </div>`;
 
-  grid.innerHTML = typeSection + formatSection + stocksSection + labsSection + camerasSection + locsSection + ptypesSection + tagsSection;
+  const formatCard = `<div class="stat-card">
+    <div class="stat-card-title">Formato</div>
+    <div class="pill-row">
+      ${formatEntries.map(({ meta, count }) => `
+      <div class="pill-item">
+        <div class="pill-circle" style="background:${meta.bg};color:${meta.color};border:1px solid ${meta.border}">${count}</div>
+        <span class="pill-label">${meta.label}</span>
+      </div>`).join('')}
+    </div>
+  </div>`;
+
+  grid.innerHTML =
+    barSection('Top Film Stocks', stocks, 'var(--text)') +
+    barSection('Laboratorios', labs, '#5b9bd5') +
+    barSection('Cámaras', cameras, '#7c5cbf') +
+    typeCard +
+    formatCard +
+    barSection('Ubicaciones más visitadas', locs, 'var(--green)') +
+    barSection('Categorías', ptypes, '#c07a30') +
+    (tags.length ? barSection('Tags', tags, 'var(--slide)') : '');
 }
 
 // ═══════════════════════════════════════════
@@ -5542,10 +5370,7 @@ async function bootstrapApprovedSession(sessionUser, sessionOverride = null) {
   renderDashPanels();
   setTimeout(drawChart, 60);
   loadCamerasCatalog();
-  if (isAdmin()) {
-    updateAdminNavBadge();
-    renderAdminPage();
-  }
+  if (isAdmin()) renderAdminPage();
   migratePushPullOnce().catch(err => console.warn('push/pull migration deferred:', err));
   return true;
 }
