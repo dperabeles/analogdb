@@ -6,10 +6,12 @@
 -- ═══════════════════════════════════════════════════════════════
 
 create extension if not exists pgcrypto;
+create extension if not exists pg_net;
 
 drop view if exists public.rolls_flat cascade;
 
 drop function if exists public.landing_metrics() cascade;
+drop function if exists public.notify_pending_signup() cascade;
 drop function if exists public.cast_admin_action_vote(uuid, text) cascade;
 drop function if exists public.request_admin_action(text, uuid) cascade;
 drop function if exists public.admin_set_profile_status(uuid, text) cascade;
@@ -19,6 +21,7 @@ drop function if exists public.touch_updated_at() cascade;
 
 drop table if exists public.admin_action_approvals cascade;
 drop table if exists public.admin_actions cascade;
+drop table if exists public.private_app_config cascade;
 drop table if exists public.frame_tags cascade;
 drop table if exists public.rolls cascade;
 drop table if exists public.cameras cascade;
@@ -47,6 +50,12 @@ create table public.user_roles (
   is_founder boolean not null default false,
   created_at timestamptz not null default now(),
   granted_by uuid references auth.users(id) on delete set null
+);
+
+create table public.private_app_config (
+  config_key text primary key,
+  config_value text not null,
+  updated_at timestamptz not null default now()
 );
 
 create table public.film_stocks (
@@ -153,6 +162,59 @@ create trigger rolls_touch
 before update on public.rolls
 for each row
 execute function public.touch_updated_at();
+
+create or replace function public.notify_pending_signup()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  webhook_secret text;
+begin
+  if new.status is distinct from 'pending' then
+    return new;
+  end if;
+
+  begin
+    select pac.config_value
+    into webhook_secret
+    from public.private_app_config pac
+    where pac.config_key = 'pending_signup_webhook_secret'
+    limit 1;
+
+    if webhook_secret is null or webhook_secret = '' then
+      raise notice 'pending signup notification skipped: missing vault secret';
+      return new;
+    end if;
+
+    perform net.http_post(
+      url := 'https://dqjjxxqruxxfsfoejdzl.supabase.co/functions/v1/notify-pending-signup',
+      headers := jsonb_build_object(
+        'Content-Type', 'application/json',
+        'x-webhook-secret', webhook_secret
+      ),
+      body := jsonb_build_object(
+        'type', tg_op,
+        'schema', tg_table_schema,
+        'table', tg_table_name,
+        'record', to_jsonb(new)
+      )
+    );
+  exception
+    when others then
+      raise notice 'pending signup notification skipped: %', sqlerrm;
+  end;
+
+  return new;
+end;
+$$;
+
+create trigger profiles_notify_pending_signup
+after insert on public.profiles
+for each row
+when (new.status = 'pending')
+execute function public.notify_pending_signup();
 
 create or replace function public.app_is_admin(p_user_id uuid default auth.uid())
 returns boolean
@@ -458,10 +520,12 @@ grant select, insert, update, delete on public.rolls to authenticated;
 grant select on public.admin_actions to authenticated;
 grant select on public.admin_action_approvals to authenticated;
 grant select on public.rolls_flat to authenticated;
+revoke all on public.private_app_config from anon, authenticated;
 revoke all on public.frame_tags from anon, authenticated;
 
 alter table public.profiles enable row level security;
 alter table public.user_roles enable row level security;
+alter table public.private_app_config enable row level security;
 alter table public.film_stocks enable row level security;
 alter table public.labs enable row level security;
 alter table public.cameras enable row level security;
@@ -689,6 +753,7 @@ revoke all on function public.admin_set_profile_status(uuid, text) from public;
 revoke all on function public.request_admin_action(text, uuid) from public;
 revoke all on function public.cast_admin_action_vote(uuid, text) from public;
 revoke all on function public.landing_metrics() from public;
+revoke all on function public.notify_pending_signup() from public;
 
 grant execute on function public.app_is_admin(uuid) to authenticated;
 grant execute on function public.app_is_founder(uuid) to authenticated;
