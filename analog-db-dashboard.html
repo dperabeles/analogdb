@@ -56,6 +56,95 @@ body::before {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+.gate-marquee {
+  margin-top: 26px;
+  border-top: 1px solid rgba(244,237,226,0.10);
+  border-bottom: 1px solid rgba(244,237,226,0.10);
+  background: linear-gradient(90deg, rgba(217,74,42,0.07), rgba(28,22,18,0) 35%, rgba(184,163,117,0.06));
+  overflow: hidden;
+  position: relative;
+}
+
+.gate-marquee::before,
+.gate-marquee::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 84px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.gate-marquee::before {
+  left: 0;
+  background: linear-gradient(90deg, rgba(24,19,15,1), rgba(24,19,15,0));
+}
+
+.gate-marquee::after {
+  right: 0;
+  background: linear-gradient(270deg, rgba(24,19,15,1), rgba(24,19,15,0));
+}
+
+.gate-marquee-track {
+  display: flex;
+  gap: 16px;
+  width: max-content;
+  padding: 16px 0;
+  animation: gateMarqueeDrift 28s linear infinite;
+}
+
+.gate-marquee:hover .gate-marquee-track {
+  animation-play-state: paused;
+}
+
+.gate-metric-pill {
+  min-width: 292px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border: 1px solid rgba(244,237,226,0.10);
+  background: rgba(17,13,10,0.74);
+}
+
+.gate-metric-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 29px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #f3eadb;
+  white-space: nowrap;
+}
+
+.gate-metric-copy {
+  min-width: 0;
+}
+
+.gate-metric-label {
+  display: block;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(232,223,209,0.58);
+}
+
+.gate-metric-sub {
+  display: block;
+  margin-top: 3px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(232,223,209,0.66);
+}
+
+@keyframes gateMarqueeDrift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
 /* ═══════════════════════════════════════════
    SIDEBAR
 ═══════════════════════════════════════════ */
@@ -2340,6 +2429,8 @@ h1, h2 {
 </head>
 <body>
 
+<div id="accessGate" style="display:none;"></div>
+
 <!-- ════════════════════ SIDEBAR ════════════════════ -->
 <aside class="sidebar ed-sidebar">
   <!-- Editorial brand mark -->
@@ -2409,21 +2500,21 @@ h1, h2 {
     <div style="padding:10px 12px 8px;border-bottom:1px solid rgba(232,220,197,0.1);display:flex;align-items:center;gap:9px;">
       <!-- Avatar placeholder -->
       <div style="width:28px;height:28px;background:rgba(138,58,34,0.5);border:1px solid rgba(138,58,34,0.6);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <span style="font-family:'Fraunces',serif;font-size:12px;color:#f5ede0;line-height:1;">R</span>
+        <span id="accountAvatarInitial" style="font-family:'Fraunces',serif;font-size:12px;color:#f5ede0;line-height:1;">R</span>
       </div>
-      <div style="min-width:0;">
-        <div style="font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:#e8dcc5;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">R. Loustaunau</div>
-        <div style="font-family:'Inter',sans-serif;font-size:8px;color:rgba(232,220,197,0.4);letter-spacing:1.5px;margin-top:1px;">ARCHIVO PERSONAL</div>
+      <div style="min-width:0;flex:1 1 auto;">
+        <div id="accountDisplayName" style="font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:#e8dcc5;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">R. Loustaunau</div>
+        <div id="accountSecondary" style="font-family:'Inter',sans-serif;font-size:7px;color:rgba(232,220,197,0.4);letter-spacing:0.6px;line-height:1.35;margin-top:2px;white-space:normal;overflow-wrap:anywhere;word-break:break-word;">ARCHIVO PERSONAL</div>
       </div>
     </div>
-    <button onclick="return false;" style="
+    <button id="accountSignOutBtn" type="button" onclick="handleSignOut(event)" style="
       display:block;width:100%;padding:7px 12px;
       background:transparent;border:none;
       font-family:'Inter',sans-serif;font-size:9px;
       letter-spacing:1.8px;color:rgba(232,220,197,0.38);
-      text-align:left;cursor:default;text-transform:uppercase;
+      text-align:left;cursor:pointer;text-transform:uppercase;
       transition:color .15s;
-    " title="Próximamente">↳ Cerrar sesión</button>
+    ">↳ Cerrar sesión</button>
   </div>
 </aside>
 
@@ -2748,12 +2839,39 @@ h1, h2 {
 
 
 <script>
-const RAW = [{"#": "R001", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "EXPIRED", "FILM STOCK": "ProImage 100", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 100, "STARTED": "2024-05-29", "FINISHED": "2024-05-29", "# EXP": 13, "PUSH/PULL": "-", "DEV": "BENGALA", "SCAN": "BENGALA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R002", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "PC-330", "C. FORMAT": "35mm", "C. TYPE": "P&S", "LENS": "Pentax 26-6.5", "LOCATIONS": "", "PHOTO TYPE": "Party, Landscape", "ISO @": 400, "STARTED": "2024-07-04", "FINISHED": "2024-07-05", "# EXP": 20, "PUSH/PULL": "-", "DEV": "GIVE FILM", "SCAN": "GIVE FILM", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R003", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "PC-330", "C. FORMAT": "35mm", "C. TYPE": "P&S", "LENS": "Pentax 26-6.5", "LOCATIONS": "", "PHOTO TYPE": "Party, Landscape", "ISO @": 400, "STARTED": "2024-07-05", "FINISHED": "2024-07-08", "# EXP": 24, "PUSH/PULL": "-", "DEV": "GIVE FILM", "SCAN": "GIVE FILM", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R004", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "PC-330", "C. FORMAT": "35mm", "C. TYPE": "P&S", "LENS": "Pentax 26-6.5", "LOCATIONS": "", "PHOTO TYPE": "Wedding, Party", "ISO @": 400, "STARTED": "2024-07-20", "FINISHED": "2024-07-20", "# EXP": 37, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R005", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Maple 100", "MANUFACTURER": "Reto", "ISO": 100, "EXP": 27, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Wedding, Party", "ISO @": 400, "STARTED": "2024-07-20", "FINISHED": "2024-07-20", "# EXP": 23, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R006", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "EXPIRED", "FILM STOCK": "ProImage 100", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "PC-330", "C. FORMAT": "35mm", "C. TYPE": "P&S", "LENS": "Pentax 26-6.5", "LOCATIONS": "", "PHOTO TYPE": "Street", "ISO @": 100, "STARTED": "2024-09-14", "FINISHED": "2024-09-16", "# EXP": 33, "PUSH/PULL": "(+1)", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R007", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "X FILM 100 Color", "MANUFACTURER": "CatLABS", "ISO": 100, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Street", "ISO @": 100, "STARTED": "2024-10-26", "FINISHED": "2024-10-26", "# EXP": 15, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R008", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Gold 200", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "IQ Zoom 115M", "C. FORMAT": "35mm", "C. TYPE": "P&S", "LENS": "Pentax 38-4.3", "LOCATIONS": "", "PHOTO TYPE": "Street", "ISO @": 200, "STARTED": "2024-10-29", "FINISHED": "2024-10-30", "# EXP": 35, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R009", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "EXPIRED", "FILM STOCK": "Portra 400", "MANUFACTURER": "Kodak", "ISO": 400, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Architecture", "ISO @": 200, "STARTED": "2024-11-14", "FINISHED": "2024-11-21", "# EXP": 15, "PUSH/PULL": "(+1)", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R010", "FILM TYPE": "B/W", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "PAN 400", "MANUFACTURER": "Kentmere", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Architecture", "ISO @": 400, "STARTED": "2024-11-02", "FINISHED": "2024-11-21", "# EXP": 32, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R011", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "IQ Zoom 115M", "C. FORMAT": "35mm", "C. TYPE": "P&S", "LENS": "Pentax 38-4.3", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Architecture", "ISO @": 400, "STARTED": "2024-11-20", "FINISHED": "2024-11-22", "# EXP": 35, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R012", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Gold 200", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Architecture", "ISO @": 200, "STARTED": "2024-11-21", "FINISHED": "2024-11-23", "# EXP": 13, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R013", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "UltraMax 400", "MANUFACTURER": "Kodak", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "IQ Zoom 115M", "C. FORMAT": "35mm", "C. TYPE": "P&S", "LENS": "Pentax 38-4.3", "LOCATIONS": "", "PHOTO TYPE": "Architecture", "ISO @": 400, "STARTED": "2024-11-21", "FINISHED": "2024-11-23", "# EXP": 36, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R014", "FILM TYPE": "B/W", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Double-X", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "IQ Zoom 115M", "C. FORMAT": "35mm", "C. TYPE": "P&S", "LENS": "Pentax 38-4.3", "LOCATIONS": "", "PHOTO TYPE": "Architecture", "ISO @": 200, "STARTED": "2024-11-23", "FINISHED": "2024-11-24", "# EXP": 36, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R015", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "EXPIRED", "FILM STOCK": "Gold 200", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "IQ Zoom 115M", "C. FORMAT": "35mm", "C. TYPE": "P&S", "LENS": "Pentax 38-4.3", "LOCATIONS": "", "PHOTO TYPE": "Architecture", "ISO @": 100, "STARTED": "2024-11-24", "FINISHED": "2024-11-25", "# EXP": 36, "PUSH/PULL": "(+1)", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R016", "FILM TYPE": "B/W", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "FP4 Plus", "MANUFACTURER": "Ilford", "ISO": 125, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Architecture", "ISO @": 125, "STARTED": "2024-11-25", "FINISHED": "2024-11-25", "# EXP": 15, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R017", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Gold 200", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Architecture", "ISO @": 200, "STARTED": "2024-11-25", "FINISHED": "2024-11-25", "# EXP": 6, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": "Solo dejo tomar 6 frames"}, {"#": "R018", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "EXPIRED", "FILM STOCK": "Reala 100", "MANUFACTURER": "Fujifilm", "ISO": 100, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Architecture", "ISO @": 50, "STARTED": "2024-11-21", "FINISHED": "2024-11-26", "# EXP": 27, "PUSH/PULL": "(+1)", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R019", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Gold 200", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Architecture", "ISO @": 200, "STARTED": "2024-11-26", "FINISHED": "2024-11-26", "# EXP": 15, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R020", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Architecture", "ISO @": 400, "STARTED": "2024-11-26", "FINISHED": "2024-11-26", "# EXP": 35, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R021", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Gallostill 800T", "MANUFACTURER": "Kodak", "ISO": 800, "EXP": 30, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Architecture", "ISO @": 800, "STARTED": "2024-11-26", "FINISHED": "2024-11-26", "# EXP": 25, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R022", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Vision3 500T", "MANUFACTURER": "Kodak", "ISO": 500, "EXP": 30, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Architecture, Street", "ISO @": 500, "STARTED": "2024-11-27", "FINISHED": "2024-11-27", "# EXP": 27, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R023", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Portra 800", "MANUFACTURER": "Kodak", "ISO": 800, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Architecture", "ISO @": 800, "STARTED": "2024-11-27", "FINISHED": "2024-11-28", "# EXP": 3, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R024", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Ektar 100", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 100, "STARTED": "2024-11-28", "FINISHED": "2024-11-28", "# EXP": 15, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R025", "FILM TYPE": "SLIDE", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Velvia 100", "MANUFACTURER": "Fujifilm", "ISO": 100, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 100, "STARTED": "2024-11-28", "FINISHED": "2024-11-28", "# EXP": 15, "PUSH/PULL": "-", "DEV": "F. HERCULES", "SCAN": "F. HERCULES", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R026", "FILM TYPE": "SLIDE", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Ektachrome E100", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 100, "STARTED": "2024-11-28", "FINISHED": "2024-11-28", "# EXP": 38, "PUSH/PULL": "-", "DEV": "F. HERCULES", "SCAN": "F. HERCULES", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R027", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Ektar 100", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 100, "STARTED": "2024-11-28", "FINISHED": "2024-11-28", "# EXP": 35, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R028", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Architecture", "ISO @": 400, "STARTED": "2024-11-28", "FINISHED": "2024-11-29", "# EXP": 32, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R029", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "EXPIRED", "FILM STOCK": "Vision3 500T", "MANUFACTURER": "Kodak", "ISO": 500, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Architecture", "ISO @": 500, "STARTED": "2024-11-29", "FINISHED": "2024-11-30", "# EXP": 0, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 1, "NOTES": "Se abrio la camara, rollo velado"}, {"#": "R030", "FILM TYPE": "SLIDE", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Ektachrome E100", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 100, "STARTED": "2024-12-01", "FINISHED": "2024-12-01", "# EXP": 40, "PUSH/PULL": "-", "DEV": "F. HERCULES", "SCAN": "F. HERCULES", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R031", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Portra 800", "MANUFACTURER": "Kodak", "ISO": 800, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 800, "STARTED": "2024-12-01", "FINISHED": "2024-12-01", "# EXP": 33, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R032", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Gold 200", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 200, "STARTED": "2024-11-29", "FINISHED": "2024-12-01", "# EXP": 15, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R033", "FILM TYPE": "SLIDE", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Velvia 50", "MANUFACTURER": "Fujifilm", "ISO": 50, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 50, "STARTED": "2024-12-01", "FINISHED": "2024-12-01", "# EXP": 15, "PUSH/PULL": "-", "DEV": "F. HERCULES", "SCAN": "F. HERCULES", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R034", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Ektar 100", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Architecture", "ISO @": 100, "STARTED": "2024-12-01", "FINISHED": "2024-12-02", "# EXP": 33, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R035", "FILM TYPE": "B/W", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "PAN 400", "MANUFACTURER": "Kentmere", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Street", "ISO @": 400, "STARTED": "2024-12-21", "FINISHED": "2025-01-25", "# EXP": 20, "PUSH/PULL": "-", "DEV": "ABORIGEN", "SCAN": "ABORIGEN", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R036", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 200", "MANUFACTURER": "Fujifilm", "ISO": 200, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Architecture", "ISO @": 200, "STARTED": "2025-01-25", "FINISHED": "2025-02-01", "# EXP": 36, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R037", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Gold 200", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Portraits", "ISO @": 200, "STARTED": "2025-02-01", "FINISHED": "2025-02-01", "# EXP": 10, "PUSH/PULL": "-", "DEV": "BENGALA", "SCAN": "BENGALA", "STATUS": "DEVELOPED", "RATING": 3, "NOTES": "Se abrio el back, se velaron algunos frames"}, {"#": "R038", "FILM TYPE": "B/W", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Pancro 400", "MANUFACTURER": "Bergger", "ISO": 400, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Street, Portraits", "ISO @": 400, "STARTED": "2025-02-01", "FINISHED": "2025-02-01", "# EXP": 0, "PUSH/PULL": "-", "DEV": "BENGALA", "SCAN": "BENGALA", "STATUS": "DEVELOPED", "RATING": 1, "NOTES": "Se descompuso el inserto, se traslaparon todos los frames"}, {"#": "R039", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "IQ Zoom 115M", "C. FORMAT": "35mm", "C. TYPE": "P&S", "LENS": "Pentax 38-4.3", "LOCATIONS": "", "PHOTO TYPE": "Wedding, Party", "ISO @": 400, "STARTED": "2025-02-01", "FINISHED": "2025-02-05", "# EXP": 36, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R040", "FILM TYPE": "B/W", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Double-X", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Architecture, Portraits", "ISO @": 200, "STARTED": "2025-02-16", "FINISHED": "2025-02-16", "# EXP": 35, "PUSH/PULL": "-", "DEV": "BENGALA", "SCAN": "BENGALA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R041", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Aerocolor III", "MANUFACTURER": "Filmdongdong", "ISO": 100, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Portraits", "ISO @": 100, "STARTED": "2025-02-16", "FINISHED": "2025-02-16", "# EXP": 15, "PUSH/PULL": "-", "DEV": "BENGALA", "SCAN": "BENGALA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R042", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 200", "MANUFACTURER": "Fujifilm", "ISO": 200, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Architecture, Portraits", "ISO @": 200, "STARTED": "2025-02-16", "FINISHED": "2025-02-18", "# EXP": 36, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R043", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Studio, Portraits", "ISO @": 400, "STARTED": "2025-02-23", "FINISHED": "2025-02-23", "# EXP": 34, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R044", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Studio, Portraits", "ISO @": 400, "STARTED": "2025-02-23", "FINISHED": "2025-02-23", "# EXP": 34, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R045", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Studio, Portraits", "ISO @": 400, "STARTED": "2025-02-23", "FINISHED": "2025-02-23", "# EXP": 39, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R046", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "400D", "MANUFACTURER": "CineStill", "ISO": 400, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 150-3.5", "LOCATIONS": "", "PHOTO TYPE": "Studio, Portraits", "ISO @": 400, "STARTED": "2025-02-23", "FINISHED": "2025-02-23", "# EXP": 15, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R047", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "LomoChrome Color '92", "MANUFACTURER": "Lomography", "ISO": 400, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 150-3.5", "LOCATIONS": "", "PHOTO TYPE": "Studio, Portraits", "ISO @": 400, "STARTED": "2025-02-23", "FINISHED": "2025-02-23", "# EXP": 14, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R048", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Gold 200", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 150-3.5", "LOCATIONS": "", "PHOTO TYPE": "Studio, Portraits", "ISO @": 200, "STARTED": "2025-02-23", "FINISHED": "2025-02-23", "# EXP": 13, "PUSH/PULL": "-", "DEV": "BENGALA", "SCAN": "BENGALA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R049", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Ektar 100", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Street", "ISO @": 100, "STARTED": "2025-03-01", "FINISHED": "2025-03-01", "# EXP": 4, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": "Se descompuso el inserto"}, {"#": "R050", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 24, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Street, Portraits", "ISO @": 400, "STARTED": "2025-03-02", "FINISHED": "2025-03-02", "# EXP": 24, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R051", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "ProImage 100", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Street, Portraits", "ISO @": 100, "STARTED": "2025-04-06", "FINISHED": "2025-04-06", "# EXP": 38, "PUSH/PULL": "-", "DEV": "ABORIGEN", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R052", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "UltraMax 400", "MANUFACTURER": "Kodak", "ISO": 400, "EXP": 24, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Portraits", "ISO @": 400, "STARTED": "2025-04-06", "FINISHED": "2025-04-06", "# EXP": 25, "PUSH/PULL": "-", "DEV": "ABORIGEN", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R053", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "ProImage 100", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Architecture, Portraits", "ISO @": 100, "STARTED": "2025-04-20", "FINISHED": "2025-04-20", "# EXP": 36, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R054", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Studio, Portraits", "ISO @": 400, "STARTED": "2025-04-26", "FINISHED": "2025-04-26", "# EXP": 20, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R055", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Studio, Portraits", "ISO @": 400, "STARTED": "2025-04-26", "FINISHED": "2025-04-26", "# EXP": 35, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R056", "FILM TYPE": "B/W", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Pancro 400", "MANUFACTURER": "Bergger", "ISO": 400, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Studio, Portraits", "ISO @": 400, "STARTED": "2025-04-26", "FINISHED": "2025-04-26", "# EXP": 15, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R057", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Gallostill 800T", "MANUFACTURER": "Kodak", "ISO": 800, "EXP": 30, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Portraits", "ISO @": 800, "STARTED": "2025-05-01", "FINISHED": "2025-05-01", "# EXP": 28, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R058", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 200", "MANUFACTURER": "Fujifilm", "ISO": 200, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Portraits", "ISO @": 200, "STARTED": "2025-05-04", "FINISHED": "2025-05-04", "# EXP": 35, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R059", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 200", "MANUFACTURER": "Fujifilm", "ISO": 200, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 200, "STARTED": "2025-05-11", "FINISHED": "2025-05-11", "# EXP": 33, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R060", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 200", "MANUFACTURER": "Fujifilm", "ISO": 200, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Architecture, Landscape", "ISO @": 200, "STARTED": "2025-06-13", "FINISHED": "2025-06-13", "# EXP": 36, "PUSH/PULL": "-", "DEV": "PANTERA", "SCAN": "PANTERA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R061", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Aerocolor III", "MANUFACTURER": "Filmdongdong", "ISO": 100, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Architecture", "ISO @": 100, "STARTED": "2025-06-12", "FINISHED": "2025-06-13", "# EXP": 15, "PUSH/PULL": "-", "DEV": "PANTERA", "SCAN": "PANTERA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R062", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Gold 200", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Architecture", "ISO @": 200, "STARTED": "2025-06-13", "FINISHED": "2025-06-15", "# EXP": 15, "PUSH/PULL": "-", "DEV": "PANTERA", "SCAN": "PANTERA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R063", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "400D", "MANUFACTURER": "CineStill", "ISO": 400, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Architecture", "ISO @": 400, "STARTED": "2025-06-15", "FINISHED": "2025-06-16", "# EXP": 15, "PUSH/PULL": "-", "DEV": "PANTERA", "SCAN": "PANTERA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R064", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Portraits, Landscape", "ISO @": 400, "STARTED": "2025-07-05", "FINISHED": "2025-07-06", "# EXP": 35, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R065", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Gold 200", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Architecture", "ISO @": 200, "STARTED": "2025-07-06", "FINISHED": "2025-07-20", "# EXP": 15, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R066", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Ektar 100", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 100, "STARTED": "2025-07-20", "FINISHED": "2025-08-18", "# EXP": 15, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R067", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Ektar 100", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 100, "STARTED": "2025-08-30", "FINISHED": "2025-10-05", "# EXP": 15, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R068", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 200", "MANUFACTURER": "Fujifilm", "ISO": 200, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Sports", "ISO @": 200, "STARTED": "2025-10-04", "FINISHED": "2025-10-04", "# EXP": 15, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R069", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "EXPIRED", "FILM STOCK": "Reala 100", "MANUFACTURER": "Fujifilm", "ISO": 100, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Wedding, Portraits", "ISO @": 25, "STARTED": "2025-10-25", "FINISHED": "2025-10-25", "# EXP": 20, "PUSH/PULL": "(+2)", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 3, "NOTES": "Boda Andie Santamaria"}, {"#": "R070", "FILM TYPE": "B/W", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "XP2 Super", "MANUFACTURER": "Ilford", "ISO": 100, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Wedding", "ISO @": 400, "STARTED": "2025-10-25", "FINISHED": "2025-10-25", "# EXP": 25, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 3, "NOTES": "Boda Andie Santamaria"}, {"#": "R071", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "UltraMax 400", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Street, Portraits", "ISO @": 400, "STARTED": "2025-10-26", "FINISHED": "2025-10-26", "# EXP": 35, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 5, "NOTES": "Photowalk con Causa"}, {"#": "R072", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 200", "MANUFACTURER": "Fujifilm", "ISO": 200, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Street, Portraits", "ISO @": 400, "STARTED": "2025-10-31", "FINISHED": "2025-11-02", "# EXP": 30, "PUSH/PULL": "(+1)", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 3, "NOTES": null}, {"#": "R073", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "EXPIRED", "FILM STOCK": "Fuji Press 800", "MANUFACTURER": "Fujifilm", "ISO": 800, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Street, Portraits, Landscape", "ISO @": 12, "STARTED": "2025-11-02", "FINISHED": "2025-11-07", "# EXP": 38, "PUSH/PULL": "(+5)", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 5, "NOTES": null}, {"#": "R074", "FILM TYPE": "B/W", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Color 400", "MANUFACTURER": "AgfaPhoto", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Architecture, Street", "ISO @": 400, "STARTED": "2025-11-08", "FINISHED": "2025-11-29", "# EXP": 33, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 5, "NOTES": null}, {"#": "R075", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Gallostill 400D", "MANUFACTURER": "Kodak", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Wedding", "ISO @": 320, "STARTED": "2025-11-29", "FINISHED": "2025-12-26", "# EXP": null, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 3, "NOTES": "Boda Ricardo Solis, Posada Drunk Readers"}, {"#": "R076", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "UltraMax 400", "MANUFACTURER": "Kodak", "ISO": 400, "EXP": 36, "MAKER": "CANON", "MODEL NAME": "Canon 7", "C. FORMAT": "35mm", "C. TYPE": "Rangefinder", "LENS": "Industar-61 53-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Architecture, Portraits, Party", "ISO @": 400, "STARTED": "2025-12-04", "FINISHED": "2025-12-06", "# EXP": 38, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 5, "NOTES": "Posada Alora 2025"}, {"#": "R077", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "UltraMax 400", "MANUFACTURER": "Kodak", "ISO": 400, "EXP": 36, "MAKER": "CANON", "MODEL NAME": "Canon 7", "C. FORMAT": "35mm", "C. TYPE": "Rangefinder", "LENS": "Industar-61 53-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Street", "ISO @": 400, "STARTED": "2025-12-07", "FINISHED": "2025-12-21", "# EXP": 38, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 4, "NOTES": null}, {"#": "R078", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "C200", "MANUFACTURER": "Luckyfilm", "ISO": 200, "EXP": 36, "MAKER": "CANON", "MODEL NAME": "Canon 7", "C. FORMAT": "35mm", "C. TYPE": "Rangefinder", "LENS": "Industar-61 53-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Street", "ISO @": 200, "STARTED": "2025-12-21", "FINISHED": "2025-12-22", "# EXP": 38, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 4, "NOTES": null}, {"#": "R079", "FILM TYPE": "B/W", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Pancro 400", "MANUFACTURER": "Bergger", "ISO": 400, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Street, Architecture", "ISO @": 400, "STARTED": "2025-12-22", "FINISHED": "2025-12-22", "# EXP": null, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 4, "NOTES": null}, {"#": "R080", "FILM TYPE": "SLIDE", "FORMAT": 35, "EXP/FRESH": "EXPIRED", "FILM STOCK": "Sensia 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "CANON", "MODEL NAME": "Canon 7", "C. FORMAT": "35mm", "C. TYPE": "Rangefinder", "LENS": "Industar-61 53-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Street", "ISO @": 400, "STARTED": "2025-12-22", "FINISHED": "2025-12-22", "# EXP": 38, "PUSH/PULL": "-", "DEV": "F. HERCULES", "SCAN": "F. HERCULES", "STATUS": "DEVELOPED", "RATING": 1, "NOTES": "No salio nada"}, {"#": "R081", "FILM TYPE": "SLIDE", "FORMAT": 120, "EXP/FRESH": "EXPIRED", "FILM STOCK": "Ektachrome E100", "MANUFACTURER": "Kodak", "ISO": 100, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Street", "ISO @": 100, "STARTED": "2025-12-22", "FINISHED": "2025-12-22", "# EXP": null, "PUSH/PULL": "-", "DEV": "F. HERCULES", "SCAN": "F. HERCULES", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R082", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Phoenix II 200", "MANUFACTURER": "Harman", "ISO": 200, "EXP": 36, "MAKER": "CANON", "MODEL NAME": "Canon 7", "C. FORMAT": "35mm", "C. TYPE": "Rangefinder", "LENS": "Industar-61 53-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 200, "STARTED": "2025-12-23", "FINISHED": "2025-12-31", "# EXP": 29, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R083", "FILM TYPE": "B/W", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Double-X", "MANUFACTURER": "Kodak", "ISO": 250, "EXP": 36, "MAKER": "CANON", "MODEL NAME": "Canon 7", "C. FORMAT": "35mm", "C. TYPE": "Rangefinder", "LENS": "Industar-61 53-2.8", "LOCATIONS": "", "PHOTO TYPE": "Party", "ISO @": 250, "STARTED": "2026-01-12", "FINISHED": "2026-01-24", "# EXP": 36, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R084", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Vision3 500T", "MANUFACTURER": "Kodak", "ISO": 500, "EXP": 36, "MAKER": "CANON", "MODEL NAME": "Canon 7", "C. FORMAT": "35mm", "C. TYPE": "Rangefinder", "LENS": "Industar-61 53-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape", "ISO @": 400, "STARTED": "2026-01-24", "FINISHED": "2026-02-21", "# EXP": null, "PUSH/PULL": "(+1/2)", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R085", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "EXPIRED", "FILM STOCK": "Vision3 250D", "MANUFACTURER": "Kodak", "ISO": 250, "EXP": 36, "MAKER": "CANON", "MODEL NAME": "Canon 7", "C. FORMAT": "35mm", "C. TYPE": "Rangefinder", "LENS": "Industar-61 53-2.8", "LOCATIONS": "", "PHOTO TYPE": "Street, Portraits", "ISO @": 100, "STARTED": "2026-02-21", "FINISHED": "2026-03-01", "# EXP": null, "PUSH/PULL": "(+2.5)", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R086", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "EXPIRED", "FILM STOCK": "Vision3 250D", "MANUFACTURER": "Kodak", "ISO": 250, "EXP": 36, "MAKER": "CANON", "MODEL NAME": "Canon 7", "C. FORMAT": "35mm", "C. TYPE": "Rangefinder", "LENS": "Industar-61 53-2.8", "LOCATIONS": "", "PHOTO TYPE": "Street, Portraits", "ISO @": 100, "STARTED": "2026-03-01", "FINISHED": "2026-03-15", "# EXP": null, "PUSH/PULL": "(+2.5)", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": null}, {"#": "R087", "FILM TYPE": "B/W", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Double-X", "MANUFACTURER": "Kodak", "ISO": 250, "EXP": 36, "MAKER": "CANON", "MODEL NAME": "Canon 7", "C. FORMAT": "35mm", "C. TYPE": "Rangefinder", "LENS": "Industar-61 53-2.8", "LOCATIONS": "", "PHOTO TYPE": "Landscape, Portraits, Wedding", "ISO @": 200, "STARTED": "2026-03-13", "FINISHED": "2026-03-15", "# EXP": null, "PUSH/PULL": "(+1/3)", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 5, "NOTES": "Save the Date Gabriel & Carolina"}, {"#": "R088", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Gold 200", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Portraits, Wedding", "ISO @": 200, "STARTED": "2026-03-15", "FINISHED": "2026-03-15", "# EXP": null, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 5, "NOTES": "Save the Date Gabriel & Carolina"}, {"#": "R089", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Phoenix II 200", "MANUFACTURER": "Harman", "ISO": 200, "EXP": 36, "MAKER": "CANON", "MODEL NAME": "Canon 7", "C. FORMAT": "35mm", "C. TYPE": "Rangefinder", "LENS": "Industar-61 53-2.8", "LOCATIONS": "", "PHOTO TYPE": "Portraits, Studio", "ISO @": 160, "STARTED": "2026-03-21", "FINISHED": "2026-04-11", "# EXP": null, "PUSH/PULL": "(+1/3)", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": "Sesión Estudio Ale Alvarado - Dark Feminine"}, {"#": "R090", "FILM TYPE": "COLOR", "FORMAT": 35, "EXP/FRESH": "FRESH", "FILM STOCK": "Fujifilm 400", "MANUFACTURER": "Fujifilm", "ISO": 400, "EXP": 36, "MAKER": "PENTAX", "MODEL NAME": "Super Program", "C. FORMAT": "35mm", "C. TYPE": "SLR", "LENS": "Pentax 50-2.0", "LOCATIONS": "", "PHOTO TYPE": "Portraits, Studio", "ISO @": 400, "STARTED": "2026-04-11", "FINISHED": "2026-04-11", "# EXP": null, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": "Sesión Estudio Ale Alvarado - Dark Feminine"}, {"#": "R091", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "Gold 200", "MANUFACTURER": "Kodak", "ISO": 200, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Portraits, Studio", "ISO @": 200, "STARTED": "2026-04-11", "FINISHED": "2026-04-11", "# EXP": null, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 3, "NOTES": "Sesión Estudio Ale Alvarado - Dark Feminine"}, {"#": "R092", "FILM TYPE": "COLOR", "FORMAT": 120, "EXP/FRESH": "FRESH", "FILM STOCK": "C200", "MANUFACTURER": "Luckyfilm", "ISO": 200, "EXP": 15, "MAKER": "MAMIYA", "MODEL NAME": "M645J", "C. FORMAT": "6x4.5", "C. TYPE": "SLR", "LENS": "Mamiya 55-2.8", "LOCATIONS": "", "PHOTO TYPE": "Portraits, Studio", "ISO @": 200, "STARTED": "2026-04-11", "FINISHED": "2026-04-11", "# EXP": null, "PUSH/PULL": "-", "DEV": "FOTOGRAMA", "SCAN": "FOTOGRAMA", "STATUS": "DEVELOPED", "RATING": 0, "NOTES": "Sesión Estudio Ale Alvarado - Dark Feminine"}];
+const RAW = [];
+const LOCAL_DEMO_DATA = [];
 
 // ═══════════════════════════════════════════
 //  STORAGE & UTILITIES
 // ═══════════════════════════════════════════
 const LS_KEY = 'filmRollDB_v2';
+
+function cacheKeyForCurrentUser() {
+  const uid = currentUserId();
+  return uid ? `${LS_KEY}:${uid}` : LS_KEY;
+}
+
+function writeLocalCache(rows) {
+  try { localStorage.setItem(cacheKeyForCurrentUser(), JSON.stringify(rows)); } catch(e) {}
+}
+
+function readLocalCache() {
+  try {
+    const s = localStorage.getItem(cacheKeyForCurrentUser());
+    if (!s) return null;
+    const arr = JSON.parse(s);
+    if (!Array.isArray(arr)) return null;
+    return arr.filter(r => r['#']).map(r => {
+      const c = { ...r };
+      c['PUSH/PULL'] = normalizePushPull(c['PUSH/PULL']);
+      c['FORMAT'] = normalizeFormatValue(c['FORMAT']);
+      return c;
+    });
+  } catch(_) {
+    return null;
+  }
+}
 const LS_MIGRATION_KEY = 'filmRollDB_migration';
 const CURRENT_MIGRATION = 'v3_stocks_normalized';
 
@@ -2795,7 +2913,7 @@ function catalogLookup(man, stock) {
 }
 
 // One-shot normalization: fix spelling, fill ISO/type, correct manufacturer
-// Mirrors the RAW edits so users with pre-existing localStorage get the fixes.
+// Keeps older local caches aligned when legacy rows are reloaded.
 const STOCK_NORMALIZATIONS = {
   'Agfa|Agfa 400':            ['AgfaPhoto','Color 400',400,'COLOR'],
   'Catlabs|Catlabs C100':     ['CatLABS','X FILM 100 Color',100,'COLOR'],
@@ -2845,6 +2963,23 @@ const FILM_FORMAT_META = {
   '16mm':         { label: '16mm',         badgeClass: 'badge-16mm',   chipClass: 'fmt16',    color: '#2a7a4a', bg: 'rgba(42,122,74,.1)',   border: 'rgba(42,122,74,.28)' },
   'Large Format': { label: 'Large Format', badgeClass: 'badge-large',  chipClass: 'fmtlarge', color: '#7c5cbf', bg: 'rgba(124,92,191,.08)', border: 'rgba(124,92,191,.25)' },
 };
+const SHARED_LABS = [
+  'BENGALA',
+  'FOTOGRAMA',
+  'GIVE FILM',
+  'F. HERCULES',
+  'En Casa',
+  'Foto Ricardo',
+  'Dichroic',
+  'Mexicana Análoga',
+  'Nightmares in Film',
+  'Foto Citlali',
+  'Laboratorio Espiral',
+  'LaboFilm',
+  'Foto Vida',
+  'El Petate',
+  'Expendio Fotográfico'
+];
 
 function normalizeFormatValue(v) {
   if (v == null || v === '') return null;
@@ -2891,6 +3026,32 @@ function formatStorageValue(v) {
 const SUPABASE_URL = 'https://dqjjxxqruxxfsfoejdzl.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_t8qzsNZaeCwAIbpEIoBPTQ_wF_30652';
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const SUPABASE_PROJECT_REF = (() => {
+  try { return new URL(SUPABASE_URL).hostname.split('.')[0]; }
+  catch (_) { return ''; }
+})();
+
+function authHeaders(accessToken) {
+  return {
+    apikey: SUPABASE_KEY,
+    Authorization: `Bearer ${accessToken}`,
+    Accept: 'application/json',
+  };
+}
+
+async function fetchRest(path, accessToken) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: authHeaders(accessToken),
+  });
+  const text = await res.text();
+  let body = null;
+  try { body = text ? JSON.parse(text) : null; } catch (_) {}
+  if (!res.ok) {
+    const message = body?.message || body?.error_description || body?.hint || text || `REST ${res.status}`;
+    throw new Error(message);
+  }
+  return body;
+}
 
 function showSyncStatus(text, isError = false) {
   let el = document.getElementById('syncStatus');
@@ -2907,6 +3068,37 @@ function showSyncStatus(text, isError = false) {
   if (!isError) el._t = setTimeout(() => el.classList.remove('visible'), 1800);
 }
 
+function currentUserId() {
+  return SESSION?.user?.id || SESSION?.id || null;
+}
+
+function readPersistedSupabaseSession() {
+  const candidates = [];
+  if (SUPABASE_PROJECT_REF) candidates.push(`sb-${SUPABASE_PROJECT_REF}-auth-token`);
+  Object.keys(localStorage)
+    .filter(k => /^sb-.*-auth-token$/.test(k) && !candidates.includes(k))
+    .forEach(k => candidates.push(k));
+
+  for (const key of candidates) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw);
+      const session = parsed?.currentSession || parsed?.session || parsed;
+      if (session?.access_token && session?.user?.id) return session;
+    } catch (_) {}
+  }
+  return null;
+}
+
+function assertApprovedSession() {
+  const uid = currentUserId();
+  if (ACCESS_STATE !== 'approved' || !uid) {
+    throw new Error('Approved session required.');
+  }
+  return uid;
+}
+
 // ── Resolve/upsert helpers for FK tables ──────────────────────
 async function upsertStockRemote(man, name, iso, type) {
   if (!man && !name) return null;
@@ -2920,10 +3112,11 @@ async function upsertStockRemote(man, name, iso, type) {
 }
 
 async function upsertCameraRemote(maker, model, fmt, ctype) {
+  const ownerUserId = assertApprovedSession();
   if (!maker && !model) return null;
   const { data, error } = await sb.from('cameras').upsert(
-    { maker: maker || null, model: model || null, format: fmt || null, type: ctype || null },
-    { onConflict: 'maker,model', ignoreDuplicates: false }
+    { owner_user_id: ownerUserId, maker: maker || null, model: model || null, format: fmt || null, type: ctype || null },
+    { onConflict: 'owner_user_id,maker,model', ignoreDuplicates: false }
   ).select('id').single();
   if (error) throw error;
   return data.id;
@@ -2940,6 +3133,7 @@ async function upsertLabRemote(name) {
 
 // Convert flat app-shape row → normalized DB row, upserting FKs
 async function upsertRollRemote(flat) {
+  const ownerUserId = assertApprovedSession();
   const toArr = v => !v ? [] : String(v).split(v.includes('|') ? '|' : ',').map(s=>s.trim()).filter(Boolean);
   const toInt = v => (v===null||v===undefined||v===''||v==='-') ? null : (Number.isFinite(+v) ? +v : null);
   const toDate = v => { if (!v) return null; const s=String(v).slice(0,10); return s.length===10 ? s : null; };
@@ -2953,6 +3147,7 @@ async function upsertRollRemote(flat) {
   ]);
 
   const row = {
+    owner_user_id: ownerUserId,
     code: flat['#'],
     film_stock_id: stock_id,
     iso_pushed: toInt(flat['ISO @']),
@@ -2974,12 +3169,13 @@ async function upsertRollRemote(flat) {
     rating: toInt(flat['RATING']) || 0,
     notes: flat['NOTES'] || null,
   };
-  const { error } = await sb.from('rolls').upsert(row, { onConflict: 'code' });
+  const { error } = await sb.from('rolls').upsert(row, { onConflict: 'owner_user_id,code' });
   if (error) throw error;
 }
 
 async function deleteRollRemote(code) {
-  const { error } = await sb.from('rolls').delete().eq('code', code);
+  const ownerUserId = assertApprovedSession();
+  const { error } = await sb.from('rolls').delete().eq('owner_user_id', ownerUserId).eq('code', code);
   if (error) throw error;
 }
 
@@ -3002,37 +3198,48 @@ function normalizePushPull(v) {
   return sign + n;
 }
 
-async function loadData() {
+async function loadData(accessToken = null) {
   try {
-    const { data, error } = await sb.from('rolls_flat').select('*').order('id', { ascending: false });
-    if (error) throw error;
+    const data = accessToken
+      ? await fetchRest('rolls_flat?select=*&order=id.desc', accessToken)
+      : await (async () => {
+          const { data, error } = await sb.from('rolls_flat').select('*').order('id', { ascending: false });
+          if (error) throw error;
+          return data;
+        })();
     const clean = (data || []).filter(r => r['#']).map(r => {
       const { id, updated_at, ...rest } = r;
       rest['PUSH/PULL'] = normalizePushPull(rest['PUSH/PULL']);
       rest['FORMAT'] = normalizeFormatValue(rest['FORMAT']);
       return rest;
     });
-    try { localStorage.setItem(LS_KEY, JSON.stringify(clean)); } catch(e) {}
+    writeLocalCache(clean);
     showSyncStatus(`☁ ${clean.length} rollos cargados`);
     return clean;
   } catch (e) {
     console.error('Supabase load failed, usando caché local:', e);
-    showSyncStatus('⚠ Offline: usando caché local', true);
-    try {
-      const s = localStorage.getItem(LS_KEY);
-      if (s) {
-        const arr = JSON.parse(s);
-        if (Array.isArray(arr) && arr.length) return arr.filter(r => r['#']).map(r => { r['PUSH/PULL'] = normalizePushPull(r['PUSH/PULL']); r['FORMAT'] = normalizeFormatValue(r['FORMAT']); return r; });
-      }
-    } catch(_) {}
-    return RAW.filter(r => r['#']).map(r => { const c = {...r}; c['PUSH/PULL'] = normalizePushPull(c['PUSH/PULL']); c['FORMAT'] = normalizeFormatValue(c['FORMAT']); return c; });
+    const cached = readLocalCache();
+    if (cached && cached.length) {
+      showSyncStatus('⚠ Offline: usando caché local', true);
+      return cached;
+    }
+    if (currentUserId()) {
+      throw e;
+    }
+    showSyncStatus('⚠ Offline: usando datos locales', true);
+    return LOCAL_DEMO_DATA.filter(r => r['#']).map(r => {
+      const c = { ...r };
+      c['PUSH/PULL'] = normalizePushPull(c['PUSH/PULL']);
+      c['FORMAT'] = normalizeFormatValue(c['FORMAT']);
+      return c;
+    });
   }
 }
 
 // persistData(rec?) — guarda en Supabase (una fila si rec dado, o bulk si no)
 // + localStorage como cache offline. Fire-and-forget para no bloquear UI.
 function persistData(rec) {
-  try { localStorage.setItem(LS_KEY, JSON.stringify(DATA)); } catch(e) {}
+  writeLocalCache(DATA);
   if (rec) {
     showSyncStatus('⟳ Guardando…');
     upsertRollRemote(rec)
@@ -3092,6 +3299,7 @@ function buildEditorForm(rec) {
   function optsFor(key) {
     const set = new Set();
     DATA.forEach(r => { if (r[key]) String(r[key]).split(',').forEach(v => { const t = v.trim(); if (t) set.add(t); }); });
+    if (key === 'DEV' || key === 'SCAN') SHARED_LABS.forEach(v => set.add(v));
     return [...set].sort((a,b) => a.localeCompare(b));
   }
 
@@ -3727,7 +3935,7 @@ function moveRollStatus(id, newStatus) {
   const r = DATA.find(x => x['#'] === id);
   if (!r) return;
   r['STATUS'] = newStatus;
-  try { localStorage.setItem(LS_KEY, JSON.stringify(DATA)); } catch(e) {}
+  writeLocalCache(DATA);
   // Persist to Supabase
   upsertRollRemote(r).catch(err => console.warn('sync error', err));
   showSyncStatus('✓ Estado actualizado');
@@ -3754,7 +3962,7 @@ function confirmDeleteRoll() {
   const codeToDelete = editingOriginalId;
   const idx = DATA.findIndex(x => x['#'] === codeToDelete);
   if (idx !== -1) DATA.splice(idx, 1);
-  try { localStorage.setItem(LS_KEY, JSON.stringify(DATA)); } catch(e) {}
+  writeLocalCache(DATA);
   showSyncStatus('⟳ Eliminando…');
   deleteRollRemote(codeToDelete)
     .then(() => showSyncStatus('✓ Eliminado'))
@@ -3779,8 +3987,187 @@ const PAGE_LABELS = {
   database:  'Database',
   stats:     'Estadísticas',
   timeline:  'Timeline',
-  cameras:   'Cámaras'
+  cameras:   'Cámaras',
+  admin:     'Admin'
 };
+
+function isAdmin() {
+  return USER_ROLE === 'admin';
+}
+
+function ensureAdminNav() {
+  const existing = document.getElementById('nav-admin');
+  if (!isAdmin()) {
+    if (existing) existing.remove();
+    return;
+  }
+  if (existing) return;
+  const statsNav = document.getElementById('nav-stats');
+  if (!statsNav || !statsNav.parentNode) return;
+  const adminNav = document.createElement('div');
+  adminNav.className = 'nav-item';
+  adminNav.id = 'nav-admin';
+  adminNav.innerHTML = `<span class="ed-nav-num">06</span>Admin`;
+  adminNav.onclick = () => goPage('admin');
+  statsNav.parentNode.appendChild(adminNav);
+}
+
+function ensureAdminPage() {
+  let page = document.getElementById('page-admin');
+  if (page) return page;
+  page = document.createElement('div');
+  page.className = 'page';
+  page.id = 'page-admin';
+  page.innerHTML = `
+    <div class="page-inner" style="padding:28px 48px 60px;">
+      <div class="ed-page-header">
+        <div class="ed-page-header-kicker">PÁG·06 &nbsp;·&nbsp; ADMIN</div>
+        <h1 class="ed-page-header-title">Admin</h1>
+        <div class="ed-page-header-sub">Aprobación de usuarios y cambios de rol sensibles</div>
+        <div style="height:1px;background:#1a1510;margin-top:12px;"></div>
+      </div>
+      <div id="adminPageContent"></div>
+    </div>
+  `;
+  document.querySelector('main.main')?.appendChild(page);
+  return page;
+}
+
+async function loadPendingUsers() {
+  const { data, error } = await sb.from('profiles').select('*').eq('status', 'pending').order('created_at', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
+async function loadApprovedUsers() {
+  const { data, error } = await sb.from('profiles').select('*').eq('status', 'approved').order('created_at', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
+async function loadAdminRoster() {
+  const { data, error } = await sb.from('user_roles').select('user_id, role, is_founder').eq('role', 'admin');
+  if (error) throw error;
+  return data || [];
+}
+
+async function loadAdminActions() {
+  const { data, error } = await sb.from('admin_actions').select('*').order('created_at', { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+async function approveUser(userId) {
+  const { error } = await sb.rpc('admin_set_profile_status', { p_target_user_id: userId, p_status: 'approved' });
+  if (error) throw error;
+}
+
+async function rejectUser(userId) {
+  const { error } = await sb.rpc('admin_set_profile_status', { p_target_user_id: userId, p_status: 'rejected' });
+  if (error) throw error;
+}
+
+async function requestAdminRoleChange(actionType, targetUserId) {
+  const { error } = await sb.rpc('request_admin_action', { p_action_type: actionType, p_target_user_id: targetUserId });
+  if (error) throw error;
+}
+
+async function voteAdminAction(actionId, decision) {
+  const { error } = await sb.rpc('cast_admin_action_vote', { p_action_id: actionId, p_decision: decision });
+  if (error) throw error;
+}
+
+function adminUserCard(profile, actionsHtml = '') {
+  return `
+    <div style="border:1px solid rgba(244,237,226,0.08);padding:14px;background:rgba(20,15,12,0.3);display:flex;justify-content:space-between;gap:16px;align-items:flex-start;">
+      <div>
+        <div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#f3eadb;">${escAttr(profile.display_name || '—')}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(232,223,209,0.52);margin-top:4px;">${escAttr(profile.email || '')}</div>
+        <div style="font-family:'Inter',sans-serif;font-size:11px;color:rgba(232,223,209,0.42);margin-top:6px;text-transform:uppercase;letter-spacing:.12em;">${escAttr(profile.status || '—')}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">${actionsHtml}</div>
+    </div>
+  `;
+}
+
+async function renderAdminPage() {
+  if (!isAdmin()) return;
+  ensureAdminPage();
+  const container = document.getElementById('adminPageContent');
+  if (!container) return;
+  try {
+    const [pending, approved, roster, actions] = await Promise.all([
+      loadPendingUsers(),
+      loadApprovedUsers(),
+      loadAdminRoster(),
+      loadAdminActions()
+    ]);
+    const adminIds = new Set(roster.map(r => r.user_id));
+    const founderIds = new Set(roster.filter(r => r.is_founder).map(r => r.user_id));
+    const pendingHtml = pending.length
+      ? pending.map(profile => adminUserCard(profile, `
+          <button onclick="approveUser('${profile.user_id}').then(renderAdminPage).catch(adminActionError)" style="background:#d94a2a;color:#140f0c;border:none;padding:10px 12px;font:600 10px 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Aprobar</button>
+          <button onclick="rejectUser('${profile.user_id}').then(renderAdminPage).catch(adminActionError)" style="background:transparent;color:#f3eadb;border:1px solid rgba(244,237,226,0.16);padding:10px 12px;font:600 10px 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Rechazar</button>
+        `)).join('')
+      : `<div style="font-family:'Fraunces',serif;font-style:italic;color:rgba(232,223,209,0.45);">No hay usuarios pendientes.</div>`;
+
+    const approvedHtml = approved.length
+      ? approved.map(profile => {
+          const isAlreadyAdmin = adminIds.has(profile.user_id);
+          const isFounder = founderIds.has(profile.user_id);
+          const promoteBtn = !isAlreadyAdmin
+            ? `<button onclick="requestAdminRoleChange('promote_to_admin','${profile.user_id}').then(renderAdminPage).catch(adminActionError)" style="background:transparent;color:#f3eadb;border:1px solid rgba(244,237,226,0.16);padding:10px 12px;font:600 10px 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Solicitar admin</button>`
+            : isFounder
+              ? `<span style="font-family:'DM Mono',monospace;font-size:10px;color:#d94a2a;letter-spacing:.12em;text-transform:uppercase;">Founder admin</span>`
+              : `<button onclick="requestAdminRoleChange('demote_from_admin','${profile.user_id}').then(renderAdminPage).catch(adminActionError)" style="background:transparent;color:#f3eadb;border:1px solid rgba(244,237,226,0.16);padding:10px 12px;font:600 10px 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Solicitar downgrade</button>`;
+          return adminUserCard(profile, promoteBtn);
+        }).join('')
+      : `<div style="font-family:'Fraunces',serif;font-style:italic;color:rgba(232,223,209,0.45);">No hay usuarios aprobados.</div>`;
+
+    const actionHtml = actions.length
+      ? actions.map(action => `
+          <div style="border:1px solid rgba(244,237,226,0.08);padding:14px;background:rgba(20,15,12,0.3);display:flex;justify-content:space-between;gap:16px;align-items:flex-start;">
+            <div>
+              <div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#f3eadb;">${escAttr(action.action_type)}</div>
+              <div style="font-family:'DM Mono',monospace;font-size:11px;color:rgba(232,223,209,0.52);margin-top:4px;">Target: ${escAttr(action.target_user_id)}</div>
+              <div style="font-family:'Inter',sans-serif;font-size:11px;color:rgba(232,223,209,0.42);margin-top:6px;text-transform:uppercase;letter-spacing:.12em;">${escAttr(action.status)}</div>
+            </div>
+            ${action.status === 'pending'
+              ? `<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+                  <button onclick="voteAdminAction('${action.id}','approved').then(renderAdminPage).catch(adminActionError)" style="background:#d94a2a;color:#140f0c;border:none;padding:10px 12px;font:600 10px 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Aprobar</button>
+                  <button onclick="voteAdminAction('${action.id}','rejected').then(renderAdminPage).catch(adminActionError)" style="background:transparent;color:#f3eadb;border:1px solid rgba(244,237,226,0.16);padding:10px 12px;font:600 10px 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Rechazar</button>
+                </div>`
+              : ''}
+          </div>
+        `).join('')
+      : `<div style="font-family:'Fraunces',serif;font-style:italic;color:rgba(232,223,209,0.45);">No hay acciones sensibles registradas.</div>`;
+
+    container.innerHTML = `
+      <section style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <h2 class="ed-section-title" style="font-size:22px;">Pending</h2>
+          ${pendingHtml}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <h2 class="ed-section-title" style="font-size:22px;">Aprobados</h2>
+          ${approvedHtml}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <h2 class="ed-section-title" style="font-size:22px;">Acciones admin</h2>
+          ${actionHtml}
+        </div>
+      </section>
+    `;
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = `<div style="font-family:'Inter',sans-serif;font-size:13px;color:#ff9c82;">No fue posible cargar el panel admin.</div>`;
+  }
+}
+
+function adminActionError(err) {
+  console.error(err);
+  alert(err.message || 'No fue posible completar la acción admin.');
+}
 
 function goPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -4439,7 +4826,7 @@ function populateFilters() {
   while (labSel.options.length > 1) labSel.remove(1);
   [...new Set(DATA.map(r=>r['MODEL NAME']).filter(Boolean))].sort()
     .forEach(c => { const o=document.createElement('option'); o.value=c; o.textContent=c; camSel.appendChild(o); });
-  [...new Set(DATA.map(r=>r['DEV']).filter(Boolean))].sort()
+  [...new Set([...SHARED_LABS, ...DATA.map(r=>r['DEV']).filter(Boolean)])].sort()
     .forEach(l => { const o=document.createElement('option'); o.value=l; o.textContent=l; labSel.appendChild(o); });
 }
 
@@ -4504,6 +4891,614 @@ let DATA     = [];
 let filtered = [];
 let modalRollId = null, editingIsNew = false, editingOriginalId = null;
 let sortCol = '#', sortDir = -1;  // default: # descendente (R093 → R001)
+let SESSION = null;
+let PROFILE = null;
+let USER_ROLE = 'user';
+let ACCESS_STATE = 'public';
+let AUTH_FLOW_LOCK = false;
+let SIGN_OUT_FLOW = null;
+let PENDING_AUTH_EVENT = false;
+const PUBLIC_LANDING_SNAPSHOT_FALLBACK = Object.freeze({
+  totalRolls: 0,
+  topStockLabel: '—',
+  topStockCount: 0,
+  supportedFormats: FILM_FORMAT_OPTIONS.length,
+  uniqueLocations: 0,
+});
+let LANDING_PUBLIC_SNAPSHOT = { ...PUBLIC_LANDING_SNAPSHOT_FALLBACK };
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function buildLandingSnapshot(rows) {
+  const safeRows = Array.isArray(rows) ? rows.filter(r => r && r['#']) : [];
+  const stockCounts = {};
+  const locationSet = new Set();
+
+  safeRows.forEach(r => {
+    const stock = String(r['FILM STOCK'] || '').trim();
+    if (stock) stockCounts[stock] = (stockCounts[stock] || 0) + 1;
+
+    const rawLocations = r['LOCATIONS'];
+    if (!rawLocations) return;
+    const locs = Array.isArray(rawLocations)
+      ? rawLocations
+      : String(rawLocations).includes('|')
+        ? String(rawLocations).split('|')
+        : String(rawLocations).split(',');
+    locs.map(v => String(v).trim()).filter(Boolean).forEach(v => locationSet.add(v));
+  });
+
+  const topStockEntry = Object.entries(stockCounts).sort((a, b) => b[1] - a[1])[0] || ['—', 0];
+  return {
+    totalRolls: safeRows.length,
+    topStockLabel: topStockEntry[0],
+    topStockCount: topStockEntry[1],
+    supportedFormats: FILM_FORMAT_OPTIONS.length,
+    uniqueLocations: locationSet.size,
+  };
+}
+
+async function hydrateLandingSnapshot() {
+  try {
+    const { data, error } = await sb.rpc('landing_metrics');
+    if (error) throw error;
+    const payload = Array.isArray(data) ? (data[0] || null) : data;
+    const metrics = payload?.landing_metrics && typeof payload.landing_metrics === 'object'
+      ? payload.landing_metrics
+      : payload;
+    if (metrics && typeof metrics === 'object') {
+      LANDING_PUBLIC_SNAPSHOT = {
+        totalRolls: Number(metrics.totalRolls || 0),
+        topStockLabel: metrics.topStockLabel || '—',
+        topStockCount: Number(metrics.topStockCount || 0),
+        supportedFormats: Number(metrics.supportedFormats || FILM_FORMAT_OPTIONS.length),
+        uniqueLocations: Number(metrics.uniqueLocations || 0),
+      };
+    } else {
+      LANDING_PUBLIC_SNAPSHOT = { ...PUBLIC_LANDING_SNAPSHOT_FALLBACK };
+    }
+  } catch (err) {
+    LANDING_PUBLIC_SNAPSHOT = { ...PUBLIC_LANDING_SNAPSHOT_FALLBACK };
+  }
+  const mount = document.getElementById('gateLandingMarqueeMount');
+  if (mount && ACCESS_STATE === 'public') {
+    mount.innerHTML = renderLandingMarquee();
+  }
+}
+
+async function waitForPendingSignOut() {
+  if (!SIGN_OUT_FLOW) return;
+  try {
+    await Promise.race([SIGN_OUT_FLOW, delay(1400)]);
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function shellEls() {
+  return {
+    gate: document.getElementById('accessGate'),
+    sidebar: document.querySelector('aside.sidebar'),
+    main: document.querySelector('main.main'),
+  };
+}
+
+function setShellVisibility(showShell) {
+  const { gate, sidebar, main } = shellEls();
+  if (sidebar) sidebar.style.display = showShell ? '' : 'none';
+  if (main) main.style.display = showShell ? '' : 'none';
+  if (gate) gate.style.display = showShell ? 'none' : 'block';
+}
+
+function renderLandingMarquee() {
+  const metrics = [
+    {
+      value: String(LANDING_PUBLIC_SNAPSHOT.totalRolls),
+      label: 'Rollos registrados',
+      sub: 'entre todos los usuarios',
+    },
+    {
+      value: escAttr(LANDING_PUBLIC_SNAPSHOT.topStockLabel),
+      label: 'Rollo más usado',
+      sub: `${LANDING_PUBLIC_SNAPSHOT.topStockCount} registros globales`,
+    },
+    {
+      value: String(LANDING_PUBLIC_SNAPSHOT.supportedFormats),
+      label: 'Formatos soportados',
+      sub: '35, 120, Super8, 110, 16mm y LF',
+    },
+    {
+      value: String(LANDING_PUBLIC_SNAPSHOT.uniqueLocations),
+      label: 'Lugares únicos',
+      sub: 'seleccionados en el archivo',
+    },
+  ];
+
+  const pills = metrics.map(metric => `
+    <div class="gate-metric-pill">
+      <div class="gate-metric-value">${metric.value}</div>
+      <div class="gate-metric-copy">
+        <span class="gate-metric-label">${metric.label}</span>
+        <span class="gate-metric-sub">${metric.sub}</span>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+    <div class="gate-marquee">
+      <div class="gate-marquee-track">
+        ${pills}
+        ${pills}
+      </div>
+    </div>
+  `;
+}
+
+function renderGateFrame(title, body, kicker = 'ANALOG ARCHIVE', extraHtml = '') {
+  return `
+    <div style="min-height:100vh;background:#14110d;color:#e8dfd1;display:flex;align-items:center;justify-content:center;padding:32px;">
+      <div style="width:min(1080px,100%);border:1px solid rgba(244,237,226,0.12);background:linear-gradient(180deg, rgba(32,24,19,0.98), rgba(24,19,15,0.98));box-shadow:0 20px 80px rgba(0,0,0,0.35);">
+        <div style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);">
+          <section style="padding:48px 44px;border-right:1px solid rgba(244,237,226,0.08);display:flex;flex-direction:column;min-height:100%;">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.26em;color:rgba(232,223,209,0.55);text-transform:uppercase;">${kicker}</div>
+            <h1 style="margin:18px 0 16px;font-family:'Playfair Display',serif;font-size:64px;line-height:.95;color:#f3eadb;font-weight:600;">${title}</h1>
+            <div style="font-family:'Inter',sans-serif;font-size:16px;line-height:1.7;color:rgba(232,223,209,0.72);max-width:620px;">${body}</div>
+            <div style="margin-top:auto;padding-top:22px;">${extraHtml}</div>
+          </section>
+          <aside style="padding:40px 36px;background:linear-gradient(135deg, rgba(43,30,23,.92), rgba(29,22,18,.98));">
+            <div id="accessGatePanel"></div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function setGateMessage(msg, isError = false) {
+  const el = document.getElementById('gateMessage');
+  if (!el) return;
+  el.textContent = msg || '';
+  el.style.color = isError ? '#ff9c82' : 'rgba(232,223,209,0.62)';
+}
+
+function bindAccessGateActions() {
+  const loginBtn = document.getElementById('gateLoginBtn');
+  const registerBtn = document.getElementById('gateRegisterBtn');
+  const signOutBtn = document.getElementById('gateSignOutBtn');
+  if (loginBtn) {
+    loginBtn.onclick = null;
+    loginBtn.addEventListener('click', handleLogin);
+  }
+  if (registerBtn) {
+    registerBtn.onclick = null;
+    registerBtn.addEventListener('click', handleRegister);
+  }
+  if (signOutBtn) {
+    signOutBtn.onclick = null;
+    signOutBtn.addEventListener('click', handleSignOut);
+  }
+}
+
+function setAuthButtonsState({ disabled = false, busyLabel = null, active = null } = {}) {
+  const loginBtn = document.getElementById('gateLoginBtn');
+  const registerBtn = document.getElementById('gateRegisterBtn');
+  const all = [
+    loginBtn ? { key: 'login', el: loginBtn, label: 'Iniciar sesión' } : null,
+    registerBtn ? { key: 'register', el: registerBtn, label: 'Solicitar acceso' } : null,
+  ].filter(Boolean);
+
+  all.forEach(({ key, el, label }) => {
+    el.disabled = disabled;
+    el.style.opacity = disabled ? (active === key ? '0.7' : '0.45') : '1';
+    el.style.cursor = disabled ? 'wait' : 'pointer';
+    el.textContent = busyLabel && active === key ? busyLabel : label;
+  });
+}
+
+function renderPublicLanding() {
+  const { gate } = shellEls();
+  if (!gate) return;
+  gate.innerHTML = renderGateFrame(
+    'Track every roll from camera to archive.',
+    `A private archive for film photographers shooting analog. Register by email, wait for manual approval, and keep your rolls, stats, cameras and workflow isolated from everyone else.`,
+    'PRIVATE BETA',
+    `<div id="gateLandingMarqueeMount">${renderLandingMarquee()}</div>
+    <div style="margin-top:14px;font-family:'Inter',sans-serif;font-size:12px;line-height:1.6;color:rgba(232,223,209,0.52);letter-spacing:.03em;">Un proyecto de:
+      <a href="https://www.instagram.com/perabeles.jpg?igsh=MXg1dXczaDgwaWJobg%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" style="color:#f3eadb;text-decoration:none;border-bottom:1px solid rgba(243,234,219,0.28);">Diego Perabeles</a>
+      y
+      <a href="https://www.instagram.com/beautyviafilm?igsh=NDZ1bjYzbWh6amd5" target="_blank" rel="noopener noreferrer" style="color:#f3eadb;text-decoration:none;border-bottom:1px solid rgba(243,234,219,0.28);">Bernabé del Moral</a>.
+    </div>`
+  );
+  const panel = document.getElementById('accessGatePanel');
+  if (!panel) return;
+  panel.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div style="border:1px solid rgba(244,237,226,0.08);padding:18px;background:rgba(20,15,12,0.35);">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:rgba(232,223,209,0.5);text-transform:uppercase;margin-bottom:10px;">Iniciar sesión</div>
+        <input id="gateLoginEmail" type="email" placeholder="Correo" style="width:100%;margin-bottom:10px;background:#221a15;border:1px solid rgba(244,237,226,0.12);padding:12px;color:#f3eadb;font-family:'Inter',sans-serif;">
+        <input id="gateLoginPassword" type="password" placeholder="Password" style="width:100%;margin-bottom:12px;background:#221a15;border:1px solid rgba(244,237,226,0.12);padding:12px;color:#f3eadb;font-family:'Inter',sans-serif;">
+        <button id="gateLoginBtn" type="button" style="width:100%;background:#d94a2a;color:#140f0c;border:none;padding:12px;font-family:'Inter',sans-serif;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Iniciar sesión</button>
+      </div>
+      <div style="border:1px solid rgba(244,237,226,0.08);padding:18px;background:rgba(20,15,12,0.35);">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:rgba(232,223,209,0.5);text-transform:uppercase;margin-bottom:10px;">Solicitar acceso</div>
+        <input id="gateRegisterDisplayName" type="text" maxlength="20" placeholder="Display name" style="width:100%;margin-bottom:10px;background:#221a15;border:1px solid rgba(244,237,226,0.12);padding:12px;color:#f3eadb;font-family:'Inter',sans-serif;">
+        <input id="gateRegisterEmail" type="email" placeholder="Correo" style="width:100%;margin-bottom:10px;background:#221a15;border:1px solid rgba(244,237,226,0.12);padding:12px;color:#f3eadb;font-family:'Inter',sans-serif;">
+        <input id="gateRegisterPassword" type="password" placeholder="Password" style="width:100%;margin-bottom:8px;background:#221a15;border:1px solid rgba(244,237,226,0.12);padding:12px;color:#f3eadb;font-family:'Inter',sans-serif;">
+        <div style="font-family:'Inter',sans-serif;font-size:11px;line-height:1.5;color:rgba(232,223,209,0.55);margin-bottom:12px;">El display name será visible dentro de tu archivo y no podrá cambiarse después.</div>
+        <button id="gateRegisterBtn" type="button" style="width:100%;background:transparent;color:#f3eadb;border:1px solid rgba(244,237,226,0.18);padding:12px;font-family:'Inter',sans-serif;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Solicitar acceso</button>
+      </div>
+      <div id="gateMessage" style="font-family:'Inter',sans-serif;font-size:12px;line-height:1.5;color:rgba(232,223,209,0.62);"></div>
+    </div>
+  `;
+  bindAccessGateActions();
+  if (SIGN_OUT_FLOW) {
+    const loginBtn = document.getElementById('gateLoginBtn');
+    const registerBtn = document.getElementById('gateRegisterBtn');
+    if (loginBtn) {
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Cerrando sesión...';
+      loginBtn.style.opacity = '0.7';
+      loginBtn.style.cursor = 'wait';
+    }
+    if (registerBtn) {
+      registerBtn.disabled = true;
+      registerBtn.style.opacity = '0.45';
+      registerBtn.style.cursor = 'wait';
+    }
+    setGateMessage('Cerrando sesión...');
+  }
+  setShellVisibility(false);
+  hydrateLandingSnapshot().catch(err => console.warn('landing snapshot:', err));
+}
+
+function renderBootLoadingState(message = 'Verificando sesión y preparando tu dashboard.') {
+  const { gate } = shellEls();
+  if (!gate) return;
+  gate.innerHTML = renderGateFrame(
+    'Cargando tu archivo.',
+    message,
+    'ANALOG ARCHIVE'
+  );
+  const panel = document.getElementById('accessGatePanel');
+  if (panel) {
+    panel.innerHTML = `
+      <div style="border:1px solid rgba(244,237,226,0.08);padding:22px;background:rgba(20,15,12,0.35);display:flex;flex-direction:column;gap:14px;">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;color:rgba(232,223,209,0.5);text-transform:uppercase;">Estado</div>
+        <div style="font-family:'Inter',sans-serif;font-size:14px;color:#f3eadb;">${escAttr(message)}</div>
+      </div>
+    `;
+  }
+  setShellVisibility(false);
+}
+
+function renderPendingState() {
+  const { gate } = shellEls();
+  if (!gate) return;
+  gate.innerHTML = renderGateFrame(
+    'Tu acceso está en revisión.',
+    `Ya puedes iniciar sesión, pero tu archivo seguirá bloqueado hasta que un admin apruebe tu cuenta. Cuando eso ocurra entrarás directo a tu Dashboard.`,
+    'PENDING'
+  );
+  document.getElementById('accessGatePanel').innerHTML = `
+    <div style="border:1px solid rgba(244,237,226,0.08);padding:22px;background:rgba(20,15,12,0.35);display:flex;flex-direction:column;gap:14px;">
+      <div style="font-family:'Inter',sans-serif;font-size:14px;color:#f3eadb;">Cuenta: ${escAttr(PROFILE?.email || '')}</div>
+      <div style="font-family:'Inter',sans-serif;font-size:13px;line-height:1.6;color:rgba(232,223,209,0.6);">Display name: ${escAttr(PROFILE?.display_name || '—')}</div>
+      <button id="gateSignOutBtn" type="button" style="background:transparent;color:#f3eadb;border:1px solid rgba(244,237,226,0.18);padding:12px;font-family:'Inter',sans-serif;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Cerrar sesión</button>
+    </div>
+  `;
+  bindAccessGateActions();
+  setShellVisibility(false);
+}
+
+function renderRejectedState() {
+  const { gate } = shellEls();
+  if (!gate) return;
+  gate.innerHTML = renderGateFrame(
+    'Tu solicitud fue rechazada.',
+    `Esta cuenta no tiene acceso activo al producto. Si esto fue un error, el ajuste debe hacerse desde administración.`,
+    'ACCESS CLOSED'
+  );
+  document.getElementById('accessGatePanel').innerHTML = `
+    <button id="gateSignOutBtn" type="button" style="width:100%;background:transparent;color:#f3eadb;border:1px solid rgba(244,237,226,0.18);padding:12px;font-family:'Inter',sans-serif;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Cerrar sesión</button>
+  `;
+  bindAccessGateActions();
+  setShellVisibility(false);
+}
+
+function renderInvalidProfileState() {
+  const { gate } = shellEls();
+  if (!gate) return;
+  gate.innerHTML = renderGateFrame(
+    'La sesión no está lista para entrar.',
+    `La cuenta existe en Auth pero el perfil de aplicación está incompleto o inválido. Se requiere revisión administrativa antes de permitir acceso.`,
+    'PROFILE ERROR'
+  );
+  document.getElementById('accessGatePanel').innerHTML = `
+    <button id="gateSignOutBtn" type="button" style="width:100%;background:transparent;color:#f3eadb;border:1px solid rgba(244,237,226,0.18);padding:12px;font-family:'Inter',sans-serif;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;">Cerrar sesión</button>
+  `;
+  bindAccessGateActions();
+  setShellVisibility(false);
+}
+
+function resolveAccessState(profile) {
+  if (!SESSION) return 'public';
+  if (!profile) return 'invalid';
+  if (profile.status === 'pending') return 'pending';
+  if (profile.status === 'approved') return 'approved';
+  if (profile.status === 'rejected') return 'rejected';
+  return 'invalid';
+}
+
+async function getSessionUser() {
+  const result = await Promise.race([
+    sb.auth.getSession(),
+    delay(1800).then(() => null),
+  ]);
+  if (!result) {
+    SESSION = readPersistedSupabaseSession();
+    return SESSION?.user || null;
+  }
+  const { data, error } = result;
+  if (error) throw error;
+  SESSION = data.session || readPersistedSupabaseSession();
+  return SESSION?.user || null;
+}
+
+async function loadProfile(userId, accessToken = null) {
+  if (accessToken) {
+    const data = await fetchRest(`profiles?select=*&user_id=eq.${encodeURIComponent(userId)}&limit=1`, accessToken);
+    return Array.isArray(data) ? (data[0] || null) : null;
+  }
+  const { data, error } = await sb.from('profiles').select('*').eq('user_id', userId).maybeSingle();
+  if (error) throw error;
+  return data || null;
+}
+
+async function loadUserRole(userId, accessToken = null) {
+  if (accessToken) {
+    const data = await fetchRest(`user_roles?select=role&user_id=eq.${encodeURIComponent(userId)}&limit=1`, accessToken);
+    return Array.isArray(data) ? (data[0]?.role || 'user') : 'user';
+  }
+  const { data, error } = await sb.from('user_roles').select('role').eq('user_id', userId).maybeSingle();
+  if (error) throw error;
+  return data?.role || 'user';
+}
+
+async function bootstrapApprovedSession(sessionUser, sessionOverride = null) {
+  let accessToken = sessionOverride?.access_token || null;
+  if (sessionOverride) SESSION = sessionOverride;
+
+  let bootErr = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      PROFILE = sessionUser ? await loadProfile(sessionUser.id, accessToken) : null;
+      USER_ROLE = sessionUser ? await loadUserRole(sessionUser.id, accessToken) : 'user';
+      bootErr = null;
+      break;
+    } catch (err) {
+      bootErr = err;
+      if (attempt === 0) {
+        await delay(160);
+        const { data, error } = await sb.auth.getSession();
+        if (error) throw error;
+        if (data?.session) {
+          SESSION = data.session;
+          accessToken = data.session.access_token || null;
+        }
+        continue;
+      }
+    }
+  }
+  if (bootErr) throw bootErr;
+
+  ACCESS_STATE = resolveAccessState(PROFILE);
+  if (ACCESS_STATE !== 'approved') {
+    renderAccessState();
+    return false;
+  }
+
+  setShellVisibility(true);
+  ensureAdminNav();
+  renderAccountAnchor();
+  try {
+    DATA = await loadData(accessToken);
+    filtered = [...DATA];
+  } catch (err) {
+    console.error('loadData failed for approved session:', err);
+    DATA = [];
+    filtered = [];
+    showSyncStatus('⚠ No fue posible cargar tu archivo', true);
+  }
+
+  (function renderMastheadDate() {
+    const el = document.getElementById('edMastheadDate');
+    if (!el) return;
+    const DAYS   = ['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
+    const MONTHS = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+    function toRoman(n) {
+      const vals = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
+      let r = '';
+      for (const [v,s] of vals) { while (n >= v) { r += s; n -= v; } }
+      return r;
+    }
+    const now = new Date();
+    const wk = Math.ceil((now - new Date(now.getFullYear(), 0, 1)) / 604800000);
+    el.textContent = `${DAYS[now.getDay()]} ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
+  })();
+
+  populateFilters();
+  renderHeaderStats();
+  applyFilters();
+  renderStats();
+  renderTimeline();
+  renderKPIs();
+  renderDashPanels();
+  setTimeout(drawChart, 60);
+  loadCamerasCatalog();
+  if (isAdmin()) renderAdminPage();
+  migratePushPullOnce().catch(err => console.warn('push/pull migration deferred:', err));
+  return true;
+}
+
+async function handleLogin() {
+  setGateMessage('Procesando acceso...');
+  if (SIGN_OUT_FLOW) {
+    setGateMessage('Esperando cierre de sesión...');
+    await waitForPendingSignOut();
+  }
+  if (AUTH_FLOW_LOCK) {
+    setGateMessage('Ya hay una autenticación en curso...');
+    return;
+  }
+  AUTH_FLOW_LOCK = true;
+  try {
+    setAuthButtonsState({ disabled: true, busyLabel: 'Entrando...', active: 'login' });
+    setGateMessage('Entrando...');
+    const email = document.getElementById('gateLoginEmail')?.value?.trim();
+    const password = document.getElementById('gateLoginPassword')?.value || '';
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    if (!data?.user || !data?.session) throw new Error('No fue posible obtener la sesión de acceso.');
+    await bootstrapApprovedSession(data.user, data.session);
+  } catch (err) {
+    console.error(err);
+    setGateMessage(err.message || 'No fue posible iniciar sesión.', true);
+  } finally {
+    AUTH_FLOW_LOCK = false;
+    if (PENDING_AUTH_EVENT && !SIGN_OUT_FLOW) {
+      PENDING_AUTH_EVENT = false;
+      await bootstrapApp();
+    }
+    if (ACCESS_STATE === 'public') {
+      setAuthButtonsState({ disabled: false });
+    }
+  }
+}
+
+async function handleRegister() {
+  setGateMessage('Procesando solicitud...');
+  if (SIGN_OUT_FLOW) {
+    setGateMessage('Esperando cierre de sesión...');
+    await waitForPendingSignOut();
+  }
+  if (AUTH_FLOW_LOCK) {
+    setGateMessage('Ya hay una autenticación en curso...');
+    return;
+  }
+  AUTH_FLOW_LOCK = true;
+  try {
+    setAuthButtonsState({ disabled: true, busyLabel: 'Enviando...', active: 'register' });
+    const displayName = (document.getElementById('gateRegisterDisplayName')?.value || '').trim();
+    const email = document.getElementById('gateRegisterEmail')?.value?.trim();
+    const password = document.getElementById('gateRegisterPassword')?.value || '';
+    if (displayName.length < 3 || displayName.length > 20) {
+      throw new Error('Display name must be 3-20 characters.');
+    }
+    const { data, error } = await sb.auth.signUp({ email, password });
+    if (error) throw error;
+    if (!data.user?.id) throw new Error('No user id returned from Supabase Auth.');
+    const { error: profileErr } = await sb.from('profiles').insert({
+      user_id: data.user.id,
+      email,
+      display_name: displayName,
+      status: 'pending',
+      approved_at: null,
+      approved_by: null,
+      rejected_at: null,
+      rejected_by: null
+    });
+    if (profileErr) throw profileErr;
+    const { error: roleErr } = await sb.from('user_roles').insert({
+      user_id: data.user.id,
+      role: 'user',
+      is_founder: false,
+      granted_by: null
+    });
+    if (roleErr) throw roleErr;
+    setGateMessage('Solicitud enviada. Tu acceso quedará en revisión hasta aprobación manual.');
+    await bootstrapApp();
+  } catch (err) {
+    console.error(err);
+    setGateMessage(err.message || 'No fue posible crear la cuenta.', true);
+  } finally {
+    AUTH_FLOW_LOCK = false;
+    if (PENDING_AUTH_EVENT && !SIGN_OUT_FLOW) {
+      PENDING_AUTH_EVENT = false;
+      await bootstrapApp();
+    }
+    if (ACCESS_STATE === 'public') {
+      setAuthButtonsState({ disabled: false });
+    }
+  }
+}
+
+async function handleSignOut(evt) {
+  if (SIGN_OUT_FLOW) return waitForPendingSignOut();
+  AUTH_FLOW_LOCK = true;
+  const signOutBtn = document.getElementById('accountSignOutBtn');
+  if (evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+  }
+  if (signOutBtn) {
+    signOutBtn.disabled = true;
+    signOutBtn.textContent = '↳ Cerrando sesión...';
+    signOutBtn.style.opacity = '0.7';
+    signOutBtn.style.cursor = 'wait';
+  }
+  SESSION = null;
+  PROFILE = null;
+  USER_ROLE = 'user';
+  ACCESS_STATE = 'public';
+  DATA = [];
+  renderPublicLanding();
+  SIGN_OUT_FLOW = (async () => {
+    try {
+      await Promise.race([
+        sb.auth.signOut({ scope: 'local' }),
+        delay(1400),
+      ]);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      AUTH_FLOW_LOCK = false;
+      SIGN_OUT_FLOW = null;
+      if (ACCESS_STATE === 'public' && !SESSION) renderPublicLanding();
+    }
+  })();
+  return waitForPendingSignOut();
+}
+
+function renderAccountAnchor() {
+  const name = PROFILE?.display_name || 'Usuario';
+  const email = PROFILE?.email || (currentUserId() ? 'Cuenta activa' : 'ARCHIVO PERSONAL');
+  const initial = name.slice(0, 1).toUpperCase() || 'U';
+  const nameEl = document.getElementById('accountDisplayName');
+  const secondaryEl = document.getElementById('accountSecondary');
+  const initialEl = document.getElementById('accountAvatarInitial');
+  const signOutBtn = document.getElementById('accountSignOutBtn');
+  if (nameEl) nameEl.textContent = name;
+  if (secondaryEl) secondaryEl.textContent = email;
+  if (initialEl) initialEl.textContent = initial;
+  if (signOutBtn) {
+    signOutBtn.onclick = handleSignOut;
+    signOutBtn.disabled = false;
+    signOutBtn.textContent = '↳ Cerrar sesión';
+    signOutBtn.style.opacity = '1';
+    signOutBtn.style.cursor = 'pointer';
+    signOutBtn.style.color = '#e8dcc5';
+    signOutBtn.title = 'Cerrar sesión';
+  }
+}
+
+function renderAccessState() {
+  if (ACCESS_STATE === 'public') return renderPublicLanding();
+  if (ACCESS_STATE === 'pending') return renderPendingState();
+  if (ACCESS_STATE === 'rejected') return renderRejectedState();
+  if (ACCESS_STATE === 'invalid') return renderInvalidProfileState();
+}
 
 async function migratePushPullOnce() {
   const FLAG = 'analogdb_pushpull_migrated_v1';
@@ -4530,41 +5525,44 @@ async function migratePushPullOnce() {
   }
 }
 
-(async () => {
-  await migratePushPullOnce();
-  DATA = await loadData();
-  filtered = [...DATA];
-
-  // Topbar is hidden by default (dashboard uses editorial masthead)
-
-  // Render masthead date
-  (function renderMastheadDate() {
-    const el = document.getElementById('edMastheadDate');
-    if (!el) return;
-    const DAYS   = ['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
-    const MONTHS = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
-    const MONTH_ROM = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
-    function toRoman(n) {
-      const vals = [[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];
-      let r = '';
-      for (const [v,s] of vals) { while (n >= v) { r += s; n -= v; } }
-      return r;
+async function bootstrapApp() {
+  try {
+    renderBootLoadingState();
+    const sessionUser = await getSessionUser();
+    if (!sessionUser) {
+      SESSION = null;
+      PROFILE = null;
+      USER_ROLE = 'user';
+      ACCESS_STATE = 'public';
+      DATA = [];
+      renderPublicLanding();
+      return;
     }
-    const now = new Date();
-    const wk = Math.ceil((now - new Date(now.getFullYear(), 0, 1)) / 604800000);
-    el.textContent = `${DAYS[now.getDay()]} ${now.getDate()} ${MONTHS[now.getMonth()]} ${now.getFullYear()}`;
-  })();
+    renderBootLoadingState('Validando perfil y cargando tu archivo...');
+    await bootstrapApprovedSession(sessionUser, SESSION);
+  } catch (err) {
+    console.error('bootstrapApp failed:', err);
+    SESSION = null;
+    PROFILE = null;
+    USER_ROLE = 'user';
+    ACCESS_STATE = 'public';
+    DATA = [];
+    renderPublicLanding();
+    setGateMessage(err.message || 'No fue posible cargar tu sesión. Intenta iniciar sesión de nuevo.', true);
+  }
+}
 
-  populateFilters();
-  renderHeaderStats();
-  applyFilters();
-  renderStats();
-  renderTimeline();
-  renderKPIs();
-  renderDashPanels();
-  setTimeout(drawChart, 60);
-  // Load camera catalog (async, doesn't block above renders)
-  loadCamerasCatalog();
+sb.auth.onAuthStateChange(async () => {
+  if (SIGN_OUT_FLOW) return;
+  if (AUTH_FLOW_LOCK) {
+    PENDING_AUTH_EVENT = true;
+    return;
+  }
+  await bootstrapApp();
+});
+
+(async () => {
+  await bootstrapApp();
 })();
 window.addEventListener('resize', drawChart);
 
@@ -4716,11 +5714,10 @@ async function fixCameraTypos() {
 async function seedCamerasToDb() {
   for (const c of SEED_CAMERAS) {
     try {
-      const { data } = await sb.from('cameras')
-        .upsert({ maker: c.maker, model: c.model, format: c.format, type: c.type },
-                 { onConflict: 'maker,model' })
-        .select('id').single();
-      if (data) CAMERAS_CATALOG.push({ id: data.id, ...c });
+      const id = await upsertCameraRemote(c.maker, c.model, c.format, c.type);
+      if (id && !CAMERAS_CATALOG.some(cam => cam.id === id)) {
+        CAMERAS_CATALOG.push({ id, ...c, owner_user_id: currentUserId() });
+      }
     } catch(e) { console.warn('seed camera error:', e); }
   }
 }
@@ -4757,14 +5754,16 @@ async function saveCameraForm() {
   try {
     let newId = Date.now();
     if (sb) {
-      const { data, error } = await sb.from('cameras')
-        .upsert({ maker, model, format: format || null, type: type || null },
-                 { onConflict: 'maker,model' })
-        .select('id').single();
-      if (error) throw error;
-      newId = data.id;
+      newId = await upsertCameraRemote(maker, model, format || null, type || null);
     }
-    CAMERAS_CATALOG.push({ id: newId, maker, model, format: format || null, type: type || null });
+    CAMERAS_CATALOG.push({
+      id: newId,
+      maker,
+      model,
+      format: format || null,
+      type: type || null,
+      owner_user_id: currentUserId() || null,
+    });
     CAMERAS_CATALOG.sort((a,b) => a.maker.localeCompare(b.maker) || a.model.localeCompare(b.model));
     closeCameraModal();
     renderCamerasPage();
@@ -4854,6 +5853,11 @@ function renderCamerasPage() {
 function renderCameras() { renderCamerasPage(); }
 
 function renderCameraCharts() {
+  const barsEl = document.getElementById('camBarsContainer');
+  const typeEl = document.getElementById('camTypeChart');
+  const formatEl = document.getElementById('camFormatChart');
+  if (!barsEl || !typeEl || !formatEl) return;
+
   // Count rolls per camera
   const camData = {};
   DATA.forEach(r => {
@@ -4875,7 +5879,7 @@ function renderCameraCharts() {
   const COLORS = ['#18160f','#c8922a','#5b9bd5','#7c5cbf','#2a7a4a','#c07a30','#c0392b','#16a085'];
 
   // Main bars
-  document.getElementById('camBarsContainer').innerHTML = sorted.map(([model, d], i) => {
+  barsEl.innerHTML = sorted.map(([model, d], i) => {
     const color = COLORS[i % COLORS.length];
     const pct = (d.total / maxVal * 100).toFixed(1);
     return `
@@ -4889,7 +5893,7 @@ function renderCameraCharts() {
           <div class="cam-bar-fill" style="width:${pct}%;background:${color}"></div>
         </div>
         <div class="cam-bar-meta">
-          ${d.r35  > 0 ? `<span class="cam-bar-segment"><span class="cam-seg-dot" style="background:#18160f"></span>${d.r35} × 35mm</span>` : ''}
+          ${d.r35  > 0 ? `<span class="cam-bar-segment"><span class="cam-seg-dot" style="background:#d97150"></span>${d.r35} × 35mm</span>` : ''}
           ${d.r120 > 0 ? `<span class="cam-bar-segment"><span class="cam-seg-dot" style="background:#c0b898"></span>${d.r120} × 120</span>` : ''}
           ${d.rOther > 0 ? `<span class="cam-bar-segment"><span class="cam-seg-dot" style="background:#7c5cbf"></span>${d.rOther} × otros</span>` : ''}
         </div>
@@ -4903,7 +5907,7 @@ function renderCameraCharts() {
   DATA.forEach(r => { const t = r['C. TYPE']||'Otro'; types[t] = (types[t]||0)+1; });
   const typeEntries = Object.entries(types).sort((a,b)=>b[1]-a[1]);
   const mxT = typeEntries[0]?.[1]||1;
-  document.getElementById('camTypeChart').innerHTML = typeEntries.map(([k,v]) => `
+  typeEl.innerHTML = typeEntries.map(([k,v]) => `
     <div class="bar-row">
       <span class="bar-lbl">${k}</span>
       <div class="bar-track"><div class="bar-fill" style="width:${v/mxT*100}%;background:#7c5cbf"></div></div>
@@ -4911,7 +5915,7 @@ function renderCameraCharts() {
     </div>`).join('');
 
   // Format by camera (stacked text)
-  document.getElementById('camFormatChart').innerHTML = sorted.slice(0,6).map(([model, d]) => `
+  formatEl.innerHTML = sorted.slice(0,6).map(([model, d]) => `
     <div class="bar-row">
       <span class="bar-lbl">${model}</span>
       <div class="bar-track">

@@ -1,47 +1,39 @@
-# Analog Archive Database
+# Analog Archive
 
-Single-file dashboard for tracking, developing, and archiving analog film rolls.
+Private beta web app for tracking analog film rolls from camera to archive.
 
-The current product is a self-contained `analog-db-dashboard.html` file backed by Supabase. It opens directly in the browser and includes dashboard views, roll editing, statistics, a timeline, and a camera catalog.
+The current product is still centered on a single-file frontend, [`analog-db-dashboard.html`](./analog-db-dashboard.html), backed by Supabase and intended to ship as a lightweight browser-based experience.
 
----
+## Current State
 
-## What It Is
+- Private beta access with email/password auth
+- Manual approval flow for new users
+- Founder/admin access inside the app
+- Per-user private rolls and cameras
+- Shared global catalogs for film stocks and labs
+- Public landing page with global archive metrics
+- Darkroom-inspired editorial UI
 
-Analog Archive is a personal archive system for film photographers. It is designed to track a roll from the moment it is loaded into a camera through development and into the archive, while keeping the interface editorial, darkroom-inspired, and lightweight.
+## Main Features
 
-This version is intentionally simple from an engineering standpoint:
+### Archive
 
-- one HTML file
-- vanilla CSS and JavaScript
-- Supabase as the backend
-- no build step
-- no framework
+- Dashboard with archive counts, workflow sections, and recent activity
+- Sortable roll database with filters and search
+- Roll editor with smart selects, tags, categories, rating, push/pull, and notes
+- Timeline and statistics views
+- Camera catalog with usage summaries
+- JSON export/import tools
 
----
+### Multi-user Beta
 
-## Current Features
+- Users sign up from the landing page
+- New accounts stay pending until approved by an admin
+- Each user sees only their own rolls, stats, and private cameras
+- Shared metrics remain global where intended, such as landing metrics and film stock popularity
 
-### Dashboard
-- Editorial dashboard with archive counts and recent activity
-- Format breakdown cards
-- Workflow sections for rolls in progress
-- Top film stock ranking
+### Supported Formats
 
-### Roll Database
-- Sortable table of rolls
-- Filters for film type, format, freshness, camera, and lab
-- Search across roll ID, film, camera, location, tags, and notes
-- Detail modal for each roll
-
-### Roll Editor
-- Create and edit rolls in a darkroom-themed modal
-- Smart selects for film stock, manufacturer, camera maker, model, labs, and lens
-- Auto-fill for ISO, film type, and manufacturer based on stock
-- Multi-select categories and hashtag-style tags
-- Rating, push/pull, notes, and timeline metadata
-
-### Supported Film Formats
 - `35`
 - `120`
 - `Super8`
@@ -49,63 +41,45 @@ This version is intentionally simple from an engineering standpoint:
 - `16mm`
 - `Large Format`
 
-### Stats and Timeline
-- Statistics by stock, lab, camera, location, categories, tags, and format
-- Timeline view grouped chronologically
-- Dashboard and stats views reflect the current format set
-
-### Cameras
-- Camera catalog with maker, model, format, and type
-- Add and delete camera entries
-- Usage summaries and charts
-
-### Data and Sync
-- Supabase-backed data storage
-- LocalStorage fallback for offline resilience
-- JSON export
-
----
-
 ## Stack
 
 | Layer | Technology |
 |---|---|
 | Frontend | HTML + CSS + Vanilla JavaScript |
 | Backend | [Supabase](https://supabase.com) |
-| UI Fonts | DM Mono, Playfair Display, Fraunces, Inter, Special Elite |
+| Auth | Supabase Auth |
+| Database | PostgreSQL + RLS |
 | Runtime | Browser, no build step |
-
----
 
 ## Design Direction
 
-- Darkroom palette with warm browns and safelight red accents
-- Editorial structure rather than app-dashboard chrome
-- Monospace technical UI mixed with serif display typography
-- Film grain and filmstrip-inspired details
+- Warm darkroom palette with safelight red accents
+- Editorial composition instead of generic dashboard chrome
+- Serif display typography mixed with technical monospace UI
+- Lightweight, direct browser delivery
 
----
+## Repo Notes
 
-## Roadmap
+- Main app file: [`analog-db-dashboard.html`](./analog-db-dashboard.html)
+- Bootstrap schema: [`supabase/schema.sql`](./supabase/schema.sql)
+- Incremental remote alignment: [`supabase/migrations/20260424_release_alignment.sql`](./supabase/migrations/20260424_release_alignment.sql)
 
-Short-term roadmap:
+## Near-term Roadmap
 
-1. Proper auth
-2. Web app migration to next.js
-3. Closed beta
-4. Mobile app (ios only for short time)
-5. Switching betweem Easy and Advanced mode for new entries
+1. Public release hardening before deployment
+2. Expand admin tools for approvals and role governance
+3. Add more shared/global metrics where privacy allows
+4. Add `En Casa` to reveal and scan flows
+5. Plan migration path to Next.js after beta validation
 
-Longer-term roadmap:
+## Longer-term Roadmap
 
-- Full gallery for each film roll taken, with tagging system working in every photo.
-- Full scale analitics
-- Full sync between all platforms
-- System for adding film stock each user has
-- User added examples for each film stock and its different settings
+- Full photo gallery per roll with frame tagging
+- Richer anonymous global analytics
+- User-submitted stock examples and shooting references
+- Country-aware lab presets and better lab analytics
+- Cross-platform product expansion after beta
 
----
-
-## Project Status
+## Status
 
 Active development.
