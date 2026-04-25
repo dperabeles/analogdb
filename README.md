@@ -58,20 +58,6 @@ The current product is still centered on a single-file frontend, [`analog-db-das
 - Serif display typography mixed with technical monospace UI
 - Lightweight, direct browser delivery
 
-## Repo Notes
-
-- Main app file: [`analog-db-dashboard.html`](./analog-db-dashboard.html)
-- Bootstrap schema: [`supabase/schema.sql`](./supabase/schema.sql)
-- Incremental remote alignment: [`supabase/migrations/20260424_release_alignment.sql`](./supabase/migrations/20260424_release_alignment.sql)
-
-## Near-term Roadmap
-
-1. Public release hardening before deployment
-2. Expand admin tools for approvals and role governance
-3. Add more shared/global metrics where privacy allows
-4. Add `En Casa` to reveal and scan flows
-5. Plan migration path to Next.js after beta validation
-
 ## Longer-term Roadmap
 
 - Full photo gallery per roll with frame tagging
