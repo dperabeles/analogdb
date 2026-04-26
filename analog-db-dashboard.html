@@ -5442,7 +5442,7 @@ async function handleRegister() {
     if (error) throw error;
     if (!data.user?.id) throw new Error('No user id returned from Supabase Auth.');
     registerSucceeded = true;
-    setGateMessage('Solicitud enviada. Tu acceso quedará en revisión hasta aprobación manual.');
+    setGateMessage('Solicitud enviada. Tu acceso quedará en revisión hasta aprobación manual. Se te enviará un correo al ser aprobado tu perfil al correo previamente registrado.');
     await bootstrapApp();
   } catch (err) {
     console.error(err);
