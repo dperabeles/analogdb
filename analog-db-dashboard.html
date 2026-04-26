@@ -2712,14 +2712,14 @@ h1, h2 {
 
   <!-- ── ESTADÍSTICAS ── -->
   <div class="page" id="page-stats">
-    <div class="page-inner" style="padding:28px 48px 60px;">
+    <div class="page-inner ed-page-inner">
       <div class="ed-page-header">
         <div class="ed-page-header-kicker">PÁG·05 &nbsp;·&nbsp; ANÁLISIS</div>
         <h1 class="ed-page-header-title">Estadísticas</h1>
         <div class="ed-page-header-sub">Métricas y tendencias del archivo fotográfico</div>
         <div style="height:1px;background:#1a1510;margin-top:12px;"></div>
       </div>
-      <div class="stats-grid" id="statsGrid"></div>
+      <div id="statsGrid"></div>
     </div>
   </div>
 
@@ -4536,19 +4536,6 @@ function renderDashPanels() {
 function renderStats() {
   const grid = document.getElementById('statsGrid');
 
-  function barSection(title, entries, color) {
-    const mx = entries[0]?.[1] || 1;
-    return `<div class="stat-card">
-      <div class="stat-card-title">${title}</div>
-      ${entries.map(([k,v]) => `
-        <div class="bar-row">
-          <span class="bar-lbl">${k}</span>
-          <div class="bar-track"><div class="bar-fill" style="width:${(v/mx*100).toFixed(1)}%;background:${color||'var(--text)'}"></div></div>
-          <span class="bar-num">${v}</span>
-        </div>`).join('')}
-    </div>`;
-  }
-
   function count(arr, key, transform) {
     const m = {};
     arr.forEach(r => {
@@ -4558,67 +4545,215 @@ function renderStats() {
     });
     return Object.entries(m).sort((a,b)=>b[1]-a[1]);
   }
-  // Special split for LOCATIONS (uses | separator, falls back to comma)
   function splitLocs(v) {
     if (!v) return [];
-    return v.includes('|')
-      ? v.split('|').map(l => l.trim()).filter(Boolean)
-      : v.split(',').map(l => l.trim()).filter(Boolean);
+    return v.includes('|') ? v.split('|').map(l=>l.trim()).filter(Boolean)
+                            : v.split(',').map(l=>l.trim()).filter(Boolean);
+  }
+  function swatchColor(stock) {
+    const s = (stock || '').toLowerCase();
+    if (s.includes('portra') || s.includes('ektar')) return '#c8785a';
+    if (s.includes('gold') || s.includes('ultramax')) return '#d4a050';
+    if (s.includes('hp5') || s.includes('delta') || s.includes('fp4')) return '#6a6a6a';
+    if (s.includes('velvia') || s.includes('provia') || s.includes('fuji')) return '#5a8a6a';
+    if (s.includes('tmax') || s.includes('tri-x') || s.includes('400tx')) return '#505050';
+    if (s.includes('cinestill')) return '#c84848';
+    return '#9c9284';
   }
 
-  const stocks  = count(DATA, 'FILM STOCK').slice(0,10);
-  const labs    = count(DATA, 'DEV').slice(0,8);
-  const cameras = count(DATA, 'MODEL NAME').slice(0,6);
-  const locs    = count(DATA, 'LOCATIONS', v => splitLocs(v)).slice(0,8);
-  const ptypes  = count(DATA, 'PHOTO TYPE', v => v ? v.split(',').map(t=>t.trim()) : null).slice(0,8);
-  const tags    = count(DATA, 'TAGS', v => v ? v.split(',').map(t=>t.trim()).filter(Boolean) : null).slice(0,10);
+  const stocks  = count(DATA, 'FILM STOCK').slice(0, 10);
+  const labs    = count(DATA, 'DEV').slice(0, 8);
+  const cameras = count(DATA, 'MODEL NAME').slice(0, 8);
+  const locs    = count(DATA, 'LOCATIONS', v => splitLocs(v)).slice(0, 8);
+  const ptypes  = count(DATA, 'PHOTO TYPE', v => v ? v.split(',').map(t=>t.trim()) : null).slice(0, 8);
+  const tags    = count(DATA, 'TAGS', v => v ? v.split(',').map(t=>t.trim()).filter(Boolean) : null).slice(0, 10);
 
-  const typeColor = DATA.filter(r=>r['FILM TYPE']==='COLOR').length;
-  const typeBW    = DATA.filter(r=>r['FILM TYPE']==='B/W').length;
-  const typeSL    = DATA.filter(r=>r['FILM TYPE']==='SLIDE').length;
-  const formatEntries = FILM_FORMAT_OPTIONS.map(fmt => {
-    const meta = formatMeta(fmt);
-    return { key: fmt, meta, count: DATA.filter(r => formatKey(r.FORMAT) === formatKey(fmt)).length };
+  const total     = DATA.length || 1;
+  const typeColor = DATA.filter(r => r['FILM TYPE']==='COLOR').length;
+  const typeBW    = DATA.filter(r => r['FILM TYPE']==='B/W').length;
+  const typeSL    = DATA.filter(r => r['FILM TYPE']==='SLIDE').length;
+  const typeRows  = [
+    { label: 'COLOR', n: typeColor, color: '#d94a2a' },
+    { label: 'B / W', n: typeBW, color: '#9a9080' },
+    { label: 'SLIDE', n: typeSL, color: '#6a9de0' },
+  ];
+
+  const formatCounts = FILM_FORMAT_OPTIONS.map(fmt => ({
+    key: fmt,
+    meta: formatMeta(fmt),
+    count: DATA.filter(r => formatKey(r.FORMAT) === formatKey(fmt)).length
+  }));
+
+  function sectionHead(num, title, sub) {
+    return `
+      <div class="ed-section-head">
+        <div class="ed-section-num">${num}.</div>
+        <div style="flex:1;">
+          <h2 class="ed-section-title">${title}</h2>
+          <div class="ed-section-sub">${sub}</div>
+        </div>
+      </div>`;
+  }
+
+  function leaderboard(entries, opts) {
+    const mx = entries[0]?.[1] || 1;
+    const swatch = opts?.swatch || (() => '#9c9284');
+    const subFn  = opts?.sub || (k => '');
+    const barColor = opts?.barColor || '#d94a2a';
+    return entries.map(([k, n], i) => `
+      <div class="ed-stock-row">
+        <span class="ed-stock-num">${String(i + 1).padStart(2, '0')}</span>
+        <span class="ed-stock-swatch" style="background:${swatch(k)};"></span>
+        <span style="flex:0 0 220px;min-width:0;">
+          <div class="ed-stock-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${k}</div>
+          ${subFn(k) ? `<div class="ed-stock-brand">${subFn(k)}</div>` : ''}
+        </span>
+        <span class="ed-stock-bar-wrap"><span class="ed-stock-bar" style="width:${(n / mx * 100).toFixed(1)}%;background:${barColor};"></span></span>
+        <span class="ed-stock-count">${n}</span>
+      </div>`).join('');
+  }
+
+  const typeSection = `
+    <section style="margin-top:36px;">
+      ${sectionHead('I', 'Tipo de Rollo', 'Distribución por emulsión del archivo')}
+      <div class="ed-format-boxes" style="margin-top:20px;">
+        ${typeRows.map(({ label, n, color }) => `
+          <div class="ed-format-box" style="border-top:2px solid ${color};">
+            <div class="ed-format-box-label" style="color:${color};">${label}</div>
+            <div class="ed-format-num">${n}</div>
+            <div class="ed-format-pct">${total ? Math.round(n / total * 100) : 0}% del archivo</div>
+          </div>`).join('')}
+      </div>
+    </section>`;
+
+  const formatSection = `
+    <section style="margin-top:40px;">
+      ${sectionHead('II', 'Formatos', 'Películas por tamaño físico')}
+      <div class="ed-format-boxes" style="margin-top:20px;grid-template-columns:repeat(${formatCounts.length},minmax(0,1fr));">
+        ${formatCounts.map(({ meta, count }) => `
+          <div class="ed-format-box" style="border-top:2px solid ${meta.color};">
+            <div class="ed-format-box-label" style="color:${meta.color};">${meta.label.toUpperCase()}</div>
+            <div class="ed-format-num">${count}</div>
+            <div class="ed-format-pct">${total ? Math.round(count / total * 100) : 0}% del archivo</div>
+          </div>`).join('')}
+      </div>
+    </section>`;
+
+  const stocksSection = `
+    <section style="margin-top:44px;">
+      ${sectionHead('III', 'Stocks favoritos', 'Top 10 de películas más usadas')}
+      <div style="margin-top:16px;">
+        ${leaderboard(stocks, {
+          swatch: swatchColor,
+          sub: k => (k.split(' ')[0] || '').toUpperCase(),
+          barColor: '#d94a2a',
+        })}
+      </div>
+    </section>`;
+
+  const LAB_SWATCH = {
+    'FOTOGRAMA': '#d4a050',
+    'F. HERCULES': '#c47a8a',
+    'BENGALA': '#5b9bd5',
+    'PANTERA': '#c25444',
+    'ABORIGEN': '#6a9a72',
+    'GIVE FILM': '#d6cdb8',
+    'LABTANK': '#8a9050',
+    'EN CASA': '#9c8a72',
+    'FOTO RICARDO': '#a07a4a',
+    'DICHROIC': '#7c5cbf',
+    'MEXICANA ANÁLOGA': '#b06030',
+    'NIGHTMARES IN FILM': '#6a5a8a',
+    'FOTO CITLALI': '#c08a40',
+    'LABORATORIO ESPIRAL': '#5a8a8a',
+    'LABOFILM': '#a05050',
+    'FOTO VIDA': '#7a9a40',
+    'EL PETATE': '#9a6c2a',
+    'EXPENDIO FOTOGRÁFICO': '#5a7aa0',
+  };
+  function labSwatch(name) {
+    const k = (name || '').toUpperCase();
+    return LAB_SWATCH[k] || '#9c9284';
+  }
+  const labsSection = labs.length ? `
+    <section style="margin-top:44px;">
+      ${sectionHead('IV', 'Laboratorios', 'Dónde se reveló cada rollo')}
+      <div style="margin-top:16px;">
+        ${leaderboard(labs, {
+          swatch: labSwatch,
+          barColor: '#5b9bd5',
+        })}
+      </div>
+    </section>` : '';
+
+  const cameraFormatMap = {};
+  DATA.forEach(r => {
+    const cam = r['MODEL NAME'];
+    const fk = formatKey(r.FORMAT);
+    if (!cam || !fk) return;
+    if (!cameraFormatMap[cam]) cameraFormatMap[cam] = {};
+    cameraFormatMap[cam][fk] = (cameraFormatMap[cam][fk] || 0) + 1;
   });
+  function cameraSwatch(modelName) {
+    const counts = cameraFormatMap[modelName];
+    if (!counts) return '#9c9284';
+    const topFmt = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+    const meta = FILM_FORMAT_META[topFmt];
+    return meta?.color || '#9c9284';
+  }
+  const camerasSection = cameras.length ? `
+    <section style="margin-top:44px;">
+      ${sectionHead('V', 'Cámaras', 'Equipo más utilizado · color por formato')}
+      <div style="margin-top:16px;">
+        ${leaderboard(cameras, {
+          swatch: cameraSwatch,
+          barColor: '#9b72cf',
+        })}
+      </div>
+    </section>` : '';
 
-  const typeCard = `<div class="stat-card">
-    <div class="stat-card-title">Tipo de Rollo</div>
-    <div class="pill-row">
-      <div class="pill-item">
-        <div class="pill-circle" style="background:rgba(200,146,42,.12);color:var(--amber-dark)">${typeColor}</div>
-        <span class="pill-label">Color</span>
+  const locsSection = locs.length ? `
+    <section style="margin-top:44px;">
+      ${sectionHead('VI', 'Ubicaciones', 'Lugares más visitados con la cámara')}
+      <div style="margin-top:16px;">
+        ${leaderboard(locs, {
+          swatch: () => '#5aaf7a',
+          barColor: '#5aaf7a',
+        })}
       </div>
-      <div class="pill-item">
-        <div class="pill-circle" style="background:rgba(85,85,85,.1);color:var(--bw)">${typeBW}</div>
-        <span class="pill-label">B/W</span>
-      </div>
-      <div class="pill-item">
-        <div class="pill-circle" style="background:rgba(30,82,160,.1);color:var(--slide)">${typeSL}</div>
-        <span class="pill-label">Slide</span>
-      </div>
-    </div>
-  </div>`;
+    </section>` : '';
 
-  const formatCard = `<div class="stat-card">
-    <div class="stat-card-title">Formato</div>
-    <div class="pill-row">
-      ${formatEntries.map(({ meta, count }) => `
-      <div class="pill-item">
-        <div class="pill-circle" style="background:${meta.bg};color:${meta.color};border:1px solid ${meta.border}">${count}</div>
-        <span class="pill-label">${meta.label}</span>
-      </div>`).join('')}
-    </div>
-  </div>`;
+  const ptypesSection = ptypes.length ? `
+    <section style="margin-top:44px;">
+      ${sectionHead('VII', 'Categorías', 'Tipos de fotografía documentada')}
+      <div style="margin-top:16px;">
+        ${leaderboard(ptypes, {
+          swatch: () => '#c07a30',
+          barColor: '#c07a30',
+        })}
+      </div>
+    </section>` : '';
+
+  const tagsSection = tags.length ? `
+    <section style="margin-top:44px;">
+      ${sectionHead('VIII', 'Tags', 'Etiquetas más recurrentes')}
+      <div style="margin-top:16px;">
+        ${leaderboard(tags, {
+          swatch: () => '#6a9de0',
+          barColor: '#6a9de0',
+        })}
+      </div>
+    </section>` : '';
 
   grid.innerHTML =
-    barSection('Top Film Stocks', stocks, 'var(--text)') +
-    barSection('Laboratorios', labs, '#5b9bd5') +
-    barSection('Cámaras', cameras, '#7c5cbf') +
-    typeCard +
-    formatCard +
-    barSection('Ubicaciones más visitadas', locs, 'var(--green)') +
-    barSection('Categorías', ptypes, '#c07a30') +
-    (tags.length ? barSection('Tags', tags, 'var(--slide)') : '');
+    typeSection +
+    formatSection +
+    stocksSection +
+    labsSection +
+    camerasSection +
+    locsSection +
+    ptypesSection +
+    tagsSection;
 }
 
 // ═══════════════════════════════════════════
