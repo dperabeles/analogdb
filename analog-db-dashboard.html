@@ -524,6 +524,10 @@ body.sidebar-collapsed .mobile-nav-toggle-line:nth-child(3) {
    FILTERS + TABLE
 ═══════════════════════════════════════════ */
 .filters-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; align-items: center; }
+.filters-bar .search-box {
+  width: min(100%, 320px);
+  min-width: 220px;
+}
 
 .btn-primary {
   background: var(--text); color: #fff; border: none;
@@ -2561,12 +2565,9 @@ h1, h2 {
     white-space: nowrap;
     text-overflow: ellipsis;
   }
-  .topbar-right {
+  .filters-bar .search-box {
+    width: 100%;
     min-width: 0;
-    flex: 0 1 auto;
-  }
-  .search-box {
-    width: min(42vw, 220px);
   }
   .mobile-sidebar-backdrop {
     display: block;
@@ -2690,12 +2691,6 @@ h1, h2 {
         <span id="edMastheadDate" style="opacity:0.7;"></span>
       </div>
     </div>
-    <div class="topbar-right">
-      <div class="search-box">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
-        <input type="text" id="searchInput" placeholder="Buscar rollos..." oninput="applyFilters()">
-      </div>
-    </div>
   </div>
 
   <!-- ── DASHBOARD ── -->
@@ -2817,6 +2812,10 @@ h1, h2 {
       </div>
       <div class="filters-bar">
         <button class="btn-primary" onclick="openRollEditor(null)">+ Agregar rollo</button>
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+          <input type="text" id="searchInput" placeholder="Buscar rollos..." oninput="applyFilters()">
+        </div>
         <select class="filter-select" id="filterType" onchange="applyFilters()">
           <option value="">Todos los tipos</option>
           <option value="COLOR">Color</option>
