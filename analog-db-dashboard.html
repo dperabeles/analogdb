@@ -5714,9 +5714,17 @@ async function bootstrapApp() {
 
 const AUTH_EVENTS_REQUIRING_BOOTSTRAP = new Set(['SIGNED_IN', 'SIGNED_OUT', 'USER_UPDATED', 'PASSWORD_RECOVERY']);
 
-sb.auth.onAuthStateChange(async (event) => {
+function isRedundantAuthBootstrapEvent(event, session) {
+  if (event !== 'SIGNED_IN') return false;
+  const nextUserId = session?.user?.id || null;
+  const currentUserId = SESSION?.user?.id || null;
+  return !!nextUserId && !!currentUserId && nextUserId === currentUserId;
+}
+
+sb.auth.onAuthStateChange(async (event, session) => {
   if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') return;
   if (!AUTH_EVENTS_REQUIRING_BOOTSTRAP.has(event)) return;
+  if (isRedundantAuthBootstrapEvent(event, session)) return;
   if (SIGN_OUT_FLOW) return;
   if (AUTH_FLOW_LOCK) {
     PENDING_AUTH_EVENT = true;
