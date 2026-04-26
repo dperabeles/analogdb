@@ -12,6 +12,7 @@ drop view if exists public.rolls_flat cascade;
 
 drop function if exists public.landing_metrics() cascade;
 drop function if exists public.notify_pending_signup() cascade;
+drop function if exists public.notify_profile_approved() cascade;
 drop function if exists public.handle_new_auth_user() cascade;
 drop function if exists public.cast_admin_action_vote(uuid, text) cascade;
 drop function if exists public.request_admin_action(text, uuid) cascade;
@@ -216,6 +217,61 @@ after insert on public.profiles
 for each row
 when (new.status = 'pending')
 execute function public.notify_pending_signup();
+
+create or replace function public.notify_profile_approved()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  webhook_secret text;
+begin
+  if new.status is distinct from 'approved'
+    or old.status is not distinct from 'approved' then
+    return new;
+  end if;
+
+  begin
+    select pac.config_value
+    into webhook_secret
+    from public.private_app_config pac
+    where pac.config_key = 'pending_signup_webhook_secret'
+    limit 1;
+
+    if webhook_secret is null or webhook_secret = '' then
+      raise notice 'profile approval notification skipped: missing webhook secret';
+      return new;
+    end if;
+
+    perform net.http_post(
+      url := 'https://dqjjxxqruxxfsfoejdzl.supabase.co/functions/v1/notify-profile-approved',
+      headers := jsonb_build_object(
+        'Content-Type', 'application/json',
+        'x-webhook-secret', webhook_secret
+      ),
+      body := jsonb_build_object(
+        'type', tg_op,
+        'schema', tg_table_schema,
+        'table', tg_table_name,
+        'old_record', to_jsonb(old),
+        'record', to_jsonb(new)
+      )
+    );
+  exception
+    when others then
+      raise notice 'profile approval notification skipped: %', sqlerrm;
+  end;
+
+  return new;
+end;
+$$;
+
+create trigger profiles_notify_approved
+after update of status on public.profiles
+for each row
+when (new.status = 'approved' and old.status is distinct from 'approved')
+execute function public.notify_profile_approved();
 
 create or replace function public.handle_new_auth_user()
 returns trigger

@@ -5411,6 +5411,8 @@ async function handleLogin() {
 }
 
 async function handleRegister() {
+  const registerBtn = document.getElementById('gateRegisterBtn');
+  if (registerBtn?.disabled) return;
   setGateMessage('Procesando solicitud...');
   if (SIGN_OUT_FLOW) {
     setGateMessage('Esperando cierre de sesión...');
@@ -5421,6 +5423,7 @@ async function handleRegister() {
     return;
   }
   AUTH_FLOW_LOCK = true;
+  let registerSucceeded = false;
   try {
     setAuthButtonsState({ disabled: true, busyLabel: 'Enviando...', active: 'register' });
     const displayName = (document.getElementById('gateRegisterDisplayName')?.value || '').trim();
@@ -5438,6 +5441,7 @@ async function handleRegister() {
     });
     if (error) throw error;
     if (!data.user?.id) throw new Error('No user id returned from Supabase Auth.');
+    registerSucceeded = true;
     setGateMessage('Solicitud enviada. Tu acceso quedará en revisión hasta aprobación manual.');
     await bootstrapApp();
   } catch (err) {
@@ -5449,7 +5453,7 @@ async function handleRegister() {
       PENDING_AUTH_EVENT = false;
       await bootstrapApp();
     }
-    if (ACCESS_STATE === 'public') {
+    if (ACCESS_STATE === 'public' && !registerSucceeded) {
       setAuthButtonsState({ disabled: false });
     }
   }
