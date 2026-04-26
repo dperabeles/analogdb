@@ -158,6 +158,7 @@ body::before {
   top: 0; left: 0; bottom: 0;
   z-index: 50;
   overflow-y: auto;
+  transition: width .22s ease, transform .22s ease;
 }
 
 .brand {
@@ -238,6 +239,7 @@ body::before {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  transition: margin-left .22s ease;
 }
 
 .topbar {
@@ -256,6 +258,56 @@ body::before {
 .breadcrumb .bc-page { color: var(--text); font-weight: 500; }
 
 .topbar-right { display: flex; align-items: center; gap: 10px; }
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.mobile-nav-toggle {
+  display: inline-flex;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(244,237,226,0.12);
+  background: rgba(22,17,14,0.9);
+  color: #e8dfd1;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.mobile-nav-toggle:hover {
+  background: rgba(31,24,19,0.96);
+  border-color: rgba(244,237,226,0.18);
+}
+.mobile-nav-toggle-line {
+  width: 15px;
+  height: 1.5px;
+  background: currentColor;
+  transition: transform .18s ease, opacity .18s ease;
+}
+body.sidebar-collapsed .mobile-nav-toggle-line:nth-child(1) {
+  transform: translateY(5.5px) rotate(45deg);
+}
+body.sidebar-collapsed .mobile-nav-toggle-line:nth-child(2) {
+  opacity: 0;
+}
+body.sidebar-collapsed .mobile-nav-toggle-line:nth-child(3) {
+  transform: translateY(-5.5px) rotate(-45deg);
+}
+.mobile-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(9,6,4,0.58);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+  z-index: 45;
+}
 .search-box {
   display: flex; align-items: center; gap: 8px;
   background: var(--surface2); border: 1px solid var(--border);
@@ -269,6 +321,48 @@ body::before {
   font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text); width: 100%;
 }
 .search-box input::placeholder { color: var(--text-dim); }
+
+@media (min-width: 901px) {
+  body.desktop-sidebar-collapsed .sidebar {
+    width: 84px;
+    min-width: 84px;
+  }
+  body.desktop-sidebar-collapsed .main {
+    margin-left: 84px;
+  }
+  body.desktop-sidebar-collapsed .ed-brand {
+    justify-content: center;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  body.desktop-sidebar-collapsed .ed-brand-copy,
+  body.desktop-sidebar-collapsed .sidebar-archive-tools,
+  body.desktop-sidebar-collapsed .sidebar-primary-action,
+  body.desktop-sidebar-collapsed .sidebar-account-card {
+    display: none !important;
+  }
+  body.desktop-sidebar-collapsed .ed-sidebar .nav-item {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+    font-size: 0;
+    gap: 0;
+  }
+  body.desktop-sidebar-collapsed .ed-sidebar .nav-item.active {
+    padding-left: 0;
+  }
+  body.desktop-sidebar-collapsed .ed-sidebar .nav-item.active::before {
+    left: 8px;
+  }
+  body.desktop-sidebar-collapsed .ed-sidebar .ed-nav-num {
+    width: auto;
+    font-size: 11px;
+    opacity: 0.8;
+  }
+  body.desktop-sidebar-collapsed .ed-sidebar .nav-badge {
+    display: none !important;
+  }
+}
 
 /* ═══════════════════════════════════════════
    PAGES
@@ -2424,12 +2518,71 @@ h1, h2 {
 
 /* Empty state title */
 .empty-state .es-title { font-family: 'Inter', system-ui, sans-serif !important; font-style: normal !important; font-weight: 600 !important; }
+
+@media (max-width: 900px) {
+  body {
+    overflow-x: hidden;
+  }
+  body.mobile-sidebar-open {
+    overflow: hidden;
+  }
+  .mobile-nav-toggle {
+    display: inline-flex;
+  }
+  body.mobile-sidebar-open .mobile-nav-toggle-line:nth-child(1) {
+    transform: translateY(5.5px) rotate(45deg);
+  }
+  body.mobile-sidebar-open .mobile-nav-toggle-line:nth-child(2) {
+    opacity: 0;
+  }
+  body.mobile-sidebar-open .mobile-nav-toggle-line:nth-child(3) {
+    transform: translateY(-5.5px) rotate(-45deg);
+  }
+  .sidebar {
+    width: min(86vw, 320px);
+    min-width: 0;
+    transform: translateX(-100%);
+    transition: transform .22s ease;
+    box-shadow: 0 18px 48px rgba(0,0,0,0.45);
+  }
+  body.mobile-sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+  .main {
+    margin-left: 0;
+    width: 100%;
+  }
+  .topbar {
+    padding: 0 14px;
+  }
+  .topbar-left > div:last-child {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .topbar-right {
+    min-width: 0;
+    flex: 0 1 auto;
+  }
+  .search-box {
+    width: min(42vw, 220px);
+  }
+  .mobile-sidebar-backdrop {
+    display: block;
+  }
+  body.mobile-sidebar-open .mobile-sidebar-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <div id="accessGate" style="display:none;"></div>
+<div class="mobile-sidebar-backdrop" id="mobileSidebarBackdrop" onclick="closeMobileSidebar()"></div>
 
 <!-- ════════════════════ SIDEBAR ════════════════════ -->
 <aside class="sidebar ed-sidebar">
@@ -2438,7 +2591,7 @@ h1, h2 {
     <div style="width:32px;height:32px;background:#d94a2a;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
       <span style="color:#14100d;font-weight:900;font-size:14px;font-family:'DM Mono',monospace;line-height:1;">⊙</span>
     </div>
-    <div>
+    <div class="ed-brand-copy">
       <div style="font-size:9px;letter-spacing:2.5px;opacity:0.55;font-family:'DM Mono',monospace;color:#e8dfd1;line-height:1;margin-bottom:4px;">ANALOG</div>
       <div style="font-size:14px;font-weight:700;font-family:'Inter',sans-serif;color:#e8dfd1;letter-spacing:0.4px;line-height:1;">ARCHIVE</div>
     </div>
@@ -2465,7 +2618,7 @@ h1, h2 {
   </div>
 
   <!-- Archive section -->
-  <div style="margin-top:32px;padding-top:16px;border-top:1px solid rgba(232,220,197,0.12);">
+  <div class="sidebar-archive-tools" style="margin-top:32px;padding-top:16px;border-top:1px solid rgba(232,220,197,0.12);">
     <div style="font-size:9px;letter-spacing:2px;opacity:0.4;margin-bottom:8px;font-family:'Inter',sans-serif;color:#e8dcc5;padding:0 20px;">ARCHIVOS</div>
     <div class="nav-item" id="navExport">
       <span class="ed-nav-num">—</span>Exportar JSON
@@ -2480,7 +2633,7 @@ h1, h2 {
   <div style="flex:1;"></div>
 
   <!-- Persistent new-roll button -->
-  <div style="padding:0 16px 14px;">
+  <div class="sidebar-primary-action" style="padding:0 16px 14px;">
     <button onclick="openRollEditor(null)" style="
       display:block; width:100%;
       background:#8a3a22; color:#f5ede0;
@@ -2496,7 +2649,7 @@ h1, h2 {
   </div>
 
   <!-- User widget -->
-  <div style="margin:0 14px 16px;border:1px solid rgba(232,220,197,0.12);background:rgba(232,220,197,0.05);">
+  <div class="sidebar-account-card" style="margin:0 14px 16px;border:1px solid rgba(232,220,197,0.12);background:rgba(232,220,197,0.05);">
     <div style="padding:10px 12px 8px;border-bottom:1px solid rgba(232,220,197,0.1);display:flex;align-items:center;gap:9px;">
       <!-- Avatar placeholder -->
       <div style="width:28px;height:28px;background:rgba(138,58,34,0.5);border:1px solid rgba(138,58,34,0.6);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -2523,12 +2676,19 @@ h1, h2 {
 
   <!-- TOPBAR (always visible) -->
   <div class="topbar" id="mainTopbar">
-    <div style="font-size:10px;letter-spacing:1.5px;font-family:'DM Mono',monospace;color:#e8dfd1;display:flex;align-items:center;gap:10px;opacity:0.6;">
-      <span>ARCHIVE</span>
-      <span style="opacity:0.4;">/</span>
-      <span id="bcPage" style="opacity:1;color:#e8dfd1;">DASHBOARD</span>
-      <span style="opacity:0.4;">/</span>
-      <span id="edMastheadDate" style="opacity:0.7;"></span>
+    <div class="topbar-left">
+      <button class="mobile-nav-toggle" id="mobileNavToggle" type="button" aria-label="Abrir navegación" aria-expanded="false" onclick="toggleMobileSidebar()">
+        <span class="mobile-nav-toggle-line"></span>
+        <span class="mobile-nav-toggle-line"></span>
+        <span class="mobile-nav-toggle-line"></span>
+      </button>
+      <div style="font-size:10px;letter-spacing:1.5px;font-family:'DM Mono',monospace;color:#e8dfd1;display:flex;align-items:center;gap:10px;opacity:0.6;">
+        <span>ARCHIVE</span>
+        <span style="opacity:0.4;">/</span>
+        <span id="bcPage" style="opacity:1;color:#e8dfd1;">DASHBOARD</span>
+        <span style="opacity:0.4;">/</span>
+        <span id="edMastheadDate" style="opacity:0.7;"></span>
+      </div>
     </div>
     <div class="topbar-right">
       <div class="search-box">
@@ -4211,6 +4371,7 @@ function goPage(id) {
   document.getElementById('bcPage').textContent = PAGE_LABELS[id] || id;
   const topbar = document.getElementById('mainTopbar');
   if (topbar) topbar.style.display = '';
+  closeMobileSidebar();
 }
 
 // ═══════════════════════════════════════════
@@ -5049,7 +5210,12 @@ document.getElementById('fileImportInput').addEventListener('change', function(e
 //  KEYBOARD
 // ═══════════════════════════════════════════
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') document.getElementById('modalOverlay').classList.remove('open');
+  if (e.key !== 'Escape') return;
+  if (MOBILE_SIDEBAR_OPEN) {
+    closeMobileSidebar();
+    return;
+  }
+  document.getElementById('modalOverlay').classList.remove('open');
 });
 
 // ═══════════════════════════════════════════
@@ -5066,6 +5232,8 @@ let ACCESS_STATE = 'public';
 let AUTH_FLOW_LOCK = false;
 let SIGN_OUT_FLOW = null;
 let PENDING_AUTH_EVENT = false;
+let MOBILE_SIDEBAR_OPEN = false;
+let DESKTOP_SIDEBAR_COLLAPSED = false;
 const PUBLIC_LANDING_SNAPSHOT_FALLBACK = Object.freeze({
   totalRolls: 0,
   topStockLabel: '—',
@@ -5148,13 +5316,65 @@ async function waitForPendingSignOut() {
 function shellEls() {
   return {
     gate: document.getElementById('accessGate'),
+    backdrop: document.getElementById('mobileSidebarBackdrop'),
+    navToggle: document.getElementById('mobileNavToggle'),
     sidebar: document.querySelector('aside.sidebar'),
     main: document.querySelector('main.main'),
   };
 }
 
+function isMobileSidebarViewport() {
+  return window.innerWidth <= 900;
+}
+
+function syncSidebarToggleButton() {
+  const { navToggle } = shellEls();
+  if (!navToggle) return;
+  const isOpen = isMobileSidebarViewport() ? MOBILE_SIDEBAR_OPEN : DESKTOP_SIDEBAR_COLLAPSED;
+  navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  navToggle.setAttribute('aria-label', isOpen ? 'Cerrar navegación' : 'Abrir navegación');
+}
+
+function syncMobileSidebarState() {
+  const { backdrop } = shellEls();
+  const isOpen = MOBILE_SIDEBAR_OPEN && isMobileSidebarViewport();
+  document.body.classList.toggle('mobile-sidebar-open', isOpen);
+  document.body.classList.toggle('sidebar-collapsed', isOpen || DESKTOP_SIDEBAR_COLLAPSED);
+  document.body.classList.toggle('desktop-sidebar-collapsed', DESKTOP_SIDEBAR_COLLAPSED && !isMobileSidebarViewport());
+  if (backdrop) backdrop.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+  syncSidebarToggleButton();
+}
+
+function openMobileSidebar() {
+  if (!isMobileSidebarViewport()) return;
+  MOBILE_SIDEBAR_OPEN = true;
+  syncMobileSidebarState();
+}
+
+function closeMobileSidebar() {
+  if (!MOBILE_SIDEBAR_OPEN) return;
+  MOBILE_SIDEBAR_OPEN = false;
+  syncMobileSidebarState();
+}
+
+function setDesktopSidebarCollapsed(collapsed) {
+  DESKTOP_SIDEBAR_COLLAPSED = !!collapsed;
+  localStorage.setItem('analogdb_sidebar_collapsed_desktop_v1', DESKTOP_SIDEBAR_COLLAPSED ? '1' : '0');
+  syncMobileSidebarState();
+}
+
+function toggleMobileSidebar() {
+  if (!isMobileSidebarViewport()) {
+    setDesktopSidebarCollapsed(!DESKTOP_SIDEBAR_COLLAPSED);
+    return;
+  }
+  if (MOBILE_SIDEBAR_OPEN) closeMobileSidebar();
+  else openMobileSidebar();
+}
+
 function setShellVisibility(showShell) {
   const { gate, sidebar, main } = shellEls();
+  if (!showShell) closeMobileSidebar();
   if (sidebar) sidebar.style.display = showShell ? '' : 'none';
   if (main) main.style.display = showShell ? '' : 'none';
   if (gate) gate.style.display = showShell ? 'none' : 'block';
@@ -5734,9 +5954,15 @@ sb.auth.onAuthStateChange(async (event, session) => {
 });
 
 (async () => {
+  DESKTOP_SIDEBAR_COLLAPSED = localStorage.getItem('analogdb_sidebar_collapsed_desktop_v1') === '1';
   await bootstrapApp();
+  syncMobileSidebarState();
 })();
-window.addEventListener('resize', drawChart);
+window.addEventListener('resize', () => {
+  if (!isMobileSidebarViewport()) MOBILE_SIDEBAR_OPEN = false;
+  syncMobileSidebarState();
+  drawChart();
+});
 
 
 // ═══════════════════════════════════════════
