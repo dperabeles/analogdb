@@ -2760,6 +2760,84 @@ h1, h2 {
     pointer-events: auto;
   }
 }
+
+/* ─────────────  MOBILE BOTTOM NAV — feat/mobile-v1 PR#1  ─────────────
+   Bottom nav + FAB for fast page-switching on phone-sized viewports.
+   Hidden by default; activated below 640px. Reuses existing goPage() and
+   openRollEditor(null). The "Cuenta" tab toggles the existing mobile sidebar. */
+.mob-bnav {
+  display: none;
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 400;
+  background: rgba(18, 16, 13, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(244, 237, 226, 0.16);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.mob-bnav-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+.mob-bnav-btn {
+  background: none; border: 0; cursor: pointer;
+  padding: 12px 4px 14px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(232, 223, 209, 0.4);
+  position: relative;
+  min-height: 54px;
+  -webkit-tap-highlight-color: transparent;
+}
+.mob-bnav-btn .mob-bnav-glyph {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  color: #e8dfd1;
+  letter-spacing: 0;
+  line-height: 1;
+}
+.mob-bnav-btn.on { color: #d94a2a; }
+.mob-bnav-btn.on .mob-bnav-glyph { color: #d94a2a; }
+.mob-bnav-btn.on::before {
+  content: ""; position: absolute; top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 24px; height: 1px;
+  background: #d94a2a;
+}
+.mob-bnav-fab-wrap {
+  background: none; border: 0; cursor: pointer; padding: 0 4px 14px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: #d94a2a;
+  -webkit-tap-highlight-color: transparent;
+}
+.mob-bnav-fab {
+  margin-top: -22px;
+  width: 48px; height: 48px;
+  background: #d94a2a;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 800; font-size: 22px; color: #0c0906;
+  box-shadow: 0 6px 18px -4px rgba(217, 74, 42, 0.55), 0 0 0 4px #14110d;
+  letter-spacing: 0; line-height: 1;
+  transition: transform .14s ease, background .16s ease;
+}
+.mob-bnav-fab-wrap:active .mob-bnav-fab { transform: scale(0.92); background: #c03a1a; }
+
+@media (max-width: 640px) {
+  /* Show bnav only when the authenticated shell is visible — keeps it
+     out of the public gate (login/pending screens). The .shell-visible
+     class is toggled by setShellVisibility(). */
+  body.shell-visible .mob-bnav { display: block; }
+  /* clearance so bottom content isn't covered by the fixed nav */
+  body.shell-visible .main { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -5694,6 +5772,8 @@ function setShellVisibility(showShell) {
   if (sidebar) sidebar.style.display = showShell ? '' : 'none';
   if (main) main.style.display = showShell ? '' : 'none';
   if (gate) gate.style.display = showShell ? 'none' : 'block';
+  // feat/mobile-v1 PR#1: gate the mobile bottom nav to authenticated shell only
+  document.body.classList.toggle('shell-visible', !!showShell);
 }
 
 function renderLandingMarquee() {
@@ -7230,6 +7310,49 @@ function updateLocationCheckbox(id) {
 }
 
 
+</script>
+
+<!-- ─────  MOBILE BOTTOM NAV — feat/mobile-v1 PR#1  ─────
+     Visible only below 640px (CSS controlled). Reuses existing goPage()
+     and openRollEditor(null). "Cuenta" toggles the existing mobile sidebar. -->
+<nav class="mob-bnav" aria-label="Navegación móvil">
+  <div class="mob-bnav-row">
+    <button type="button" class="mob-bnav-btn on" data-page="page-dashboard"
+            onclick="goPage('page-dashboard'); _mobBnavSync('page-dashboard');">
+      <span class="mob-bnav-glyph">Dash</span>
+      <span>I</span>
+    </button>
+    <button type="button" class="mob-bnav-btn" data-page="page-database"
+            onclick="goPage('page-database'); _mobBnavSync('page-database');">
+      <span class="mob-bnav-glyph">Tabla</span>
+      <span>II</span>
+    </button>
+    <button type="button" class="mob-bnav-fab-wrap" aria-label="Cargar rollo nuevo"
+            onclick="openRollEditor(null);">
+      <span class="mob-bnav-fab">+</span>
+      <span>Nuevo</span>
+    </button>
+    <button type="button" class="mob-bnav-btn" data-page="page-stats"
+            onclick="goPage('page-stats'); _mobBnavSync('page-stats');">
+      <span class="mob-bnav-glyph">Stats</span>
+      <span>III</span>
+    </button>
+    <button type="button" class="mob-bnav-btn" data-page="__account"
+            onclick="document.body.classList.toggle('mobile-sidebar-open');">
+      <span class="mob-bnav-glyph">Cuenta</span>
+      <span>·</span>
+    </button>
+  </div>
+</nav>
+<script>
+  function _mobBnavSync(pageId) {
+    document.querySelectorAll('.mob-bnav .mob-bnav-btn').forEach(function (b) {
+      b.classList.toggle('on', b.getAttribute('data-page') === pageId);
+    });
+    if (document.body.classList.contains('mobile-sidebar-open')) {
+      document.body.classList.remove('mobile-sidebar-open');
+    }
+  }
 </script>
 </body>
 </html>
