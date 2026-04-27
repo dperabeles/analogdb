@@ -2243,6 +2243,189 @@ td { color: #e8dfd1 !important; }
 .bar-num { color: rgba(232,223,209,0.45) !important; }
 .pill-circle { border: 1px solid rgba(244,237,226,0.12) !important; }
 
+/* Stats drill-down modal */
+.stats-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8,6,4,.75);
+  z-index: 600;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.stats-modal-overlay.open { display: flex; }
+.stats-modal {
+  background: #1c1612;
+  border: 1px solid rgba(244,237,226,0.12);
+  border-radius: 2px;
+  width: 640px;
+  max-width: 95vw;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 32px 80px rgba(0,0,0,.65);
+  animation: modalIn .2s ease;
+  overflow: hidden;
+}
+.stats-modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 28px 18px;
+  border-bottom: 1px solid rgba(244,237,226,0.1);
+  flex-shrink: 0;
+}
+.stats-modal-kicker {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: rgba(232,223,209,0.35);
+  margin-bottom: 7px;
+}
+.stats-modal-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #e8dfd1;
+  line-height: 1.1;
+}
+.stats-modal-close {
+  border: 1px solid rgba(244,237,226,0.1);
+  border-radius: 2px;
+  background: none;
+  color: rgba(232,223,209,0.3);
+  font-family: 'DM Mono', monospace;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 3px 7px;
+  transition: color .15s, border-color .15s;
+  flex-shrink: 0;
+  margin-top: -2px;
+}
+.stats-modal-close:hover {
+  color: #e8dfd1;
+  border-color: rgba(244,237,226,0.25);
+}
+.stats-modal-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid rgba(244,237,226,0.1);
+  flex-shrink: 0;
+}
+.stats-modal-stat {
+  padding: 14px 22px;
+  border-right: 1px solid rgba(244,237,226,0.07);
+}
+.stats-modal-stat:last-child { border-right: none; }
+.stats-modal-stat-num {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #e8dfd1;
+  line-height: 1;
+}
+.stats-modal-stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(232,223,209,0.35);
+  margin-top: 4px;
+}
+.stats-modal-list {
+  overflow-y: auto;
+  flex: 1;
+}
+.stats-modal-list::-webkit-scrollbar { width: 4px; }
+.stats-modal-list::-webkit-scrollbar-track { background: transparent; }
+.stats-modal-list::-webkit-scrollbar-thumb {
+  background: rgba(244,237,226,0.1);
+  border-radius: 2px;
+}
+.stats-modal-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 28px;
+  border-bottom: 1px solid rgba(244,237,226,0.05);
+  cursor: pointer;
+  transition: background .12s;
+}
+.stats-modal-row:last-child { border-bottom: none; }
+.stats-modal-row:hover { background: rgba(244,237,226,0.03); }
+.stats-modal-roll-id {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: #d94a2a;
+  font-weight: 600;
+  flex-shrink: 0;
+  width: 38px;
+  letter-spacing: .03em;
+}
+.stats-modal-roll-main {
+  flex: 1;
+  min-width: 0;
+}
+.stats-modal-roll-name {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: #e8dfd1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stats-modal-roll-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: rgba(232,223,209,0.38);
+  letter-spacing: .03em;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.stats-modal-roll-badge { flex-shrink: 0; }
+.stats-modal-stars {
+  font-size: 11px;
+  letter-spacing: -.02em;
+  flex-shrink: 0;
+  color: rgba(232,223,209,0.2);
+}
+.stats-modal-stars .star-on { color: #d9a050; }
+.stats-modal-empty {
+  padding: 48px 28px;
+  text-align: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: rgba(232,223,209,0.25);
+  letter-spacing: .08em;
+}
+.stats-drillable {
+  cursor: pointer;
+  position: relative;
+}
+.stats-drillable:hover .ed-stock-name { color: #d94a2a; }
+.stats-drillable::after {
+  content: '›';
+  font-size: 14px;
+  color: rgba(232,223,209,0.2);
+  margin-left: auto;
+  padding-left: 8px;
+  flex-shrink: 0;
+  transition: color .15s, transform .15s;
+}
+.stats-drillable:hover::after {
+  color: #d94a2a;
+  transform: translateX(2px);
+}
+
 /* Roll cards (dashboard kanban / status view) */
 .roll-card { background: #1c1612 !important; border-color: rgba(244,237,226,0.08) !important; border-radius: 2px !important; }
 .roll-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.4) !important; }
@@ -2977,6 +3160,21 @@ h1, h2 {
       <button class="cam-modal-cancel" onclick="closeCameraModal()">Cancelar</button>
       <button class="cam-modal-save" onclick="saveCameraForm()">Guardar cámara</button>
     </div>
+  </div>
+</div>
+
+<!-- ════════════ STATS DRILL-DOWN MODAL ════════════ -->
+<div class="stats-modal-overlay" id="statsModalOverlay" onclick="if(event.target===this)closeStatsModal()">
+  <div class="stats-modal">
+    <div class="stats-modal-head">
+      <div>
+        <div class="stats-modal-kicker" id="statsModalKicker"></div>
+        <div class="stats-modal-name" id="statsModalName"></div>
+      </div>
+      <button class="stats-modal-close" type="button" onclick="closeStatsModal()">✕</button>
+    </div>
+    <div class="stats-modal-strip" id="statsModalStrip"></div>
+    <div class="stats-modal-list" id="statsModalList"></div>
   </div>
 </div>
 
@@ -4760,8 +4958,15 @@ function renderStats() {
     const swatch = opts?.swatch || (() => '#9c9284');
     const subFn  = opts?.sub || (k => '');
     const barColor = opts?.barColor || '#d94a2a';
-    return entries.map(([k, n], i) => `
-      <div class="ed-stock-row">
+    const field = opts?.field || '';
+    const section = opts?.section || '';
+    return entries.map(([k, n], i) => {
+      const safeKey = String(k).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      const drillAttrs = field
+        ? `class="ed-stock-row stats-drillable" data-dim="${field}" data-key="${safeKey}" data-label="${safeKey}" data-section="${section}" onclick="openStatsModal(this)"`
+        : `class="ed-stock-row"`;
+      return `
+      <div ${drillAttrs}>
         <span class="ed-stock-num">${String(i + 1).padStart(2, '0')}</span>
         <span class="ed-stock-swatch" style="background:${swatch(k)};"></span>
         <span style="flex:0 0 220px;min-width:0;">
@@ -4770,7 +4975,8 @@ function renderStats() {
         </span>
         <span class="ed-stock-bar-wrap"><span class="ed-stock-bar" style="width:${(n / mx * 100).toFixed(1)}%;background:${barColor};"></span></span>
         <span class="ed-stock-count">${n}</span>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }
 
   const typeSection = `
@@ -4807,6 +5013,8 @@ function renderStats() {
           swatch: swatchColor,
           sub: k => (k.split(' ')[0] || '').toUpperCase(),
           barColor: '#d94a2a',
+          field: 'FILM STOCK',
+          section: 'STOCKS FAVORITOS',
         })}
       </div>
     </section>`;
@@ -4842,6 +5050,8 @@ function renderStats() {
         ${leaderboard(labs, {
           swatch: labSwatch,
           barColor: '#5b9bd5',
+          field: 'DEV',
+          section: 'LABORATORIOS',
         })}
       </div>
     </section>` : '';
@@ -4868,6 +5078,8 @@ function renderStats() {
         ${leaderboard(cameras, {
           swatch: cameraSwatch,
           barColor: '#9b72cf',
+          field: 'MODEL NAME',
+          section: 'CÁMARAS',
         })}
       </div>
     </section>` : '';
@@ -4879,6 +5091,8 @@ function renderStats() {
         ${leaderboard(locs, {
           swatch: () => '#5aaf7a',
           barColor: '#5aaf7a',
+          field: 'LOCATIONS',
+          section: 'UBICACIONES',
         })}
       </div>
     </section>` : '';
@@ -4890,6 +5104,8 @@ function renderStats() {
         ${leaderboard(ptypes, {
           swatch: () => '#c07a30',
           barColor: '#c07a30',
+          field: 'PHOTO TYPE',
+          section: 'CATEGORÍAS',
         })}
       </div>
     </section>` : '';
@@ -4901,6 +5117,8 @@ function renderStats() {
         ${leaderboard(tags, {
           swatch: () => '#6a9de0',
           barColor: '#6a9de0',
+          field: 'TAGS',
+          section: 'TAGS',
         })}
       </div>
     </section>` : '';
@@ -5007,6 +5225,105 @@ function typeBadge(t) {
   const cls = t==='COLOR'?'badge-color':t==='B/W'?'badge-bw':'badge-slide';
   return `<span class="badge ${cls}">${t}</span>`;
 }
+function openStatsModal(el) {
+  if (!el) return;
+
+  const dim = el.dataset.dim;
+  const raw = el.dataset.key;
+  const label = el.dataset.label;
+  const section = el.dataset.section;
+  if (!dim || !raw) return;
+
+  const MULTI_FIELDS = { 'LOCATIONS': true, 'PHOTO TYPE': true, 'TAGS': true };
+  const effectiveDate = r => r.FINISHED || r.STARTED || '';
+
+  function matchesField(r, field, value) {
+    const source = String(r[field] || '').trim();
+    if (!source) return false;
+    if (MULTI_FIELDS[field]) {
+      const parts = field === 'LOCATIONS' && source.includes('|')
+        ? source.split('|')
+        : source.split(',');
+      return parts.map(part => part.trim()).filter(Boolean).includes(value);
+    }
+    return source === value;
+  }
+
+  function fmtRollDate(r) {
+    const d = effectiveDate(r);
+    if (!d) return '';
+    return new Date(d + 'T12:00:00').toLocaleDateString('es-MX', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  }
+
+  function miniStars(n) {
+    const rating = Math.max(0, Math.min(5, Number(n) || 0));
+    if (!rating) return '';
+    return '<span class="stats-modal-stars">'
+      + '★'.repeat(rating).split('').map(() => '<span class="star-on">★</span>').join('')
+      + '☆'.repeat(5 - rating)
+      + '</span>';
+  }
+
+  const rolls = DATA
+    .filter(r => matchesField(r, dim, raw))
+    .sort((a, b) => effectiveDate(b).localeCompare(effectiveDate(a)));
+
+  const total = DATA.length || 1;
+  const pct = Math.round(rolls.length / total * 100);
+  const dates = rolls.map(effectiveDate).filter(Boolean).sort();
+  const since = dates.length ? dates[0].slice(0, 7).replace('-', '.') : '—';
+  const rated = rolls.map(r => Number(r.RATING)).filter(n => Number.isFinite(n) && n > 0);
+  const avgRating = rated.length
+    ? (rated.reduce((sum, n) => sum + n, 0) / rated.length).toFixed(1)
+    : '—';
+
+  document.getElementById('statsModalKicker').textContent = section || '';
+  document.getElementById('statsModalName').textContent = label || raw;
+  document.getElementById('statsModalStrip').innerHTML = `
+    <div class="stats-modal-stat">
+      <div class="stats-modal-stat-num">${rolls.length}</div>
+      <div class="stats-modal-stat-label">Rollos</div>
+    </div>
+    <div class="stats-modal-stat">
+      <div class="stats-modal-stat-num">${pct}%</div>
+      <div class="stats-modal-stat-label">Del archivo</div>
+    </div>
+    <div class="stats-modal-stat">
+      <div class="stats-modal-stat-num" style="font-size:15px;padding-top:4px;">${since}</div>
+      <div class="stats-modal-stat-label">Desde</div>
+    </div>
+    <div class="stats-modal-stat">
+      <div class="stats-modal-stat-num" style="font-size:15px;padding-top:4px;">${avgRating}</div>
+      <div class="stats-modal-stat-label">Rating medio</div>
+    </div>`;
+
+  const list = document.getElementById('statsModalList');
+  if (!rolls.length) {
+    list.innerHTML = '<div class="stats-modal-empty">Sin rollos registrados</div>';
+  } else {
+    list.innerHTML = rolls.map(r => `
+      <div class="stats-modal-row" data-roll-id="${r['#'] || ''}" onclick="closeStatsModal();openModalById(this.dataset.rollId)">
+        <span class="stats-modal-roll-id">${r['#'] || '—'}</span>
+        <div class="stats-modal-roll-main">
+          <div class="stats-modal-roll-name">${r['FILM STOCK'] || '—'} <span style="opacity:.45;font-weight:400;">· ${r['MANUFACTURER'] || ''}</span></div>
+          <div class="stats-modal-roll-meta">${[r['MODEL NAME'], r['LOCATIONS'], fmtRollDate(r)].filter(Boolean).join(' · ')}</div>
+        </div>
+        ${typeBadge(r['FILM TYPE'])}
+        ${miniStars(r['RATING'])}
+      </div>`).join('');
+  }
+
+  document.getElementById('statsModalOverlay').classList.add('open');
+}
+
+function closeStatsModal() {
+  document.getElementById('statsModalOverlay').classList.remove('open');
+}
+
 function formatBadge(f) {
   const meta = formatMeta(f);
   return meta ? `<span class="badge ${meta.badgeClass}">${meta.label}</span>` : (f || '');
