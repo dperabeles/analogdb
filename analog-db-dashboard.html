@@ -2977,6 +2977,247 @@ h1, h2 {
   body.shell-visible .modal-overlay .modal-roll-id { font-size: 22px !important; }
   body.shell-visible .modal-overlay .modal-roll-name { font-size: 14px !important; }
 }
+
+/* ─────────────  F·2 — QUICK ADD ROLL (3-step mobile flow)  ─────────────
+   Mobile-only fast path to register a new roll: Format → Stock → Camera.
+   Reuses emptyRoll(), persistData(), refreshAll(). Independent of the
+   heavy editor (openRollEditor) which remains unchanged for desktop. */
+.qa-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  z-index: 600; /* above modal-overlay (200) and bnav (400) */
+  background: #14110d;
+  flex-direction: column;
+}
+.qa-overlay.open { display: flex; }
+.qa-head {
+  flex: 0 0 auto;
+  padding: 18px 22px 14px;
+  padding-top: calc(18px + env(safe-area-inset-top, 0px));
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(244,237,226,0.07);
+}
+.qa-head-tag {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+  display: flex; align-items: center; gap: 8px;
+}
+.qa-head-tag b {
+  font-family: 'Inter', sans-serif; font-weight: 800;
+  font-size: 11px; color: #d94a2a; letter-spacing: 0.05em;
+}
+.qa-close {
+  font-family: 'DM Mono', monospace; font-size: 18px;
+  color: rgba(232,223,209,0.4);
+  background: none; border: 0; padding: 8px; cursor: pointer; line-height: 1;
+}
+.qa-close:active { color: #f3eadb; }
+.qa-body {
+  flex: 1 1 auto; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 18px 22px 130px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.qa-rid {
+  display: flex; flex-direction: column; gap: 2px; align-items: flex-start;
+  padding-bottom: 14px; border-bottom: 1px solid rgba(244,237,226,0.07);
+}
+.qa-rid-lbl {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+}
+.qa-rid-id {
+  font-family: 'Special Elite', serif;
+  font-size: 40px; color: #f0e6d3;
+  line-height: 1; letter-spacing: 0.01em;
+}
+.qa-rid-id sup {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  color: #d94a2a; letter-spacing: 0.2em;
+  vertical-align: top; margin-left: 6px;
+}
+.qa-steps { display: flex; align-items: center; gap: 6px; }
+.qa-steps-stp { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.qa-steps-bar { height: 2px; background: rgba(244,237,226,0.10); transition: background .2s ease; }
+.qa-steps-stp.on .qa-steps-bar { background: #d94a2a; }
+.qa-steps-ix {
+  font-family: 'DM Mono', monospace; font-size: 8px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(232,223,209,0.28); transition: color .2s ease;
+}
+.qa-steps-stp.on .qa-steps-ix { color: #d94a2a; }
+.qa-q {
+  font-family: 'Inter', sans-serif; font-weight: 700;
+  font-size: 22px; line-height: 1.2;
+  letter-spacing: -0.012em; color: #f3eadb;
+}
+.qa-q em { font-style: normal; color: #d94a2a; }
+.qa-h {
+  font-family: 'DM Mono', monospace; font-size: 9.5px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4); margin-top: -6px;
+}
+.qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.qa-chip {
+  border: 1px solid rgba(244,237,226,0.10);
+  background: #1e1a15;
+  padding: 16px 14px;
+  display: flex; flex-direction: column; gap: 6px;
+  min-height: 74px; justify-content: space-between;
+  cursor: pointer; text-align: left; width: 100%;
+  transition: border-color .14s ease, background .14s ease, transform .12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.qa-chip:active { transform: scale(0.98); }
+.qa-chip-t {
+  font-family: 'Inter', sans-serif; font-weight: 700;
+  font-size: 14px; color: #e8dfd1; letter-spacing: -0.005em;
+}
+.qa-chip-s {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+}
+.qa-chip.sel { border-color: #d94a2a; background: rgba(217,74,42,0.07); }
+.qa-chip.sel .qa-chip-t { color: #f3eadb; }
+.qa-chip.sel .qa-chip-s { color: #d94a2a; }
+.qa-chip-row { display: flex; align-items: center; gap: 8px; }
+.qa-swc { width: 12px; height: 12px; flex: 0 0 12px; display: inline-block; }
+.qa-list { display: flex; flex-direction: column; border: 1px solid rgba(244,237,226,0.10); }
+.qa-list-it {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 14px;
+  border-bottom: 1px solid rgba(244,237,226,0.05);
+  background: #1e1a15;
+  cursor: pointer; width: 100%; text-align: left;
+  transition: background .12s ease, border-color .12s ease;
+  -webkit-tap-highlight-color: transparent;
+  border-left: 0; border-right: 0; border-top: 0;
+}
+.qa-list-it:last-child { border-bottom: 0; }
+.qa-list-it:active { background: rgba(244,237,226,0.04); }
+.qa-list-it .qa-swc { flex: 0 0 12px; }
+.qa-list-it-nm {
+  font-family: 'Inter', sans-serif; font-weight: 600;
+  font-size: 13px; color: #e8dfd1; flex: 1; min-width: 0;
+  letter-spacing: -0.005em;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.qa-list-it-meta {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  color: rgba(232,223,209,0.4);
+  letter-spacing: 0.14em; text-transform: uppercase;
+  flex: 0 0 auto;
+}
+.qa-list-it.sel { background: rgba(217,74,42,0.07); border-left: 2px solid #d94a2a; padding-left: 12px; }
+.qa-list-it.sel .qa-list-it-nm { color: #f3eadb; }
+.qa-list-it.sel .qa-list-it-meta { color: #d94a2a; }
+.qa-search {
+  border: 1px solid rgba(244,237,226,0.10);
+  background: #1e1a15;
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.qa-search-ix {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: #d94a2a; letter-spacing: 0.18em; flex: 0 0 auto;
+}
+.qa-search input {
+  flex: 1; background: none; border: 0; outline: none;
+  color: #f3eadb; font-family: 'Inter', sans-serif;
+  font-size: 14px; letter-spacing: -0.005em; min-width: 0;
+}
+.qa-search input::placeholder {
+  color: rgba(232,223,209,0.4);
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.qa-help {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.12em; color: rgba(232,223,209,0.28); line-height: 1.7;
+}
+.qa-help b { color: #d94a2a; font-weight: 500; }
+.qa-summary {
+  display: flex; flex-direction: column;
+  border: 1px solid rgba(244,237,226,0.10);
+  background: #1e1a15;
+}
+.qa-summary-row {
+  display: grid; grid-template-columns: 100px 1fr; gap: 14px;
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(244,237,226,0.05);
+  align-items: center;
+}
+.qa-summary-row:last-child { border-bottom: none; }
+.qa-summary-l {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+}
+.qa-summary-v {
+  font-family: 'Inter', sans-serif; font-weight: 600;
+  font-size: 14px; color: #f3eadb; letter-spacing: -0.005em;
+  display: flex; align-items: center; gap: 8px;
+}
+.qa-summary-v.empty {
+  color: rgba(232,223,209,0.28); font-weight: 400;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+.qa-cta {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  z-index: 5;
+  display: grid; grid-template-columns: auto 1fr;
+  border-top: 1px solid rgba(244,237,226,0.16);
+  background: rgba(18,16,13,0.96);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.qa-cta-back {
+  padding: 18px 22px;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(232,223,209,0.55);
+  border: 0; border-right: 1px solid rgba(244,237,226,0.10);
+  background: none; cursor: pointer;
+}
+.qa-cta-back:active { color: #f3eadb; }
+.qa-cta-next {
+  padding: 18px;
+  font-family: 'DM Mono', monospace; font-size: 10.5px;
+  font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+  color: #0c0906; background: #d94a2a;
+  border: 0; cursor: pointer; width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.qa-cta-next:active { background: #c03a1a; }
+.qa-cta-next.disabled {
+  background: #1e1a15; color: rgba(232,223,209,0.4); cursor: not-allowed;
+}
+.qa-cta-next-ar {
+  font-family: 'Inter', sans-serif; font-weight: 800; font-size: 14px;
+}
+.qa-toast {
+  position: fixed; left: 22px; right: 22px;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  background: #1e1a15;
+  border: 1px solid #d94a2a; border-left-width: 3px;
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  z-index: 700;
+  animation: fadeUp .26s ease both;
+}
+.qa-toast-ic { font-family: 'Special Elite', serif; color: #d94a2a; font-size: 18px; line-height: 1; }
+.qa-toast-tx {
+  font-family: 'Inter', sans-serif; font-size: 13px; color: #f3eadb;
+  letter-spacing: -0.005em;
+}
+.qa-toast-tx b {
+  font-family: 'Special Elite', serif; color: #f0e6d3;
+  font-weight: 400; letter-spacing: 0.04em;
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -7452,8 +7693,9 @@ function updateLocationCheckbox(id) {
 </script>
 
 <!-- ─────  MOBILE BOTTOM NAV — feat/mobile-v1 PR#1  ─────
-     Visible only below 640px (CSS controlled). Reuses existing goPage()
-     and openRollEditor(null). "Cuenta" toggles the existing mobile sidebar. -->
+     Visible only below 640px (CSS controlled). Reuses existing goPage().
+     FAB calls openQuickAdd() (mobile fast path) which gracefully falls back
+     to openRollEditor(null) on desktop. "Cuenta" toggles existing sidebar. -->
 <nav class="mob-bnav" aria-label="Navegación móvil">
   <div class="mob-bnav-row">
     <button type="button" class="mob-bnav-btn on" data-page="page-dashboard"
@@ -7467,7 +7709,7 @@ function updateLocationCheckbox(id) {
       <span>II</span>
     </button>
     <button type="button" class="mob-bnav-fab-wrap" aria-label="Cargar rollo nuevo"
-            onclick="openRollEditor(null);">
+            onclick="openQuickAdd();">
       <span class="mob-bnav-fab">+</span>
       <span>Nuevo</span>
     </button>
@@ -7492,6 +7734,336 @@ function updateLocationCheckbox(id) {
       document.body.classList.remove('mobile-sidebar-open');
     }
   }
+</script>
+
+<!-- ─────  QUICK ADD ROLL — feat/mobile-v1 PR#2 (F·2)  ───── -->
+<div class="qa-overlay" id="quickAddOverlay" role="dialog" aria-label="Cargar rollo rápido"></div>
+
+<script>
+(function () {
+  // ── FORMAT META (visual only — same swatches used in stats) ────────
+  var QA_FORMAT_META = {
+    '35':           { name: '35mm',         sb: '24/36 exp',  swatch: '#d97150' },
+    '120':          { name: '120',          sb: '12/15 exp',  swatch: '#5a8aad' },
+    'Super8':       { name: 'Super 8',      sb: 'Cine',       swatch: '#c8a048' },
+    '110':          { name: '110',          sb: '24 exp',     swatch: '#b85c00' },
+    '16mm':         { name: '16mm',         sb: 'Cine',       swatch: '#2a7a4a' },
+    'Large Format': { name: 'Large Format', sb: '1 sheet',    swatch: '#7c5cbf' }
+  };
+
+  function qaSwatchForStock(name) {
+    var s = (name || '').toLowerCase();
+    if (s.indexOf('portra') >= 0 || s.indexOf('ektar') >= 0) return '#c8785a';
+    if (s.indexOf('gold') >= 0 || s.indexOf('ultramax') >= 0) return '#d4a050';
+    if (s.indexOf('hp5') >= 0 || s.indexOf('delta') >= 0 || s.indexOf('fp4') >= 0) return '#6a6a6a';
+    if (s.indexOf('velvia') >= 0 || s.indexOf('provia') >= 0 || s.indexOf('fuji') >= 0) return '#5a8a6a';
+    if (s.indexOf('tmax') >= 0 || s.indexOf('tri-x') >= 0 || s.indexOf('400tx') >= 0) return '#505050';
+    if (s.indexOf('cinestill') >= 0) return '#c84848';
+    return '#9c9284';
+  }
+
+  function qaEsc(v) {
+    return String(v == null ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // ── State ───────────────────────────────────────────────────────────
+  var qaState = null; // { step, format, stock, manufacturer, iso, type, camera }
+  var qaSearchValue = '';
+
+  // ── Recent stocks: top 5 by frequency from current DATA ─────────────
+  function qaRecentStocks() {
+    var counts = {};
+    if (typeof DATA !== 'undefined' && Array.isArray(DATA)) {
+      DATA.forEach(function (r) {
+        var name = r['FILM STOCK'];
+        if (!name) return;
+        if (!counts[name]) counts[name] = { name: name, mfr: r['MANUFACTURER'] || '', iso: r['ISO'] || null, type: r['FILM TYPE'] || '', n: 0 };
+        counts[name].n++;
+      });
+    }
+    var arr = Object.values(counts).sort(function (a, b) { return b.n - a.n; }).slice(0, 5);
+    // If user has fewer than 3 distinct stocks, top up with common defaults from FILM_CATALOG
+    if (arr.length < 3 && typeof FILM_CATALOG !== 'undefined') {
+      var defaults = [
+        ['Kodak', 'Portra 400'], ['Kodak', 'Tri-X'], ['Fujifilm', 'Fujifilm 400'],
+        ['Ilford', 'HP5 Plus'], ['Kodak', 'Gold 200']
+      ];
+      defaults.forEach(function (d) {
+        if (arr.length >= 5) return;
+        if (arr.find(function (a) { return a.name === d[1]; })) return;
+        var meta = (FILM_CATALOG[d[0]] || []).find(function (s) { return s[0] === d[1]; });
+        if (meta) arr.push({ name: d[1], mfr: d[0], iso: meta[1], type: meta[2], n: 0 });
+      });
+    }
+    return arr;
+  }
+
+  // ── All stocks flattened from FILM_CATALOG ──────────────────────────
+  function qaAllStocks() {
+    var out = [];
+    if (typeof FILM_CATALOG === 'undefined') return out;
+    Object.keys(FILM_CATALOG).forEach(function (mfr) {
+      FILM_CATALOG[mfr].forEach(function (s) {
+        out.push({ name: s[0], mfr: mfr, iso: s[1], type: s[2] });
+      });
+    });
+    return out;
+  }
+
+  // ── Cameras list ────────────────────────────────────────────────────
+  function qaCameras() {
+    if (typeof CAMERAS_CATALOG !== 'undefined' && Array.isArray(CAMERAS_CATALOG) && CAMERAS_CATALOG.length) {
+      return CAMERAS_CATALOG.slice();
+    }
+    // Fallback: pull unique maker+model pairs from DATA
+    var seen = {};
+    var out = [];
+    if (typeof DATA !== 'undefined') {
+      DATA.forEach(function (r) {
+        var key = (r['MAKER'] || '') + '|' + (r['MODEL NAME'] || '');
+        if (!r['MODEL NAME'] || seen[key]) return;
+        seen[key] = true;
+        out.push({ maker: r['MAKER'] || '', model: r['MODEL NAME'] || '', format: r['C. FORMAT'] || '', type: r['C. TYPE'] || '' });
+      });
+    }
+    return out;
+  }
+
+  // ── Render the current step into the overlay ───────────────────────
+  function qaRender() {
+    var ov = document.getElementById('quickAddOverlay');
+    if (!ov || !qaState) return;
+    var nextRid = (typeof nextRollId === 'function') ? nextRollId() : 'R???';
+
+    var stepBar = function (n, label) {
+      var on = qaState.step >= n;
+      return '<div class="qa-steps-stp ' + (on ? 'on' : '') + '">' +
+        '<div class="qa-steps-bar"></div>' +
+        '<div class="qa-steps-ix">0' + n + ' · ' + label + '</div>' +
+      '</div>';
+    };
+
+    var stepHTML = '';
+    var canNext = false;
+
+    if (qaState.step === 1) {
+      // Format
+      var grid = FILM_FORMAT_OPTIONS.map(function (k) {
+        var meta = QA_FORMAT_META[k] || { name: k, sb: '', swatch: '#9c9284' };
+        var sel = qaState.format === k;
+        return '<button type="button" class="qa-chip ' + (sel ? 'sel' : '') + '" onclick="window._qaSelFormat(\'' + k + '\')">' +
+          '<div class="qa-chip-row"><span class="qa-swc" style="background:' + meta.swatch + '"></span><span class="qa-chip-t">' + qaEsc(meta.name) + '</span></div>' +
+          '<span class="qa-chip-s">' + qaEsc(meta.sb) + '</span>' +
+        '</button>';
+      }).join('');
+      stepHTML = '<div class="qa-q">¿Qué <em>formato</em>?</div>' +
+        '<div class="qa-h">El formato fija las exposiciones máximas</div>' +
+        '<div class="qa-grid">' + grid + '</div>';
+      canNext = !!qaState.format;
+    } else if (qaState.step === 2) {
+      // Stock
+      var recent = qaRecentStocks();
+      var recentHTML = recent.map(function (s) {
+        var sel = qaState.stock === s.name;
+        return '<button type="button" class="qa-list-it ' + (sel ? 'sel' : '') + '" onclick="window._qaSelStock(\'' + qaEsc(s.name).replace(/&#39;/g, "\\'") + '\')">' +
+          '<span class="qa-swc" style="background:' + qaSwatchForStock(s.name) + '"></span>' +
+          '<span class="qa-list-it-nm">' + qaEsc(s.name) + '</span>' +
+          '<span class="qa-list-it-meta">ISO ' + qaEsc(s.iso || '?') + ' · ' + qaEsc(s.type || '') + '</span>' +
+        '</button>';
+      }).join('');
+
+      var searchHTML = '';
+      if (qaSearchValue && qaSearchValue.length > 0) {
+        var q = qaSearchValue.toLowerCase();
+        var matches = qaAllStocks().filter(function (s) {
+          return s.name.toLowerCase().indexOf(q) >= 0 || s.mfr.toLowerCase().indexOf(q) >= 0;
+        }).slice(0, 8);
+        searchHTML = matches.length ? '<div class="qa-list">' + matches.map(function (s) {
+          var sel = qaState.stock === s.name;
+          return '<button type="button" class="qa-list-it ' + (sel ? 'sel' : '') + '" onclick="window._qaSelStock(\'' + qaEsc(s.name).replace(/&#39;/g, "\\'") + '\')">' +
+            '<span class="qa-swc" style="background:' + qaSwatchForStock(s.name) + '"></span>' +
+            '<span class="qa-list-it-nm">' + qaEsc(s.mfr) + ' · ' + qaEsc(s.name) + '</span>' +
+            '<span class="qa-list-it-meta">ISO ' + s.iso + '</span>' +
+          '</button>';
+        }).join('') + '</div>' : '<div class="qa-help"><b>›</b> Sin coincidencias en ' + qaAllStocks().length + ' stocks del catálogo.</div>';
+      }
+
+      stepHTML = '<div class="qa-q">¿Qué <em>película</em> cargaste?</div>' +
+        '<div class="qa-h">Tus stocks más usados · auto-rellena ISO + tipo</div>' +
+        '<div class="qa-list">' + recentHTML + '</div>' +
+        '<div class="qa-search">' +
+          '<span class="qa-search-ix">›</span>' +
+          '<input id="qaSearchInput" type="text" placeholder="Buscar otro stock…" autocomplete="off" oninput="window._qaSearch(this.value)" />' +
+        '</div>' +
+        searchHTML +
+        '<div class="qa-help"><b>›</b> Catálogo completo: ' + qaAllStocks().length + ' películas. Lo nuevo se agrega al vuelo.</div>';
+      canNext = !!qaState.stock;
+    } else if (qaState.step === 3) {
+      // Camera
+      var cams = qaCameras();
+      var camsHTML = cams.length
+        ? cams.map(function (c, i) {
+            var sel = qaState.camera === i;
+            return '<button type="button" class="qa-list-it ' + (sel ? 'sel' : '') + '" onclick="window._qaSelCamera(' + i + ')">' +
+              '<span class="qa-swc" style="background:' + (c.format === '120' ? '#5a8aad' : '#d97150') + '"></span>' +
+              '<span class="qa-list-it-nm">' + qaEsc((c.maker || '') + ' ' + (c.model || '')) + '</span>' +
+              '<span class="qa-list-it-meta">' + qaEsc(c.format || '—') + '</span>' +
+            '</button>';
+          }).join('')
+        : '<div class="qa-help" style="padding:14px;border:1px dashed rgba(244,237,226,0.10)"><b>›</b> No hay cámaras registradas todavía. Se guardará el rollo sin cámara — puedes asignarla después desde el detalle.</div>';
+
+      var fmtMeta = QA_FORMAT_META[qaState.format] || {};
+      var stockSwatch = qaSwatchForStock(qaState.stock);
+      stepHTML = '<div class="qa-q">¿Qué <em>cámara</em>?</div>' +
+        '<div class="qa-h">Puedes cambiarla después desde el detalle</div>' +
+        (cams.length ? '<div class="qa-list">' + camsHTML + '</div>' : camsHTML) +
+        '<div style="height:1px;background:rgba(244,237,226,0.07);margin:6px 0"></div>' +
+        '<div class="qa-h">Resumen</div>' +
+        '<div class="qa-summary">' +
+          '<div class="qa-summary-row"><span class="qa-summary-l">Formato</span><span class="qa-summary-v"><span class="qa-swc" style="background:' + (fmtMeta.swatch || '#9c9284') + '"></span>' + qaEsc(fmtMeta.name || qaState.format) + '</span></div>' +
+          '<div class="qa-summary-row"><span class="qa-summary-l">Stock</span><span class="qa-summary-v"><span class="qa-swc" style="background:' + stockSwatch + '"></span>' + qaEsc(qaState.stock) + '<span style="font-family:DM Mono,monospace;font-size:10px;color:rgba(232,223,209,0.4);letter-spacing:.14em;text-transform:uppercase;margin-left:auto">ISO ' + qaEsc(qaState.iso || '?') + '</span></span></div>' +
+          '<div class="qa-summary-row"><span class="qa-summary-l">Cámara</span><span class="qa-summary-v ' + (qaState.camera == null ? 'empty' : '') + '">' + (qaState.camera == null ? 'Sin asignar' : qaEsc((cams[qaState.camera].maker || '') + ' ' + (cams[qaState.camera].model || ''))) + '</span></div>' +
+        '</div>' +
+        '<div class="qa-help"><b>›</b> Status inicial: <b>EN CÁMARA</b> · Push: 0 · Fecha inicio: hoy. Editable luego desde el detalle.</div>';
+      canNext = true; // camera optional — empty state still allows save
+    }
+
+    var ctaLabel = qaState.step === 3 ? 'Guardar rollo' : 'Continuar';
+
+    ov.innerHTML =
+      '<div class="qa-head">' +
+        '<div class="qa-head-tag"><span>Modo</span><b>RÁPIDO</b><span>· paso 0' + qaState.step + ' / 03</span></div>' +
+        '<button type="button" class="qa-close" onclick="closeQuickAdd()">✕</button>' +
+      '</div>' +
+      '<div class="qa-body">' +
+        '<div class="qa-rid">' +
+          '<span class="qa-rid-lbl">Nuevo rollo</span>' +
+          '<span class="qa-rid-id">' + qaEsc(nextRid) + ' <sup>● BORRADOR</sup></span>' +
+        '</div>' +
+        '<div class="qa-steps">' + stepBar(1, 'Formato') + stepBar(2, 'Stock') + stepBar(3, 'Cámara') + '</div>' +
+        '<div>' + stepHTML + '</div>' +
+      '</div>' +
+      '<div class="qa-cta">' +
+        '<button type="button" class="qa-cta-back" onclick="window._qaBack()">' + (qaState.step === 1 ? '✕ Cancelar' : '‹ Atrás') + '</button>' +
+        '<button type="button" class="qa-cta-next ' + (canNext ? '' : 'disabled') + '" ' + (canNext ? 'onclick="window._qaNext()"' : '') + '>' + ctaLabel + ' <span class="qa-cta-next-ar">→</span></button>' +
+      '</div>';
+
+    // Restore search input focus + value if step 2
+    if (qaState.step === 2 && qaSearchValue) {
+      var inp = document.getElementById('qaSearchInput');
+      if (inp) {
+        inp.value = qaSearchValue;
+        inp.focus();
+        inp.setSelectionRange(qaSearchValue.length, qaSearchValue.length);
+      }
+    }
+  }
+
+  // ── Selectors ───────────────────────────────────────────────────────
+  window._qaSelFormat = function (k) { qaState.format = k; qaRender(); };
+  window._qaSelStock = function (name) {
+    var all = qaAllStocks();
+    var hit = all.find(function (s) { return s.name === name; });
+    if (!hit) {
+      var rec = qaRecentStocks().find(function (s) { return s.name === name; });
+      hit = rec || { name: name, mfr: '', iso: null, type: '' };
+    }
+    qaState.stock = hit.name;
+    qaState.manufacturer = hit.mfr;
+    qaState.iso = hit.iso;
+    qaState.type = hit.type;
+    qaRender();
+  };
+  window._qaSelCamera = function (i) { qaState.camera = i; qaRender(); };
+  window._qaSearch = function (v) { qaSearchValue = v; qaRender(); };
+  window._qaBack = function () {
+    if (qaState.step > 1) { qaState.step--; qaRender(); }
+    else closeQuickAdd();
+  };
+  window._qaNext = function () {
+    if (qaState.step < 3) { qaState.step++; qaSearchValue = ''; qaRender(); return; }
+    qaSave();
+  };
+
+  // ── Save ────────────────────────────────────────────────────────────
+  function qaSave() {
+    if (typeof emptyRoll !== 'function' || typeof persistData !== 'function') {
+      alert('No se puede guardar: dependencias no disponibles.');
+      return;
+    }
+    var rec = emptyRoll();
+    var fmtNum = (qaState.format === 'Super8') ? 8 :
+                 (qaState.format === '16mm') ? 16 :
+                 (qaState.format === 'Large Format') ? 45 :
+                 (qaState.format === '110') ? 110 :
+                 (qaState.format === '120') ? 120 : 35;
+    rec['FORMAT'] = fmtNum;
+    rec['FILM STOCK'] = qaState.stock;
+    rec['MANUFACTURER'] = qaState.manufacturer || '';
+    rec['ISO'] = qaState.iso != null ? Number(qaState.iso) : null;
+    rec['ISO @'] = qaState.iso != null ? Number(qaState.iso) : null;
+    rec['FILM TYPE'] = qaState.type || 'COLOR';
+
+    var cams = qaCameras();
+    if (qaState.camera != null && cams[qaState.camera]) {
+      var c = cams[qaState.camera];
+      rec['MAKER'] = c.maker || '';
+      rec['MODEL NAME'] = c.model || '';
+      rec['C. FORMAT'] = c.format || '';
+      rec['C. TYPE'] = c.type || '';
+    }
+
+    rec['STARTED'] = new Date().toISOString().slice(0, 10);
+    rec['STATUS'] = 'In Camera';
+    rec['PUSH/PULL'] = '0';
+
+    if (typeof DATA !== 'undefined') DATA.unshift(rec);
+    persistData(rec);
+    if (typeof refreshAll === 'function') refreshAll();
+
+    closeQuickAdd(true);
+    qaToast(rec['#'], qaState.stock);
+  }
+
+  function qaToast(rid, stock) {
+    var ex = document.querySelector('.qa-toast');
+    if (ex) ex.remove();
+    var t = document.createElement('div');
+    t.className = 'qa-toast';
+    t.innerHTML = '<span class="qa-toast-ic">✓</span><span class="qa-toast-tx"><b>' + qaEsc(rid) + '</b> · ' + qaEsc(stock) + ' cargado en cámara</span>';
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 2600);
+  }
+
+  // ── Public API ──────────────────────────────────────────────────────
+  window.openQuickAdd = function () {
+    // On viewports >= 641px, route to the heavy editor instead. The FAB
+    // only renders below 640px in CSS, but desktop users could still call
+    // openQuickAdd() programmatically — fall back gracefully.
+    if (window.matchMedia && window.matchMedia('(min-width: 641px)').matches) {
+      if (typeof openRollEditor === 'function') return openRollEditor(null);
+    }
+    qaState = { step: 1, format: null, stock: null, manufacturer: '', iso: null, type: '', camera: null };
+    qaSearchValue = '';
+    var ov = document.getElementById('quickAddOverlay');
+    if (ov) ov.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    qaRender();
+  };
+
+  window.closeQuickAdd = function (skipConfirm) {
+    if (!skipConfirm && qaState && (qaState.format || qaState.stock)) {
+      if (!confirm('¿Descartar el rollo en progreso?')) return;
+    }
+    qaState = null;
+    qaSearchValue = '';
+    var ov = document.getElementById('quickAddOverlay');
+    if (ov) { ov.classList.remove('open'); ov.innerHTML = ''; }
+    document.body.style.overflow = '';
+  };
+})();
 </script>
 </body>
 </html>
