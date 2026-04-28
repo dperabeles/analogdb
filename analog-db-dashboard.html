@@ -2803,6 +2803,14 @@ h1, h2 {
 }
 .mob-bnav-btn.on { color: #d94a2a; }
 .mob-bnav-btn.on .mob-bnav-glyph { color: #d94a2a; }
+/* Editorial roman-numeral indicator under each tab — Inter 800, not mono */
+.mob-bnav-btn .mob-bnav-num {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 800; font-size: 9px;
+  letter-spacing: 0.04em; line-height: 1;
+  color: rgba(232,223,209,0.4);
+}
+.mob-bnav-btn.on .mob-bnav-num { color: #d94a2a; }
 .mob-bnav-btn.on::before {
   content: ""; position: absolute; top: 0; left: 50%;
   transform: translateX(-50%);
@@ -3272,6 +3280,30 @@ h1, h2 {
   font-family: 'Inter', sans-serif; font-weight: 700;
   font-size: 11px; color: #f0e6d3; letter-spacing: 0;
 }
+/* Empty placeholder slot in topbar — reserved for theme toggle (light mode) */
+.mob-shell-top-slot {
+  width: 24px; height: 24px;
+  border: 1px dashed rgba(244,237,226,0.10);
+  background: transparent;
+}
+
+/* Admin takeover: when the user taps "Panel admin" from the Cuenta tab, the
+   mobile shell hides and the existing desktop admin page (#page-admin) shows
+   full-bleed. Tapping any bnav button clears the takeover via _mobNav. */
+@media (max-width: 640px) {
+  body.shell-visible.mob-admin-takeover .mob-app { display: none !important; }
+  body.shell-visible.mob-admin-takeover .page#page-admin {
+    display: block !important;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+  body.shell-visible.mob-admin-takeover #page-admin .page-inner {
+    padding: 18px 18px 40px !important;
+    padding-top: calc(18px + env(safe-area-inset-top, 0px)) !important;
+  }
+  body.shell-visible.mob-admin-takeover #page-admin .ed-page-header-title { font-size: 28px !important; }
+  /* The bnav remains visible during takeover — tapping any tab clears it
+     and routes back to that tab via _mobNav. No extra back button needed. */
+}
 
 /* ── view container ── */
 .mob-view {
@@ -3405,7 +3437,7 @@ h1, h2 {
 .mob-roll .row1 { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 .mob-roll .rid {
   font-family: 'Special Elite', serif; font-size: 18px;
-  color: #f0e6d3; letter-spacing: 0.02em; flex: 0 0 auto;
+  color: #d94a2a; letter-spacing: 0.02em; flex: 0 0 auto;
 }
 .mob-roll .stk {
   font-family: 'Inter', sans-serif; font-weight: 600;
@@ -8035,12 +8067,12 @@ function updateLocationCheckbox(id) {
     <button type="button" class="mob-bnav-btn on" data-page="dashboard"
             onclick="_mobNav('dashboard')">
       <span class="mob-bnav-glyph">Dash</span>
-      <span>I</span>
+      <span class="mob-bnav-num">I</span>
     </button>
     <button type="button" class="mob-bnav-btn" data-page="database"
             onclick="_mobNav('database')">
-      <span class="mob-bnav-glyph">Tabla</span>
-      <span>II</span>
+      <span class="mob-bnav-glyph">Data</span>
+      <span class="mob-bnav-num">II</span>
     </button>
     <button type="button" class="mob-bnav-fab-wrap" aria-label="Cargar rollo nuevo"
             onclick="openQuickAdd();">
@@ -8050,12 +8082,12 @@ function updateLocationCheckbox(id) {
     <button type="button" class="mob-bnav-btn" data-page="stats"
             onclick="_mobNav('stats')">
       <span class="mob-bnav-glyph">Stats</span>
-      <span>III</span>
+      <span class="mob-bnav-num">III</span>
     </button>
     <button type="button" class="mob-bnav-btn" data-page="__account"
             onclick="_mobNav('__account')">
       <span class="mob-bnav-glyph">Cuenta</span>
-      <span>·</span>
+      <span class="mob-bnav-num">X</span>
     </button>
   </div>
 </nav>
@@ -8064,6 +8096,10 @@ function updateLocationCheckbox(id) {
   // viewport. On desktop we still call goPage() (which expects the suffix).
   function _mobNav(key) {
     var onMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+    // Clear any admin takeover so the bnav tabs always return to the mobile shell
+    if (document.body.classList.contains('mob-admin-takeover')) {
+      document.body.classList.remove('mob-admin-takeover');
+    }
     if (onMobile && typeof window._mobApp !== 'undefined') {
       try { window._mobApp.render(key); } catch (e) { console.error('mobApp render failed:', e); }
       _mobBnavSync(key);
@@ -8522,13 +8558,12 @@ function updateLocationCheckbox(id) {
   }
 
   // ── shell topbar ───────────────────────────────────────────────────
-  // Avatar only — name is redundant here since the Cuenta tab carries identity.
+  // The right-hand slot is a placeholder for the future theme toggle (light
+  // mode pending). Identity already lives in the Cuenta tab.
   function renderTop(view) {
     return '<div class="mob-shell-top">' +
       '<div class="brand"><span class="b1">Analog</span><span class="b2">Archive</span></div>' +
-      '<div class="mob-shell-top-acct" aria-label="Cuenta">' +
-        '<div class="acct-av">' + esc(userInitial()) + '</div>' +
-      '</div>' +
+      '<div class="mob-shell-top-slot" aria-label="Tema (próximamente)" title="Tema (próximamente)"></div>' +
     '</div>';
   }
 
@@ -8571,7 +8606,7 @@ function updateLocationCheckbox(id) {
           '<div class="ksub">Crónica del archivo · ' + dateLabel + '</div>' +
         '</div>' +
         '<div class="mob-kpi">' +
-          '<div><div class="l">Rollos</div><div class="v">' + total + ' <sup>TOTAL</sup></div></div>' +
+          '<div><div class="l">Rollos en archivo</div><div class="v">' + total + '</div></div>' +
           '<div><div class="l">En cámara</div><div class="v">' + inCam + '</div></div>' +
           '<div><div class="l">Por revelar</div><div class="v">' + toDev + '</div></div>' +
           '<div><div class="l">Stocks</div><div class="v">' + stocks + '</div></div>' +
@@ -8752,7 +8787,7 @@ function updateLocationCheckbox(id) {
       '<div class="mob-view" id="mobView">' +
         '<div class="mob-edhead">' +
           '<div class="knum">III.</div>' +
-          '<div class="ktitle">El archivo, <em>en cifras</em>.</div>' +
+          '<div class="ktitle">Tu film, <em>en cifras</em>.</div>' +
           '<div class="ksub">Lectura editorial · ' + data.length + ' rollos catalogados</div>' +
         '</div>' +
         '<div class="mob-kpi">' +
@@ -8770,25 +8805,47 @@ function updateLocationCheckbox(id) {
 
   // ── ACCOUNT ────────────────────────────────────────────────────────
   function renderAccount() {
+    var amAdmin = (typeof isAdmin === 'function') ? !!isAdmin() : false;
+    var statusLabel = amAdmin ? 'Founder · Approved' : 'Approved';
+    var adminSection = amAdmin
+      ? '<div class="mob-subhead"><span class="n">II.</span><span class="t">Administración</span></div>' +
+        '<div>' +
+          '<div class="mob-acpending" onclick="_mobApp.openAdmin()">' +
+            '<div class="ct">›</div>' +
+            '<div class="col">' +
+              '<span class="lb">Panel de admin</span>' +
+              '<span class="nm">Pendientes · roles · votaciones abiertas</span>' +
+            '</div>' +
+            '<span class="ar">›</span>' +
+          '</div>' +
+          '<div class="mob-acrow" onclick="_mobApp.openAdmin()">' +
+            '<div class="col"><span class="lb">Acciones admin</span><span class="vl warn">Aprobar usuarios y votar cambios</span></div>' +
+            '<span class="ar">›</span>' +
+          '</div>' +
+        '</div>'
+      : '';
+
     return renderTop('account') +
       '<div class="mob-view" id="mobView">' +
         '<div class="mob-edhead">' +
-          '<div class="knum">·</div>' +
+          '<div class="knum">X.</div>' +
           '<div class="ktitle">Cuenta.</div>' +
-          '<div class="ksub">Identidad · sesión · administración</div>' +
+          '<div class="ksub">Identidad · ' + (amAdmin ? 'administración · ' : '') + 'sesión</div>' +
         '</div>' +
         '<div class="mob-achero">' +
           '<div class="mob-acav">' + esc(userInitial()) + '</div>' +
           '<div class="mob-acname">' + esc(userName()) + '</div>' +
           '<div class="mob-acemail">' + esc(userEmail()) + '</div>' +
-          '<div class="mob-acstatus"><span class="dt"></span>Approved</div>' +
+          '<div class="mob-acstatus"><span class="dt"></span>' + esc(statusLabel) + '</div>' +
         '</div>' +
         '<div class="mob-subhead"><span class="n">I.</span><span class="t">Identidad</span></div>' +
         '<div>' +
           '<div class="mob-acrow"><div class="col"><span class="lb">Display name</span><span class="vl">' + esc(userName()) + '</span></div><span class="ar">·</span></div>' +
           '<div class="mob-acrow"><div class="col"><span class="lb">Correo</span><span class="vl">' + esc(userEmail()) + '</span></div><span class="ar">·</span></div>' +
+          (amAdmin ? '<div class="mob-acrow"><div class="col"><span class="lb">Rol</span><span class="vl warn">Admin · Founder</span></div><span class="ar">·</span></div>' : '') +
         '</div>' +
-        '<div class="mob-subhead"><span class="n">II.</span><span class="t">Sesión</span></div>' +
+        adminSection +
+        '<div class="mob-subhead"><span class="n">' + (amAdmin ? 'III.' : 'II.') + '</span><span class="t">Sesión</span></div>' +
         '<div>' +
           '<div class="mob-acrow"><div class="col"><span class="lb">App</span><span class="vl">Analog Archive · v1.0 beta</span></div><span class="ar">·</span></div>' +
           '<div class="mob-acrow danger" onclick="_mobApp.signOut()"><div class="col"><span class="lb">Sesión</span><span class="vl">↳ Cerrar sesión</span></div><span class="ar">›</span></div>' +
@@ -8871,6 +8928,21 @@ function updateLocationCheckbox(id) {
     signOut: function () {
       if (typeof handleSignOut === 'function') handleSignOut(new Event('click'));
       else if (window.confirm('¿Cerrar sesión?')) location.reload();
+    },
+    // Hand control to the existing desktop admin page within the mobile shell.
+    // Sets a body class so the mobile shell hides and #page-admin shows.
+    // Tapping any bnav tab clears the takeover via _mobNav.
+    openAdmin: function () {
+      if (typeof ensureAdminPage === 'function') ensureAdminPage();
+      if (typeof goPage === 'function') {
+        try { goPage('admin'); } catch (e) { console.error('goPage(admin) failed:', e); }
+      }
+      document.body.classList.add('mob-admin-takeover');
+      window.scrollTo(0, 0);
+    },
+    closeAdmin: function () {
+      document.body.classList.remove('mob-admin-takeover');
+      render(STATE.view || 'account');
     }
   };
 
