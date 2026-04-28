@@ -3218,6 +3218,332 @@ h1, h2 {
   font-family: 'Special Elite', serif; color: #f0e6d3;
   font-weight: 400; letter-spacing: 0.04em;
 }
+
+/* ═════════════════════════════════════════════════════════════════════
+   MOBILE APP SHELL — feat/mobile-v1 PR#3 (aesthetic redo)
+   Below 640px and once the user is logged in, the app renders a parallel
+   editorial layout that mirrors DESIGN-SYSTEM.md. The desktop pages are
+   hidden; mob-app takes over with its own topbar, view container, and
+   internal page state. All data flows from the same DATA + helpers.
+   ═════════════════════════════════════════════════════════════════════ */
+.mob-app { display: none; }
+
+@media (max-width: 640px) {
+  body.shell-visible .page { display: none !important; }
+  body.shell-visible .topbar { display: none !important; }
+  body.shell-visible .main { padding: 0 !important; margin: 0 !important; width: 100% !important; }
+  body.shell-visible .mob-app {
+    display: flex; flex-direction: column;
+    min-height: 100vh; min-height: 100dvh;
+    background: #14110d;
+  }
+}
+
+/* ── shell topbar ── */
+.mob-shell-top {
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px 14px;
+  padding-top: calc(14px + env(safe-area-inset-top, 0px));
+  border-bottom: 1px solid rgba(244,237,226,0.05);
+  background: #14110d;
+  position: sticky; top: 0; z-index: 10;
+}
+.mob-shell-top .brand { display: flex; align-items: baseline; gap: 8px; }
+.mob-shell-top .brand .b1 {
+  font-family: 'Inter', sans-serif; font-weight: 800; font-size: 14px;
+  letter-spacing: -0.01em; color: #f3eadb;
+}
+.mob-shell-top .brand .b2 {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.24em; text-transform: uppercase; color: #d94a2a;
+}
+.mob-shell-top .acct {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+}
+.mob-shell-top .acct-av {
+  width: 24px; height: 24px;
+  background: #1e1a15; border: 1px solid rgba(244,237,226,0.10);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Inter', sans-serif; font-weight: 700;
+  font-size: 11px; color: #f0e6d3; letter-spacing: 0;
+}
+
+/* ── view container ── */
+.mob-view {
+  flex: 1 1 auto;
+  padding: 18px 22px calc(110px + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; gap: 22px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  animation: mobFade .22s ease both;
+}
+@keyframes mobFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── editorial section heads ── */
+.mob-edhead { display: flex; flex-direction: column; gap: 4px; padding-top: 6px; }
+.mob-edhead .knum {
+  font-family: 'Inter', sans-serif; font-weight: 800;
+  font-size: 42px; line-height: 0.9; color: #d94a2a;
+  letter-spacing: -0.02em;
+}
+.mob-edhead .ktitle {
+  font-family: 'Inter', sans-serif; font-weight: 700;
+  font-size: 24px; color: #f3eadb;
+  line-height: 1.15; letter-spacing: -0.015em; margin-top: 4px;
+}
+.mob-edhead .ktitle em { font-style: normal; color: #d94a2a; }
+.mob-edhead .ksub {
+  font-family: 'DM Mono', monospace; font-size: 9.5px;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4); margin-top: 8px;
+}
+
+/* ── KPI 2x2 ── */
+.mob-kpi {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border: 1px solid rgba(244,237,226,0.10);
+  background: #1e1a15;
+}
+.mob-kpi > div {
+  padding: 14px 16px;
+  border-right: 1px solid rgba(244,237,226,0.05);
+  border-bottom: 1px solid rgba(244,237,226,0.05);
+}
+.mob-kpi > div:nth-child(2n) { border-right: none; }
+.mob-kpi > div:nth-last-child(-n+2) { border-bottom: none; }
+.mob-kpi .l {
+  font-family: 'DM Mono', monospace; font-size: 8.5px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+}
+.mob-kpi .v {
+  font-family: 'Inter', sans-serif; font-weight: 800;
+  font-size: 24px; color: #f0e6d3;
+  letter-spacing: -0.02em; margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.mob-kpi .v sup {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  color: rgba(232,223,209,0.4); font-weight: 400;
+  margin-left: 4px; letter-spacing: 0.1em; vertical-align: top;
+}
+
+/* ── status tabs (3-col) ── */
+.mob-status-tabs {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border: 1px solid rgba(244,237,226,0.10);
+  background: #1e1a15;
+}
+.mob-status-tabs button {
+  padding: 11px 8px; text-align: center;
+  border: 0; border-right: 1px solid rgba(244,237,226,0.05);
+  background: none;
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+  position: relative; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+.mob-status-tabs button:last-child { border-right: 0; }
+.mob-status-tabs button .c {
+  font-family: 'Inter', sans-serif; font-weight: 800;
+  font-size: 18px; color: #f0e6d3;
+  letter-spacing: -0.02em; font-variant-numeric: tabular-nums;
+}
+.mob-status-tabs button.on { color: #f3eadb; }
+.mob-status-tabs button.on .c { color: #f3eadb; }
+.mob-status-tabs button.on::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 2px; background: #d94a2a;
+}
+.mob-status-tabs button:active { background: rgba(244,237,226,0.03); }
+
+/* ── subhead ── */
+.mob-subhead {
+  display: flex; align-items: baseline; gap: 10px;
+  padding-bottom: 8px; border-bottom: 1px solid rgba(244,237,226,0.05);
+}
+.mob-subhead .n {
+  font-family: 'Inter', sans-serif; font-weight: 800;
+  font-size: 18px; color: #d94a2a;
+  letter-spacing: -0.02em; line-height: 1;
+}
+.mob-subhead .t {
+  font-family: 'Inter', sans-serif; font-weight: 700;
+  font-size: 13px; color: #f3eadb; letter-spacing: -0.005em;
+}
+.mob-subhead .a {
+  margin-left: auto;
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+}
+
+/* ── roll cards ── */
+.mob-rolls { display: flex; flex-direction: column; gap: 10px; }
+.mob-roll {
+  border: 1px solid rgba(244,237,226,0.10);
+  background: #1e1a15;
+  padding: 14px 14px 12px;
+  display: flex; flex-direction: column; gap: 10px;
+  position: relative; cursor: pointer;
+  transition: border-color .16s ease, transform .12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.mob-roll:active { border-color: rgba(244,237,226,0.16); transform: scale(0.99); }
+.mob-roll .row1 { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.mob-roll .rid {
+  font-family: 'Special Elite', serif; font-size: 18px;
+  color: #f0e6d3; letter-spacing: 0.02em; flex: 0 0 auto;
+}
+.mob-roll .stk {
+  font-family: 'Inter', sans-serif; font-weight: 600;
+  font-size: 13px; color: #e8dfd1; letter-spacing: -0.005em;
+  flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mob-roll .badge {
+  font-family: 'DM Mono', monospace; font-size: 8.5px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 3px 7px; border: 1px solid rgba(244,237,226,0.16);
+  color: rgba(232,223,209,0.4); flex: 0 0 auto;
+}
+.mob-roll .badge.live { color: #d94a2a; border-color: rgba(217,74,42,0.4); }
+.mob-roll .row2 {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: rgba(232,223,209,0.55); letter-spacing: 0.04em;
+}
+.mob-swc { width: 10px; height: 10px; display: inline-block; flex: 0 0 10px; }
+.mob-roll .row3 {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  color: rgba(232,223,209,0.28); letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding-top: 6px; border-top: 1px dashed rgba(244,237,226,0.05);
+}
+.mob-roll .row3 .lens { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mob-roll .stars { color: #d9a050; font-size: 11px; letter-spacing: 0.06em; }
+
+/* ── table view (mob) ── */
+.mob-search {
+  display: flex; align-items: center; gap: 10px;
+  border: 1px solid rgba(244,237,226,0.10); background: #1e1a15;
+  padding: 11px 14px;
+}
+.mob-search .ix {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: #d94a2a; letter-spacing: 0.18em; flex: 0 0 auto;
+}
+.mob-search input {
+  flex: 1; background: none; border: 0; outline: none;
+  color: #f3eadb;
+  font-family: 'Inter', sans-serif; font-size: 13.5px; letter-spacing: -0.005em;
+  min-width: 0;
+}
+.mob-search input::placeholder {
+  color: rgba(232,223,209,0.4);
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.mob-pills-wrap { margin: 0 -22px; padding: 0 22px; }
+.mob-pills { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
+.mob-pills::-webkit-scrollbar { display: none; }
+.mob-pills button {
+  flex: 0 0 auto;
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  padding: 9px 13px;
+  border: 1px solid rgba(244,237,226,0.10);
+  background: #1e1a15; color: rgba(232,223,209,0.4);
+  cursor: pointer; white-space: nowrap; min-height: 32px;
+  -webkit-tap-highlight-color: transparent;
+}
+.mob-pills button.on { background: #d94a2a; color: #0c0906; border-color: #d94a2a; font-weight: 500; }
+.mob-meta {
+  display: flex; align-items: baseline; justify-content: space-between;
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+  padding: 6px 0; border-bottom: 1px solid rgba(244,237,226,0.05);
+}
+.mob-meta .c {
+  color: #f0e6d3;
+  font-family: 'Inter', sans-serif; font-weight: 600;
+  font-size: 12px; letter-spacing: -0.005em; text-transform: none;
+}
+
+/* ── stats view (mob) ── */
+.mob-stbar { display: grid; grid-template-columns: 14px 1fr 36px; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(244,237,226,0.05); }
+.mob-stbar:last-child { border-bottom: 0; }
+.mob-stbar .col2 { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mob-stbar .nm { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; color: #e8dfd1; letter-spacing: -0.005em; }
+.mob-stbar .meter { height: 3px; background: rgba(244,237,226,0.06); position: relative; }
+.mob-stbar .fl { position: absolute; left: 0; top: 0; height: 100%; background: #d94a2a; transition: width .4s ease; }
+.mob-stbar .ct { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 16px; color: #f0e6d3; letter-spacing: -0.02em; text-align: right; font-variant-numeric: tabular-nums; }
+
+.mob-strank { display: grid; grid-template-columns: 24px 14px 1fr 36px; gap: 10px; align-items: center; padding: 13px 0; border-bottom: 1px solid rgba(244,237,226,0.05); }
+.mob-strank:last-child { border-bottom: 0; }
+.mob-strank .rk { font-family: 'DM Mono', monospace; font-size: 10px; color: #d94a2a; letter-spacing: 0.16em; font-weight: 500; }
+.mob-strank .col { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.mob-strank .nm { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px; color: #e8dfd1; letter-spacing: -0.005em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mob-strank .sb { font-family: 'DM Mono', monospace; font-size: 8.5px; color: rgba(232,223,209,0.4); letter-spacing: 0.18em; text-transform: uppercase; }
+.mob-strank .meter { height: 3px; background: rgba(244,237,226,0.06); position: relative; }
+.mob-strank .fl { position: absolute; left: 0; top: 0; height: 100%; background: #d94a2a; transition: width .4s ease; }
+.mob-strank .ct { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 16px; color: #f0e6d3; letter-spacing: -0.02em; text-align: right; font-variant-numeric: tabular-nums; }
+
+.mob-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.mob-tag { font-family: 'DM Mono', monospace; font-size: 10px; color: #e8dfd1; border: 1px solid rgba(244,237,226,0.10); padding: 6px 10px; background: #1e1a15; letter-spacing: 0.06em; display: flex; align-items: center; gap: 8px; }
+.mob-tag .h { color: #d94a2a; font-weight: 500; }
+.mob-tag .ct { color: #f0e6d3; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 11px; }
+
+/* ── account view (mob) ── */
+.mob-achero { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 14px 0 22px; border-bottom: 1px solid rgba(244,237,226,0.07); }
+.mob-acav {
+  width: 84px; height: 84px;
+  border: 1px solid rgba(244,237,226,0.16); background: #1e1a15;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Inter', sans-serif; font-weight: 800; font-size: 36px;
+  color: #f0e6d3; letter-spacing: -0.02em;
+}
+.mob-acname { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 22px; color: #f3eadb; letter-spacing: -0.012em; margin-top: 4px; }
+.mob-acemail { font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(232,223,209,0.55); letter-spacing: 0.06em; }
+.mob-acstatus {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.24em; text-transform: uppercase; color: #d94a2a;
+  border: 1px solid rgba(217,74,42,0.4); padding: 6px 11px; margin-top: 4px;
+}
+.mob-acstatus .dt { width: 6px; height: 6px; border-radius: 50%; background: #d94a2a; box-shadow: 0 0 0 0 rgba(217,74,42,0.5); animation: gatePulse 2.8s ease-in-out infinite; }
+@keyframes gatePulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(217,74,42,0.5); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 6px rgba(217,74,42,0); }
+}
+.mob-acrow { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center; padding: 15px 2px; border-bottom: 1px solid rgba(244,237,226,0.05); cursor: pointer; transition: background .12s ease; -webkit-tap-highlight-color: transparent; }
+.mob-acrow:last-child { border-bottom: 0; }
+.mob-acrow:active { background: rgba(244,237,226,0.03); }
+.mob-acrow .col { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mob-acrow .lb { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(232,223,209,0.4); }
+.mob-acrow .vl { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 14px; color: #e8dfd1; letter-spacing: -0.005em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mob-acrow .vl.warn { color: #d94a2a; }
+.mob-acrow .ar { font-family: 'Inter', sans-serif; font-weight: 300; font-size: 18px; color: rgba(232,223,209,0.28); }
+.mob-acrow.danger .vl { color: #ff9c82; }
+
+.mob-empty {
+  border: 1px dashed rgba(244,237,226,0.10);
+  padding: 32px 18px; text-align: center;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(232,223,209,0.28);
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -3567,6 +3893,11 @@ h1, h2 {
       </div>
     </div>
   </div>
+
+  <!-- ════════════════════ MOBILE APP SHELL — feat/mobile-v1 PR#3 ════════════════════
+       Below 640px and once authenticated, this overlay takes over the entire
+       main column. Filled by _mobApp.render() in the script at end of body. -->
+  <div class="mob-app" id="mobApp" aria-label="Vista móvil"></div>
 </main>
 
 <!-- ════════════ ADD CAMERA MODAL ════════════ -->
@@ -7726,8 +8057,16 @@ function updateLocationCheckbox(id) {
   </div>
 </nav>
 <script>
-  // goPage() accepts the suffix only ("dashboard" → looks up "page-dashboard").
+  // On mobile (<640px) the desktop pages are hidden and _mobApp owns the
+  // viewport. On desktop we still call goPage() (which expects the suffix).
   function _mobNav(key) {
+    var onMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+    if (onMobile && typeof window._mobApp !== 'undefined') {
+      try { window._mobApp.render(key); } catch (e) { console.error('mobApp render failed:', e); }
+      _mobBnavSync(key);
+      return;
+    }
+    // Desktop fallback (rare — the bnav is hidden but defensive)
     if (key === '__account') {
       document.body.classList.toggle('mobile-sidebar-open');
       return;
@@ -8076,5 +8415,491 @@ function updateLocationCheckbox(id) {
   };
 })();
 </script>
+
+<!-- ═══════════════ MOBILE APP RENDERERS — feat/mobile-v1 PR#3 ═══════════════
+     Editorial parallel renderer that mirrors mobile-prototype.html. Reads from
+     the live DATA array, hooks into refreshAll(), and reuses openModal() for
+     roll details. Only active below 640px; desktop is untouched. -->
+<script>
+(function () {
+  var STATE = { view: 'dashboard', filter: 'In Camera' };
+
+  // ── helpers ────────────────────────────────────────────────────────
+  function esc(v) {
+    return String(v == null ? '' : v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function isMobile() {
+    return window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+  }
+  function fmtSwatch(fmt) {
+    var meta = (typeof formatMeta === 'function') ? formatMeta(fmt) : null;
+    return meta && meta.color ? meta.color : '#9c9284';
+  }
+  function fmtLabel(fmt) {
+    var meta = (typeof formatMeta === 'function') ? formatMeta(fmt) : null;
+    return meta ? meta.label : (fmt == null ? '—' : String(fmt));
+  }
+  function stockSwatch(name) {
+    var s = (name || '').toLowerCase();
+    if (s.indexOf('portra') >= 0 || s.indexOf('ektar') >= 0) return '#c8785a';
+    if (s.indexOf('gold') >= 0 || s.indexOf('ultramax') >= 0) return '#d4a050';
+    if (s.indexOf('hp5') >= 0 || s.indexOf('delta') >= 0 || s.indexOf('fp4') >= 0) return '#6a6a6a';
+    if (s.indexOf('velvia') >= 0 || s.indexOf('provia') >= 0 || s.indexOf('fuji') >= 0) return '#5a8a6a';
+    if (s.indexOf('tmax') >= 0 || s.indexOf('tri-x') >= 0 || s.indexOf('400tx') >= 0) return '#505050';
+    if (s.indexOf('cinestill') >= 0) return '#c84848';
+    return '#9c9284';
+  }
+  var STATUS_LABEL = {
+    'In Camera':       'En cámara',
+    'To Develop':      'Por revelar',
+    'In Development':  'En lab',
+    'Developed':       'Revelado'
+  };
+  function countByStatus(s) {
+    if (typeof DATA === 'undefined') return 0;
+    return DATA.filter(function (r) { return r.STATUS === s; }).length;
+  }
+  function rollsBy(filter) {
+    if (typeof DATA === 'undefined') return [];
+    return DATA.filter(function (r) { return r.STATUS === filter; });
+  }
+  function userInitial() {
+    var el = document.getElementById('accountAvatarInitial');
+    return (el && el.textContent && el.textContent.trim()[0]) || 'D';
+  }
+  function userName() {
+    var el = document.getElementById('accountDisplayName');
+    return (el && el.textContent.trim()) || 'Diego';
+  }
+  function userEmail() {
+    var el = document.getElementById('accountSecondary');
+    return (el && el.textContent.trim()) || '';
+  }
+
+  // ── roll card (used by dashboard & table) ──────────────────────────
+  function renderRollCard(r) {
+    var stk = r['FILM STOCK'] || '—';
+    var fmt = r['FORMAT'];
+    var iso = r['ISO'] != null ? r['ISO'] : (r['ISO @'] != null ? r['ISO @'] : '?');
+    var exp = r['EXP'] || r['# EXP'] || '?';
+    var maxExp = r['EXP'] || '?';
+    var maker = r['MAKER'] || '';
+    var model = r['MODEL NAME'] || '';
+    var lens  = r['LENS'] || '';
+    var rating = parseInt(r['RATING'], 10) || 0;
+    var status = r['STATUS'] || 'In Camera';
+    var push = r['PUSH/PULL'] || '0';
+    var stars = rating > 0 ? '★'.repeat(rating) + '☆'.repeat(5 - rating) : '— —';
+    var badge = (status === 'In Camera')
+      ? '<span class="badge live">● ' + STATUS_LABEL[status] + '</span>'
+      : '<span class="badge">' + (STATUS_LABEL[status] || status) + '</span>';
+    var camLine = (maker + ' ' + model).trim() + (lens ? ' · ' + lens : '');
+    var pushChip = (push && push !== '0') ? '<span>·</span><span>push ' + esc(push) + '</span>' : '';
+    var expChip  = exp ? '<span>·</span><span>' + esc(exp) + (maxExp && maxExp !== exp ? '/' + esc(maxExp) : '') + '</span>' : '';
+    return '<div class="mob-roll" onclick="_mobApp.openRoll(\'' + esc(r['#']).replace(/'/g, "\\'") + '\')">' +
+      '<div class="row1">' +
+        '<span class="rid">' + esc(r['#']) + '</span>' +
+        '<span class="stk">' + esc(stk) + '</span>' +
+        badge +
+      '</div>' +
+      '<div class="row2">' +
+        '<span class="mob-swc" style="background:' + fmtSwatch(fmt) + '"></span>' +
+        '<span>' + esc(fmtLabel(fmt)) + '</span>' +
+        '<span>·</span><span>ISO ' + esc(iso) + '</span>' +
+        expChip +
+        pushChip +
+      '</div>' +
+      '<div class="row3">' +
+        '<span class="lens">' + esc(camLine || '—') + '</span>' +
+        '<span class="stars">' + stars + '</span>' +
+      '</div>' +
+    '</div>';
+  }
+
+  // ── shell topbar ───────────────────────────────────────────────────
+  function renderTop(view) {
+    return '<div class="mob-shell-top">' +
+      '<div class="brand"><span class="b1">Analog</span><span class="b2">Archive</span></div>' +
+      '<div class="acct">' +
+        '<div class="acct-av">' + esc(userInitial()) + '</div>' +
+        '<span>' + esc(userName().split(' ')[0]) + '</span>' +
+      '</div>' +
+    '</div>';
+  }
+
+  // ── DASHBOARD ──────────────────────────────────────────────────────
+  function renderDash() {
+    var total = (typeof DATA !== 'undefined') ? DATA.length : 0;
+    var inCam = countByStatus('In Camera');
+    var toDev = countByStatus('To Develop');
+    var stocks = (typeof DATA !== 'undefined')
+      ? new Set(DATA.map(function (r) { return r['FILM STOCK']; }).filter(Boolean)).size
+      : 0;
+    var filtered = rollsBy(STATE.filter);
+    var developed = (typeof DATA !== 'undefined')
+      ? DATA.filter(function (r) { return r.STATUS === 'Developed'; })
+            .sort(function (a, b) {
+              return String(b.FINISHED || b.STARTED || '').localeCompare(String(a.FINISHED || a.STARTED || ''));
+            })[0]
+      : null;
+
+    var tab = function (key) {
+      var on = STATE.filter === key;
+      return '<button class="' + (on ? 'on' : '') + '" onclick="_mobApp.setFilter(\'' + key + '\')">' +
+        '<span>' + STATUS_LABEL[key] + '</span>' +
+        '<span class="c">' + countByStatus(key) + '</span>' +
+      '</button>';
+    };
+
+    var rolls = filtered.length
+      ? filtered.map(renderRollCard).join('')
+      : '<div class="mob-empty">Sin rollos en esta sección</div>';
+
+    var dateLabel = new Date().toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+    return renderTop('dashboard') +
+      '<div class="mob-view" id="mobView">' +
+        '<div class="mob-edhead">' +
+          '<div class="knum">I.</div>' +
+          '<div class="ktitle">Tu carrete, <em>en curso</em>.</div>' +
+          '<div class="ksub">Crónica del archivo · ' + dateLabel + '</div>' +
+        '</div>' +
+        '<div class="mob-kpi">' +
+          '<div><div class="l">Rollos</div><div class="v">' + total + ' <sup>TOTAL</sup></div></div>' +
+          '<div><div class="l">En cámara</div><div class="v">' + inCam + '</div></div>' +
+          '<div><div class="l">Por revelar</div><div class="v">' + toDev + '</div></div>' +
+          '<div><div class="l">Stocks</div><div class="v">' + stocks + '</div></div>' +
+        '</div>' +
+        '<div class="mob-status-tabs">' +
+          tab('In Camera') + tab('To Develop') + tab('In Development') +
+        '</div>' +
+        '<div class="mob-subhead">' +
+          '<span class="n">II.</span><span class="t">' + STATUS_LABEL[STATE.filter] + '</span>' +
+          '<span class="a">' + filtered.length + ' ' + (filtered.length === 1 ? 'rollo' : 'rollos') + '</span>' +
+        '</div>' +
+        '<div class="mob-rolls">' + rolls + '</div>' +
+        (developed ? (
+          '<div class="mob-subhead"><span class="n">III.</span><span class="t">Última revelada</span></div>' +
+          renderRollCard(developed)
+        ) : '') +
+      '</div>';
+  }
+
+  // ── TABLE ──────────────────────────────────────────────────────────
+  var TBL = { search: '', filter: 'all', sort: 'id-desc' };
+
+  function applyTblFilters(list) {
+    if (TBL.search) {
+      var q = TBL.search.toLowerCase();
+      list = list.filter(function (r) {
+        return String(r['#'] || '').toLowerCase().indexOf(q) >= 0
+            || String(r['FILM STOCK'] || '').toLowerCase().indexOf(q) >= 0
+            || String(r['MAKER'] || '').toLowerCase().indexOf(q) >= 0
+            || String(r['MODEL NAME'] || '').toLowerCase().indexOf(q) >= 0
+            || String(r['TAGS'] || '').toLowerCase().indexOf(q) >= 0;
+      });
+    }
+    if (TBL.filter !== 'all') {
+      if (TBL.filter === 'color') list = list.filter(function (r) { return r['FILM TYPE'] === 'COLOR'; });
+      else if (TBL.filter === 'bw') list = list.filter(function (r) { return r['FILM TYPE'] === 'B/W'; });
+      else if (TBL.filter === 'push') list = list.filter(function (r) { return (r['PUSH/PULL'] || '0') !== '0'; });
+      else if (TBL.filter === 'rated') list = list.filter(function (r) { return parseInt(r['RATING'], 10) > 0; });
+      else {
+        var key = TBL.filter; // '35', '120', etc.
+        list = list.filter(function (r) {
+          var meta = (typeof formatMeta === 'function') ? formatMeta(r['FORMAT']) : null;
+          return meta && meta.label === ({ '35': '35mm', '120': '120', 'Super8': 'Super8' }[key] || key);
+        });
+      }
+    }
+    if (TBL.sort === 'id-desc') list.sort(function (a, b) { return String(b['#']).localeCompare(String(a['#'])); });
+    else if (TBL.sort === 'id-asc') list.sort(function (a, b) { return String(a['#']).localeCompare(String(b['#'])); });
+    else if (TBL.sort === 'rating') list.sort(function (a, b) { return (parseInt(b['RATING'], 10) || 0) - (parseInt(a['RATING'], 10) || 0); });
+    return list;
+  }
+
+  function renderTbl() {
+    var all = (typeof DATA !== 'undefined') ? DATA.slice() : [];
+    var list = applyTblFilters(all);
+    var SORT_LABEL = { 'id-desc': 'Recientes', 'id-asc': 'Antiguos', 'rating': 'Mejor calificados' };
+
+    var pill = function (id, lbl) {
+      return '<button class="' + (TBL.filter === id ? 'on' : '') + '" onclick="_mobApp.setTblFilter(\'' + id + '\')">' + lbl + '</button>';
+    };
+
+    var clearBtn = TBL.search
+      ? '<button onclick="_mobApp.setTblSearch(\'\')" style="font-family:DM Mono,monospace;font-size:14px;color:rgba(232,223,209,0.4);background:none;border:0;cursor:pointer;padding:0 2px">✕</button>'
+      : '';
+
+    return renderTop('database') +
+      '<div class="mob-view" id="mobView">' +
+        '<div class="mob-edhead">' +
+          '<div class="knum">II.</div>' +
+          '<div class="ktitle">El archivo, <em>completo</em>.</div>' +
+          '<div class="ksub">' + all.length + ' rollos · todos los estados</div>' +
+        '</div>' +
+        '<div class="mob-search">' +
+          '<span class="ix">›</span>' +
+          '<input id="mobTblSearch" type="text" placeholder="Buscar por ID, stock, cámara o tag…" value="' + esc(TBL.search) + '" autocomplete="off" oninput="_mobApp.setTblSearch(this.value, true)" />' +
+          clearBtn +
+        '</div>' +
+        '<div class="mob-pills-wrap"><div class="mob-pills">' +
+          pill('all', 'Todos') +
+          pill('35', '35mm') +
+          pill('120', '120') +
+          pill('color', 'Color') +
+          pill('bw', 'B/W') +
+          pill('push', 'Push/Pull') +
+          pill('rated', 'Calificados') +
+        '</div></div>' +
+        '<div class="mob-meta">' +
+          '<span class="c">' + list.length + ' de ' + all.length + '</span>' +
+          '<button class="sort" style="background:none;border:0;cursor:pointer" onclick="_mobApp.cycleTblSort()">' +
+            '<span style="font-family:Inter,sans-serif;font-size:12px;font-weight:500;color:#e8dfd1">' + SORT_LABEL[TBL.sort] + '</span> ' +
+            '<span style="color:#d94a2a;font-family:Inter,sans-serif;font-weight:800">↻</span>' +
+          '</button>' +
+        '</div>' +
+        '<div class="mob-rolls">' +
+          (list.length ? list.map(renderRollCard).join('') : '<div class="mob-empty">Sin coincidencias</div>') +
+        '</div>' +
+      '</div>';
+  }
+
+  // ── STATS ──────────────────────────────────────────────────────────
+  function renderStatsView() {
+    var data = (typeof DATA !== 'undefined') ? DATA : [];
+    var byFmt = {}, byStock = {}, byCam = {}, byTag = {};
+    data.forEach(function (r) {
+      var fk = r['FORMAT'];
+      if (fk != null && fk !== '') byFmt[fk] = (byFmt[fk] || 0) + 1;
+      if (r['FILM STOCK']) byStock[r['FILM STOCK']] = (byStock[r['FILM STOCK']] || 0) + 1;
+      var cam = ((r['MAKER'] || '') + ' ' + (r['MODEL NAME'] || '')).trim();
+      if (cam) byCam[cam] = (byCam[cam] || 0) + 1;
+      var tags = String(r['TAGS'] || '').split(/[,;|]/).map(function (t) { return t.trim().replace(/^#/, ''); }).filter(Boolean);
+      tags.forEach(function (t) { byTag[t] = (byTag[t] || 0) + 1; });
+    });
+
+    var fmtMax = Math.max.apply(null, Object.values(byFmt).concat([1]));
+    var stockMax = Math.max.apply(null, Object.values(byStock).concat([1]));
+    var camMax = Math.max.apply(null, Object.values(byCam).concat([1]));
+
+    var fmtList = Object.entries(byFmt).sort(function (a, b) { return b[1] - a[1]; });
+    var stockList = Object.entries(byStock).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 5);
+    var camList = Object.entries(byCam).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 5);
+    var tagList = Object.entries(byTag).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 10);
+
+    var color = data.filter(function (r) { return r['FILM TYPE'] === 'COLOR'; }).length;
+    var bw    = data.filter(function (r) { return r['FILM TYPE'] === 'B/W'; }).length;
+    var push  = data.filter(function (r) { return (r['PUSH/PULL'] || '0') !== '0'; }).length;
+    var rated = data.filter(function (r) { return parseInt(r['RATING'], 10) > 0; }).length;
+
+    var fmtSection = fmtList.map(function (entry) {
+      var fk = entry[0], n = entry[1];
+      return '<div class="mob-stbar">' +
+        '<span class="mob-swc" style="background:' + fmtSwatch(fk) + '"></span>' +
+        '<div class="col2">' +
+          '<span class="nm">' + esc(fmtLabel(fk)) + '</span>' +
+          '<div class="meter"><div class="fl" style="width:' + ((n / fmtMax) * 100) + '%"></div></div>' +
+        '</div>' +
+        '<span class="ct">' + n + '</span>' +
+      '</div>';
+    }).join('');
+
+    var stockSection = stockList.map(function (entry, i) {
+      var name = entry[0], n = entry[1];
+      return '<div class="mob-strank">' +
+        '<span class="rk">0' + (i + 1) + '</span>' +
+        '<span class="mob-swc" style="background:' + stockSwatch(name) + '"></span>' +
+        '<div class="col">' +
+          '<span class="nm">' + esc(name) + '</span>' +
+          '<span class="sb">' + esc(n + (n === 1 ? ' rollo' : ' rollos')) + '</span>' +
+          '<div class="meter"><div class="fl" style="width:' + ((n / stockMax) * 100) + '%"></div></div>' +
+        '</div>' +
+        '<span class="ct">' + n + '</span>' +
+      '</div>';
+    }).join('');
+
+    var camSection = camList.map(function (entry, i) {
+      var name = entry[0], n = entry[1];
+      return '<div class="mob-strank">' +
+        '<span class="rk">0' + (i + 1) + '</span>' +
+        '<span class="mob-swc" style="background:#7c5cbf"></span>' +
+        '<div class="col">' +
+          '<span class="nm">' + esc(name) + '</span>' +
+          '<span class="sb">' + esc(n + (n === 1 ? ' rollo' : ' rollos')) + '</span>' +
+          '<div class="meter"><div class="fl" style="width:' + ((n / camMax) * 100) + '%"></div></div>' +
+        '</div>' +
+        '<span class="ct">' + n + '</span>' +
+      '</div>';
+    }).join('');
+
+    var tagSection = tagList.length
+      ? '<div class="mob-tags">' + tagList.map(function (e) {
+          return '<span class="mob-tag"><span class="h">#</span>' + esc(e[0]) + '<span class="ct">' + e[1] + '</span></span>';
+        }).join('') + '</div>'
+      : '';
+
+    return renderTop('stats') +
+      '<div class="mob-view" id="mobView">' +
+        '<div class="mob-edhead">' +
+          '<div class="knum">III.</div>' +
+          '<div class="ktitle">El archivo, <em>en cifras</em>.</div>' +
+          '<div class="ksub">Lectura editorial · ' + data.length + ' rollos catalogados</div>' +
+        '</div>' +
+        '<div class="mob-kpi">' +
+          '<div><div class="l">Total</div><div class="v">' + data.length + '</div></div>' +
+          '<div><div class="l">Color</div><div class="v">' + color + '</div></div>' +
+          '<div><div class="l">B/W</div><div class="v">' + bw + '</div></div>' +
+          '<div><div class="l">Push/Pull</div><div class="v">' + push + '</div></div>' +
+        '</div>' +
+        (fmtList.length ? '<div class="mob-subhead"><span class="n">I.</span><span class="t">Por formato</span><span class="a">' + fmtList.length + ' usados</span></div><div>' + fmtSection + '</div>' : '') +
+        (stockList.length ? '<div class="mob-subhead"><span class="n">II.</span><span class="t">Stocks favoritos</span><span class="a">Top ' + stockList.length + '</span></div><div>' + stockSection + '</div>' : '') +
+        (camList.length ? '<div class="mob-subhead"><span class="n">III.</span><span class="t">Cámaras</span><span class="a">Top ' + camList.length + '</span></div><div>' + camSection + '</div>' : '') +
+        (tagList.length ? '<div class="mob-subhead"><span class="n">IV.</span><span class="t">Tags</span><span class="a">' + Object.keys(byTag).length + ' en total</span></div>' + tagSection : '') +
+      '</div>';
+  }
+
+  // ── ACCOUNT ────────────────────────────────────────────────────────
+  function renderAccount() {
+    return renderTop('account') +
+      '<div class="mob-view" id="mobView">' +
+        '<div class="mob-edhead">' +
+          '<div class="knum">·</div>' +
+          '<div class="ktitle">Cuenta.</div>' +
+          '<div class="ksub">Identidad · sesión · administración</div>' +
+        '</div>' +
+        '<div class="mob-achero">' +
+          '<div class="mob-acav">' + esc(userInitial()) + '</div>' +
+          '<div class="mob-acname">' + esc(userName()) + '</div>' +
+          '<div class="mob-acemail">' + esc(userEmail()) + '</div>' +
+          '<div class="mob-acstatus"><span class="dt"></span>Approved</div>' +
+        '</div>' +
+        '<div class="mob-subhead"><span class="n">I.</span><span class="t">Identidad</span></div>' +
+        '<div>' +
+          '<div class="mob-acrow"><div class="col"><span class="lb">Display name</span><span class="vl">' + esc(userName()) + '</span></div><span class="ar">·</span></div>' +
+          '<div class="mob-acrow"><div class="col"><span class="lb">Correo</span><span class="vl">' + esc(userEmail()) + '</span></div><span class="ar">·</span></div>' +
+        '</div>' +
+        '<div class="mob-subhead"><span class="n">II.</span><span class="t">Sesión</span></div>' +
+        '<div>' +
+          '<div class="mob-acrow"><div class="col"><span class="lb">App</span><span class="vl">Analog Archive · v1.0 beta</span></div><span class="ar">·</span></div>' +
+          '<div class="mob-acrow danger" onclick="_mobApp.signOut()"><div class="col"><span class="lb">Sesión</span><span class="vl">↳ Cerrar sesión</span></div><span class="ar">›</span></div>' +
+        '</div>' +
+      '</div>';
+  }
+
+  // ── render entry ───────────────────────────────────────────────────
+  function render(view) {
+    if (view) STATE.view = view;
+    var root = document.getElementById('mobApp');
+    if (!root) return;
+    var html;
+    switch (STATE.view) {
+      case 'database':  html = renderTbl();        break;
+      case 'stats':     html = renderStatsView();  break;
+      case '__account':
+      case 'account':   html = renderAccount();    break;
+      case 'dashboard':
+      default:          html = renderDash();       break;
+    }
+    root.innerHTML = html;
+    var viewEl = root.querySelector('#mobView');
+    if (viewEl) viewEl.scrollTop = 0;
+    // Keep the bottom nav active state in sync regardless of caller
+    if (typeof window._mobBnavSync === 'function') {
+      var navKey = STATE.view === 'account' ? '__account' : STATE.view;
+      window._mobBnavSync(navKey);
+    }
+
+    // Restore search input focus + caret if the table was being typed in
+    if (STATE.view === 'database' && TBL.search) {
+      var inp = document.getElementById('mobTblSearch');
+      if (inp && document.activeElement !== inp) {
+        inp.focus();
+        var len = inp.value.length;
+        try { inp.setSelectionRange(len, len); } catch (e) { /* no-op */ }
+      }
+    }
+  }
+
+  // ── Public API ─────────────────────────────────────────────────────
+  window._mobApp = {
+    render: render,
+    refresh: function () { if (isMobile()) render(); },
+    setFilter: function (s) { STATE.filter = s; render(); },
+    openRoll: function (rid) {
+      if (typeof DATA === 'undefined') return;
+      var r = DATA.find(function (x) { return x['#'] === rid; });
+      if (!r) return;
+      // openModal is the read-first detail view; falls back to editor if absent
+      if (typeof openModal === 'function') openModal(r);
+      else if (typeof openRollEditor === 'function') openRollEditor(r);
+    },
+    setTblSearch: function (q, preserveFocus) {
+      TBL.search = q;
+      // While typing, only re-render the list portion to keep focus stable
+      if (preserveFocus) {
+        var root = document.getElementById('mobApp');
+        var rolls = root && root.querySelector('.mob-rolls');
+        var meta  = root && root.querySelector('.mob-meta .c');
+        if (rolls && meta) {
+          var list = applyTblFilters((typeof DATA !== 'undefined') ? DATA.slice() : []);
+          var all = (typeof DATA !== 'undefined') ? DATA.length : 0;
+          rolls.innerHTML = list.length
+            ? list.map(renderRollCard).join('')
+            : '<div class="mob-empty">Sin coincidencias</div>';
+          meta.textContent = list.length + ' de ' + all;
+          return;
+        }
+      }
+      render();
+    },
+    setTblFilter: function (f) { TBL.filter = f; render(); },
+    cycleTblSort: function () {
+      var order = ['id-desc', 'id-asc', 'rating'];
+      TBL.sort = order[(order.indexOf(TBL.sort) + 1) % order.length];
+      render();
+    },
+    signOut: function () {
+      if (typeof handleSignOut === 'function') handleSignOut(new Event('click'));
+      else if (window.confirm('¿Cerrar sesión?')) location.reload();
+    }
+  };
+
+  // ── hook into the existing refresh cycle ───────────────────────────
+  // We don't monkey-patch refreshAll (it's a function declaration, can't
+  // be replaced reliably). Instead, we observe DATA via a periodic shallow
+  // check on the shell-visible body. Lightweight: just compares length+first ID.
+  var lastSig = '';
+  function tick() {
+    if (!isMobile() || !document.body.classList.contains('shell-visible')) return;
+    var sig = (typeof DATA !== 'undefined')
+      ? (DATA.length + '|' + (DATA[0] ? DATA[0]['#'] : '') + '|' + (DATA[0] ? DATA[0]['STATUS'] : ''))
+      : '';
+    if (sig !== lastSig) {
+      lastSig = sig;
+      render();
+    }
+  }
+  setInterval(tick, 800);
+  // Also kick a render when shell becomes visible (login completes)
+  var observer = new MutationObserver(function () {
+    if (isMobile() && document.body.classList.contains('shell-visible')) {
+      var root = document.getElementById('mobApp');
+      if (root && !root.firstChild) render();
+    }
+  });
+  observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+  // First paint if already mounted
+  if (document.readyState !== 'loading') {
+    setTimeout(function () { if (isMobile()) render(); }, 0);
+  } else {
+    document.addEventListener('DOMContentLoaded', function () { if (isMobile()) render(); });
+  }
+})();
+</script>
+
 </body>
 </html>
