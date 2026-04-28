@@ -3057,7 +3057,8 @@ h1, h2 {
 .qa-h {
   font-family: 'DM Mono', monospace; font-size: 9.5px;
   letter-spacing: 0.18em; text-transform: uppercase;
-  color: rgba(232,223,209,0.4); margin-top: -6px;
+  color: rgba(232,223,209,0.4);
+  margin-top: 10px; margin-bottom: 4px; line-height: 1.55;
 }
 .qa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .qa-chip {
@@ -3328,11 +3329,13 @@ h1, h2 {
   font-size: 24px; color: #f0e6d3;
   letter-spacing: -0.02em; margin-top: 6px;
   font-variant-numeric: tabular-nums;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
 }
 .mob-kpi .v sup {
-  font-family: 'DM Mono', monospace; font-size: 9px;
+  font-family: 'DM Mono', monospace; font-size: 8.5px;
   color: rgba(232,223,209,0.4); font-weight: 400;
-  margin-left: 4px; letter-spacing: 0.1em; vertical-align: top;
+  letter-spacing: 0.18em; vertical-align: baseline;
+  margin-left: 0; line-height: 1;
 }
 
 /* ── status tabs (3-col) ── */
@@ -8519,12 +8522,12 @@ function updateLocationCheckbox(id) {
   }
 
   // ── shell topbar ───────────────────────────────────────────────────
+  // Avatar only — name is redundant here since the Cuenta tab carries identity.
   function renderTop(view) {
     return '<div class="mob-shell-top">' +
       '<div class="brand"><span class="b1">Analog</span><span class="b2">Archive</span></div>' +
-      '<div class="acct">' +
+      '<div class="mob-shell-top-acct" aria-label="Cuenta">' +
         '<div class="acct-av">' + esc(userInitial()) + '</div>' +
-        '<span>' + esc(userName().split(' ')[0]) + '</span>' +
       '</div>' +
     '</div>';
   }
@@ -8538,12 +8541,13 @@ function updateLocationCheckbox(id) {
       ? new Set(DATA.map(function (r) { return r['FILM STOCK']; }).filter(Boolean)).size
       : 0;
     var filtered = rollsBy(STATE.filter);
-    var developed = (typeof DATA !== 'undefined')
+    var lastDeveloped = (typeof DATA !== 'undefined')
       ? DATA.filter(function (r) { return r.STATUS === 'Developed'; })
             .sort(function (a, b) {
               return String(b.FINISHED || b.STARTED || '').localeCompare(String(a.FINISHED || a.STARTED || ''));
-            })[0]
-      : null;
+            })
+            .slice(0, 3)
+      : [];
 
     var tab = function (key) {
       var on = STATE.filter === key;
@@ -8563,7 +8567,7 @@ function updateLocationCheckbox(id) {
       '<div class="mob-view" id="mobView">' +
         '<div class="mob-edhead">' +
           '<div class="knum">I.</div>' +
-          '<div class="ktitle">Tu carrete, <em>en curso</em>.</div>' +
+          '<div class="ktitle">Tu film, <em>en curso</em>.</div>' +
           '<div class="ksub">Crónica del archivo · ' + dateLabel + '</div>' +
         '</div>' +
         '<div class="mob-kpi">' +
@@ -8580,9 +8584,12 @@ function updateLocationCheckbox(id) {
           '<span class="a">' + filtered.length + ' ' + (filtered.length === 1 ? 'rollo' : 'rollos') + '</span>' +
         '</div>' +
         '<div class="mob-rolls">' + rolls + '</div>' +
-        (developed ? (
-          '<div class="mob-subhead"><span class="n">III.</span><span class="t">Última revelada</span></div>' +
-          renderRollCard(developed)
+        (lastDeveloped.length ? (
+          '<div class="mob-subhead">' +
+            '<span class="n">III.</span><span class="t">Últimos revelados</span>' +
+            '<span class="a">' + lastDeveloped.length + ' ' + (lastDeveloped.length === 1 ? 'rollo' : 'rollos') + '</span>' +
+          '</div>' +
+          '<div class="mob-rolls">' + lastDeveloped.map(renderRollCard).join('') + '</div>'
         ) : '') +
       '</div>';
   }
