@@ -2770,11 +2770,15 @@ h1, h2 {
   position: fixed;
   left: 0; right: 0; bottom: 0;
   z-index: 400;
-  background: rgba(18, 16, 13, 0.94);
+  background: rgba(18, 16, 13, 0.96);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-top: 1px solid rgba(244, 237, 226, 0.16);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* Soft elevation above the floor so the bnav reads as a distinct surface */
+  box-shadow: 0 -8px 24px -12px rgba(0, 0, 0, 0.6);
+  /* Cap safe-area padding so it never adds more than 18px — keeps the nav
+     compact even on phones with a tall home indicator */
+  padding-bottom: min(env(safe-area-inset-bottom, 0px), 18px);
 }
 .mob-bnav-row {
   display: grid;
@@ -2782,15 +2786,16 @@ h1, h2 {
 }
 .mob-bnav-btn {
   background: none; border: 0; cursor: pointer;
-  padding: 12px 4px 14px;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 4px 10px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 5px;
   font-family: 'DM Mono', monospace;
   font-size: 8.5px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: rgba(232, 223, 209, 0.4);
   position: relative;
-  min-height: 54px;
+  min-height: 56px;
   -webkit-tap-highlight-color: transparent;
 }
 .mob-bnav-btn .mob-bnav-glyph {
