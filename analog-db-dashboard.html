@@ -7698,13 +7698,13 @@ function updateLocationCheckbox(id) {
      to openRollEditor(null) on desktop. "Cuenta" toggles existing sidebar. -->
 <nav class="mob-bnav" aria-label="Navegación móvil">
   <div class="mob-bnav-row">
-    <button type="button" class="mob-bnav-btn on" data-page="page-dashboard"
-            onclick="goPage('page-dashboard'); _mobBnavSync('page-dashboard');">
+    <button type="button" class="mob-bnav-btn on" data-page="dashboard"
+            onclick="_mobNav('dashboard')">
       <span class="mob-bnav-glyph">Dash</span>
       <span>I</span>
     </button>
-    <button type="button" class="mob-bnav-btn" data-page="page-database"
-            onclick="goPage('page-database'); _mobBnavSync('page-database');">
+    <button type="button" class="mob-bnav-btn" data-page="database"
+            onclick="_mobNav('database')">
       <span class="mob-bnav-glyph">Tabla</span>
       <span>II</span>
     </button>
@@ -7713,22 +7713,33 @@ function updateLocationCheckbox(id) {
       <span class="mob-bnav-fab">+</span>
       <span>Nuevo</span>
     </button>
-    <button type="button" class="mob-bnav-btn" data-page="page-stats"
-            onclick="goPage('page-stats'); _mobBnavSync('page-stats');">
+    <button type="button" class="mob-bnav-btn" data-page="stats"
+            onclick="_mobNav('stats')">
       <span class="mob-bnav-glyph">Stats</span>
       <span>III</span>
     </button>
     <button type="button" class="mob-bnav-btn" data-page="__account"
-            onclick="document.body.classList.toggle('mobile-sidebar-open');">
+            onclick="_mobNav('__account')">
       <span class="mob-bnav-glyph">Cuenta</span>
       <span>·</span>
     </button>
   </div>
 </nav>
 <script>
-  function _mobBnavSync(pageId) {
+  // goPage() accepts the suffix only ("dashboard" → looks up "page-dashboard").
+  function _mobNav(key) {
+    if (key === '__account') {
+      document.body.classList.toggle('mobile-sidebar-open');
+      return;
+    }
+    if (typeof goPage === 'function') {
+      try { goPage(key); } catch (e) { console.error('goPage failed:', e); }
+    }
+    _mobBnavSync(key);
+  }
+  function _mobBnavSync(pageKey) {
     document.querySelectorAll('.mob-bnav .mob-bnav-btn').forEach(function (b) {
-      b.classList.toggle('on', b.getAttribute('data-page') === pageId);
+      b.classList.toggle('on', b.getAttribute('data-page') === pageKey);
     });
     if (document.body.classList.contains('mobile-sidebar-open')) {
       document.body.classList.remove('mobile-sidebar-open');
