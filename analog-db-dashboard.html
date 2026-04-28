@@ -2838,6 +2838,145 @@ h1, h2 {
   /* clearance so bottom content isn't covered by the fixed nav */
   body.shell-visible .main { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* ─────────────  F·3 — DASHBOARD MOBILE RESPONSIVE  ─────────────
+   Stacks the 3-column Kanban vertically, drops index grid to single
+   column, scales editorial typography down, and reduces page padding.
+   All scoped to body.shell-visible to avoid touching the public gate. */
+@media (max-width: 640px) {
+  body.shell-visible .ed-page-inner { padding: 18px 18px 40px !important; }
+  body.shell-visible .page-inner    { padding: 18px 18px 40px !important; }
+
+  /* Masthead — stack the title row, scale headline */
+  body.shell-visible .ed-mast-main { flex-direction: column; align-items: flex-start; gap: 16px; }
+  body.shell-visible .ed-masthead h1 { font-size: 34px !important; line-height: 1.05 !important; }
+  body.shell-visible #edMastheadDate { display: none; }
+
+  /* Section heads */
+  body.shell-visible .ed-section-head { gap: 12px; padding-bottom: 8px; }
+  body.shell-visible .ed-section-num  { font-size: 30px !important; }
+  body.shell-visible .ed-section-title { font-size: 19px !important; }
+  body.shell-visible .ed-section-sub   { font-size: 10px !important; }
+
+  /* Index — 2 columns become 1 */
+  body.shell-visible .ed-index-grid { grid-template-columns: 1fr !important; gap: 22px !important; }
+
+  /* Kanban — 3 cols stack vertically; columns get bottom border instead of right */
+  body.shell-visible .ed-workflow { grid-template-columns: 1fr !important; }
+  body.shell-visible .ed-workflow-col {
+    padding: 14px 0 18px !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(244,237,226,0.08) !important;
+  }
+  body.shell-visible .ed-workflow-col:last-child { border-bottom: none !important; }
+
+  /* Crónica reciente — single column on mobile */
+  body.shell-visible .ed-recent-grid { column-count: 1 !important; }
+
+  /* Topbar density */
+  body.shell-visible .topbar { padding: 0 12px !important; }
+
+  /* Hide desktop "+ Cargar rollo nuevo" header CTA — FAB takes its place */
+  body.shell-visible .ed-mast-main > div:last-child { display: none !important; }
+}
+
+/* ─────────────  F·5 — STATS, TIMELINE, CAMERAS PAGE HEADERS  ─────────────
+   Stats grid is already auto-fill responsive; this just scales page headers
+   and tightens density. Bar labels lose fixed width to flex naturally. */
+@media (max-width: 640px) {
+  body.shell-visible .ed-page-header-title { font-size: 28px !important; }
+  body.shell-visible .ed-page-header-kicker { font-size: 9px !important; letter-spacing: 0.2em !important; }
+  body.shell-visible .ed-page-header-sub { font-size: 11px !important; }
+  body.shell-visible .stat-card { padding: 14px !important; }
+  body.shell-visible .bar-lbl { width: auto !important; flex: 1; min-width: 0; font-size: 11px !important; }
+  body.shell-visible .bar-num { font-size: 11px !important; }
+  body.shell-visible .pill-circle { width: 48px !important; height: 48px !important; font-size: 14px !important; }
+}
+
+/* ─────────────  F·4 — TABLE → MOBILE CARD LIST  ─────────────
+   Pure CSS reflow: hide all columns except #, Rollo, Formato, ISO and turn
+   each row into a stacked block. Tapping a row opens the existing detail
+   modal which carries the full data. Filters bar wraps and goes full-width. */
+@media (max-width: 640px) {
+  body.shell-visible #page-database .filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  body.shell-visible #page-database .filters-bar .search-box,
+  body.shell-visible #page-database .filters-bar .filter-select,
+  body.shell-visible #page-database .filters-bar .btn-primary {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+  body.shell-visible #page-database .filter-count { padding: 4px 0; }
+
+  /* Reduce table density and hide non-essential columns */
+  body.shell-visible #page-database .table-card { border: none !important; }
+  body.shell-visible #page-database .table-scroll { overflow-x: visible !important; }
+  body.shell-visible #page-database table { width: 100% !important; }
+  body.shell-visible #page-database th,
+  body.shell-visible #page-database td {
+    padding: 10px 8px !important;
+    font-size: 12px !important;
+  }
+  /* Show columns 1 (#), 2 (Rollo), 4 (Formato), 6 (ISO) — hide the rest.
+     Users tap a row to see all fields in the detail modal. */
+  body.shell-visible #page-database th:nth-child(3),
+  body.shell-visible #page-database td:nth-child(3),
+  body.shell-visible #page-database th:nth-child(5),
+  body.shell-visible #page-database td:nth-child(5),
+  body.shell-visible #page-database th:nth-child(n+7),
+  body.shell-visible #page-database td:nth-child(n+7) {
+    display: none !important;
+  }
+  body.shell-visible #page-database th:first-child,
+  body.shell-visible #page-database td:first-child { padding-left: 4px !important; }
+}
+
+/* ─────────────  F·6 — MODAL FULL-SCREEN ON MOBILE  ─────────────
+   Detail and editor modals become full-viewport sheets. The editor's
+   action row sticks to the bottom for thumb-reach. */
+@media (max-width: 640px) {
+  body.shell-visible .modal-overlay { padding: 0 !important; align-items: stretch !important; }
+  body.shell-visible .modal-overlay > .modal,
+  body.shell-visible .modal-overlay .modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 100vh !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+  body.shell-visible .modal-overlay .modal-head {
+    padding: 18px 18px 16px !important;
+    flex: 0 0 auto !important;
+    padding-top: calc(18px + env(safe-area-inset-top, 0px)) !important;
+  }
+  body.shell-visible .modal-overlay .modal-body {
+    flex: 1 1 auto !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  body.shell-visible .modal-overlay .editor-actions {
+    position: sticky !important;
+    bottom: 0 !important;
+    background: rgba(28,22,18,0.96) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    z-index: 5;
+    padding: 14px 18px calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  body.shell-visible .modal-overlay .modal-roll-id { font-size: 22px !important; }
+  body.shell-visible .modal-overlay .modal-roll-name { font-size: 14px !important; }
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
