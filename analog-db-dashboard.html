@@ -9318,9 +9318,19 @@ function updateLocationCheckbox(id) {
     var techRows = [];
     // Camera: model only, maker omitted (review feedback 2026-04-28).
     // The maker often duplicates the model brand prefix and adds noise.
+    // Lens always pairs with camera — render even when empty so the slot
+    // is visible and the user can spot rolls missing the field.
     var cameraModel = String(r['MODEL NAME'] || '').trim();
-    if (cameraModel) techRows.push({ l: 'Cámara', v: cameraModel });
-    if (r.LENS) techRows.push({ l: 'Lente', v: r.LENS });
+    if (cameraModel) {
+      techRows.push({ l: 'Cámara', v: cameraModel });
+      var lensVal = r.LENS && String(r.LENS).trim()
+        ? esc(r.LENS)
+        : '<span style="color:rgba(232,223,209,0.28);font-family:DM Mono,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase">Sin asignar</span>';
+      techRows.push({ l: 'Lente', v: lensVal });
+    } else if (r.LENS) {
+      // Fallback: lens recorded but no camera model
+      techRows.push({ l: 'Lente', v: esc(r.LENS) });
+    }
     if (locs.length) techRows.push({ l: 'Lugar', v: locs.join(' · ') });
     if (expTaken != null) {
       var em = expMax != null ? ' <span style="color:rgba(232,223,209,0.4);font-family:DM Mono,monospace;font-size:11px;letter-spacing:0.1em">/ ' + esc(expMax) + '</span>' : '';
