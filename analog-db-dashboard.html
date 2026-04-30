@@ -4436,6 +4436,12 @@ async function loadApprovedUsers() {
   return data || [];
 }
 
+async function loadRejectedUsers() {
+  const { data, error } = await sb.from('profiles').select('*').eq('status', 'rejected').order('created_at', { ascending: true });
+  if (error) throw error;
+  return data || [];
+}
+
 async function loadAdminRoster() {
   const { data, error } = await sb.from('user_roles').select('user_id, role, is_founder').eq('role', 'admin');
   if (error) throw error;
@@ -4481,15 +4487,30 @@ function adminUserCard(profile, actionsHtml = '') {
   `;
 }
 
+function rejectedAdminUserCard(profile) {
+  return `
+    <div style="border:1px solid rgba(244,237,226,0.08);padding:14px;background:rgba(20,15,12,0.3);display:flex;justify-content:space-between;gap:16px;align-items:flex-start;">
+      <div style="min-width:0;flex:1;">
+        <div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#f3eadb;">${escAttr(profile.display_name || '—')}</div>
+      </div>
+      <div style="min-width:0;max-width:180px;width:100%;display:flex;flex-direction:column;align-items:flex-end;">
+        <button onclick="sb.rpc('admin_set_profile_status', { p_target_user_id: '${profile.user_id}', p_status: 'pending' }).then(({ error }) => { if (error) throw error; return renderAdminPage(); }).catch(adminActionError)" style="background:#d94a2a;color:#140f0c;border:none;padding:10px 12px;font:600 10px 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;width:100%;">Reactivar</button>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:rgba(232,223,209,0.42);margin-top:8px;text-align:right;word-break:break-word;">${escAttr(profile.email || '')}</div>
+      </div>
+    </div>
+  `;
+}
+
 async function renderAdminPage() {
   if (!isAdmin()) return;
   ensureAdminPage();
   const container = document.getElementById('adminPageContent');
   if (!container) return;
   try {
-    const [pending, approved, roster, actions] = await Promise.all([
+    const [pending, approved, rejected, roster, actions] = await Promise.all([
       loadPendingUsers(),
       loadApprovedUsers(),
+      loadRejectedUsers(),
       loadAdminRoster(),
       loadAdminActions()
     ]);
@@ -4515,6 +4536,10 @@ async function renderAdminPage() {
         }).join('')
       : `<div style="font-family:'Fraunces',serif;font-style:italic;color:rgba(232,223,209,0.45);">No hay usuarios aprobados.</div>`;
 
+    const rejectedHtml = rejected.length
+      ? rejected.map(profile => rejectedAdminUserCard(profile)).join('')
+      : `<div style="font-family:'Fraunces',serif;font-style:italic;color:rgba(232,223,209,0.45);">No hay usuarios rechazados.</div>`;
+
     const actionHtml = actions.length
       ? actions.map(action => `
           <div style="border:1px solid rgba(244,237,226,0.08);padding:14px;background:rgba(20,15,12,0.3);display:flex;justify-content:space-between;gap:16px;align-items:flex-start;">
@@ -4534,7 +4559,7 @@ async function renderAdminPage() {
       : `<div style="font-family:'Fraunces',serif;font-style:italic;color:rgba(232,223,209,0.45);">No hay acciones sensibles registradas.</div>`;
 
     container.innerHTML = `
-      <section style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;">
+      <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;">
         <div style="display:flex;flex-direction:column;gap:12px;">
           <h2 class="ed-section-title" style="font-size:22px;">Pending</h2>
           ${pendingHtml}
@@ -4542,6 +4567,10 @@ async function renderAdminPage() {
         <div style="display:flex;flex-direction:column;gap:12px;">
           <h2 class="ed-section-title" style="font-size:22px;">Aprobados</h2>
           ${approvedHtml}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <h2 class="ed-section-title" style="font-size:22px;">Usuarios rechazados</h2>
+          ${rejectedHtml}
         </div>
         <div style="display:flex;flex-direction:column;gap:12px;">
           <h2 class="ed-section-title" style="font-size:22px;">Acciones admin</h2>
