@@ -3385,6 +3385,226 @@ h1, h2 {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
+/* ─────────────  ROLL DETAIL — mobile editorial view  ─────────────
+   Replaces the desktop 30-field modal with a compact editorial layout:
+   hero, stats strip, vertical cronología, ficha técnica (only filled
+   fields), notes, tags, and a sticky status-advance CTA at the bottom.
+   The bnav hides while on detail to avoid two stacked floors. */
+.mob-edit-link {
+  background: none; border: 0; cursor: pointer;
+  padding: 6px 0;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(232,223,209,0.55);
+  -webkit-tap-highlight-color: transparent;
+}
+.mob-edit-link:active { color: #f3eadb; }
+
+.mob-rd-hero {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 4px 0 16px;
+  border-bottom: 1px solid rgba(244,237,226,0.07);
+}
+.mob-rd-hero .kicker {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  color: #d94a2a;
+}
+.mob-rd-hero .rid {
+  font-family: 'Special Elite', serif;
+  font-size: 46px; line-height: 1;
+  color: #d94a2a;
+  letter-spacing: 0.02em;
+  margin-top: 4px;
+}
+.mob-rd-hero .stk {
+  font-family: 'Inter', sans-serif; font-weight: 700;
+  font-size: 19px; color: #f3eadb;
+  letter-spacing: -0.01em;
+  margin-top: 8px;
+}
+.mob-rd-hero .meta {
+  display: flex; gap: 12px;
+  font-family: 'DM Mono', monospace; font-size: 9.5px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(232,223,209,0.55);
+  margin-top: 8px;
+  align-items: center; flex-wrap: wrap;
+}
+.mob-rd-hero .meta .swc { width: 10px; height: 10px; flex: 0 0 10px; }
+
+.mob-rd-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border: 1px solid rgba(244,237,226,0.10);
+  background: #1e1a15;
+}
+.mob-rd-stats > div {
+  padding: 14px 12px;
+  border-right: 1px solid rgba(244,237,226,0.05);
+}
+.mob-rd-stats > div:last-child { border-right: 0; }
+.mob-rd-stats .l {
+  font-family: 'DM Mono', monospace; font-size: 8.5px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+}
+.mob-rd-stats .v {
+  font-family: 'Inter', sans-serif; font-weight: 800;
+  font-size: 18px; color: #f0e6d3;
+  letter-spacing: -0.02em;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.mob-rd-stats .v small {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: rgba(232,223,209,0.4); font-weight: 400;
+  letter-spacing: 0.1em;
+}
+
+.mob-rd-tl { display: flex; flex-direction: column; }
+.mob-rd-tl .stp {
+  display: grid; grid-template-columns: auto 1fr auto;
+  gap: 14px; align-items: flex-start;
+  padding: 12px 0; position: relative;
+}
+.mob-rd-tl .stp::before {
+  content: ""; position: absolute;
+  left: 5px; top: 24px; bottom: -4px;
+  width: 1px; background: rgba(244,237,226,0.10);
+}
+.mob-rd-tl .stp:last-child::before { display: none; }
+.mob-rd-tl .stp .pt {
+  width: 11px; height: 11px;
+  border: 1px solid rgba(244,237,226,0.16);
+  background: #14110d;
+  margin-top: 4px; border-radius: 50%;
+}
+.mob-rd-tl .stp.done .pt { background: #d94a2a; border-color: #d94a2a; }
+.mob-rd-tl .stp.now .pt {
+  background: #14110d;
+  border: 1px solid #d94a2a;
+  box-shadow: 0 0 0 3px rgba(217,74,42,0.18);
+  animation: gatePulse 2.8s ease-in-out infinite;
+}
+.mob-rd-tl .stp .lbl { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.mob-rd-tl .stp .nm {
+  font-family: 'Inter', sans-serif; font-weight: 600;
+  font-size: 13px; color: rgba(232,223,209,0.55);
+  letter-spacing: -0.005em;
+}
+.mob-rd-tl .stp.now .nm { color: #f3eadb; }
+.mob-rd-tl .stp.done .nm { color: #e8dfd1; }
+.mob-rd-tl .stp .sb {
+  font-family: 'DM Mono', monospace; font-size: 8.5px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+}
+.mob-rd-tl .stp.now .sb { color: #d94a2a; }
+.mob-rd-tl .stp .dt {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.1em;
+  color: rgba(232,223,209,0.28);
+  align-self: flex-start; padding-top: 2px;
+}
+
+.mob-rd-tech {
+  display: flex; flex-direction: column;
+  border: 1px solid rgba(244,237,226,0.10);
+  background: #1e1a15;
+}
+.mob-rd-tech .row {
+  display: grid; grid-template-columns: 100px 1fr; gap: 14px;
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(244,237,226,0.05);
+  align-items: center;
+}
+.mob-rd-tech .row:last-child { border-bottom: 0; }
+.mob-rd-tech .l {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+}
+.mob-rd-tech .v {
+  font-family: 'Inter', sans-serif; font-weight: 600;
+  font-size: 13.5px; color: #f3eadb;
+  letter-spacing: -0.005em;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.mob-rd-notes {
+  border-left: 2px solid #d94a2a;
+  background: rgba(8,6,4,0.48);
+  padding: 14px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px; line-height: 1.65;
+  color: rgba(232,223,209,0.55);
+}
+.mob-rd-notes .qm {
+  font-family: 'Special Elite', serif;
+  font-size: 26px; color: #d94a2a;
+  line-height: 0.6; display: block;
+  margin-bottom: 6px;
+}
+
+.mob-rd-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.mob-rd-tag {
+  font-family: 'DM Mono', monospace; font-size: 9.5px;
+  letter-spacing: 0.14em; text-transform: lowercase;
+  color: #e8dfd1;
+  border: 1px solid rgba(244,237,226,0.10);
+  padding: 5px 9px;
+  background: #1e1a15;
+}
+.mob-rd-tag .h { color: #d94a2a; }
+.mob-rd-tag.cat { text-transform: capitalize; }
+
+.mob-rd-stars { color: #d9a050; font-size: 14px; letter-spacing: 0.06em; }
+.mob-rd-stars-empty { color: rgba(255,255,255,0.18); }
+
+/* Sticky status-advance CTA (only on detail view) */
+.mob-cta-bar {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  z-index: 401; /* above bnav z-index 400 */
+  display: grid; grid-template-columns: auto 1fr;
+  border-top: 1px solid rgba(244,237,226,0.16);
+  background: rgba(18,16,13,0.96);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 -8px 24px -12px rgba(0,0,0,0.6);
+  padding-bottom: min(env(safe-area-inset-bottom, 0px), 18px);
+}
+.mob-cta-back {
+  padding: 16px 22px;
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(232,223,209,0.55);
+  border: 0; border-right: 1px solid rgba(244,237,226,0.10);
+  background: none; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.mob-cta-back:active { color: #f3eadb; }
+.mob-cta-next {
+  padding: 16px;
+  font-family: 'DM Mono', monospace; font-size: 10.5px;
+  font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;
+  color: #0c0906; background: #d94a2a;
+  border: 0; cursor: pointer; width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  -webkit-tap-highlight-color: transparent;
+}
+.mob-cta-next .ar { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 14px; }
+.mob-cta-next:active { background: #c03a1a; }
+.mob-cta-next.archived {
+  background: transparent; color: rgba(232,223,209,0.4);
+  cursor: default;
+}
+
+/* While on detail view, hide the bnav and add bottom padding so the
+   sticky CTA doesn't overlap the last roll content */
+body.mob-detail .mob-bnav { display: none !important; }
+body.mob-detail .mob-app .mob-view {
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
 /* ── view container ── */
 .mob-view {
   flex: 1 1 auto;
@@ -8184,10 +8404,9 @@ function updateLocationCheckbox(id) {
   // viewport. On desktop we still call goPage() (which expects the suffix).
   function _mobNav(key) {
     var onMobile = window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
-    // Clear any admin takeover so the bnav tabs always return to the mobile shell
-    if (document.body.classList.contains('mob-admin-takeover')) {
-      document.body.classList.remove('mob-admin-takeover');
-    }
+    // Clear any sub-view body classes so the bnav tabs always go back to the shell
+    document.body.classList.remove('mob-admin-takeover');
+    document.body.classList.remove('mob-detail');
     if (onMobile && typeof window._mobApp !== 'undefined') {
       try { window._mobApp.render(key); } catch (e) { console.error('mobApp render failed:', e); }
       _mobBnavSync(key);
@@ -8941,6 +9160,248 @@ function updateLocationCheckbox(id) {
       '</div>';
   }
 
+  // ── roll detail mobile view ────────────────────────────────────────
+  var STATUS_LABELS = {
+    'In Camera': 'En cámara',
+    'To Develop': 'Por revelar',
+    'In Development': 'En lab',
+    'Developed': 'Revelado'
+  };
+  var STATUS_FLOW = ['In Camera', 'To Develop', 'In Development', 'Developed'];
+  var STATUS_CTA = {
+    'In Camera':       'Mover a · Por revelar',
+    'To Develop':      'Marcar entregado al lab',
+    'In Development':  'Marcar revelado',
+    'Developed':       null
+  };
+
+  function rdSwatch(r) {
+    if (typeof FILM_FORMAT_META !== 'undefined' && typeof formatKey === 'function') {
+      var meta = FILM_FORMAT_META[formatKey(r.FORMAT)];
+      if (meta) return { color: meta.color, label: meta.label };
+    }
+    return { color: '#9c9284', label: String(r.FORMAT || '—') };
+  }
+
+  function rdDateLabel(s) {
+    if (!s) return '—';
+    try {
+      var d = new Date(s);
+      if (isNaN(d)) return String(s);
+      var months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+    } catch (e) { return String(s); }
+  }
+
+  function rdDaysSince(s) {
+    if (!s) return null;
+    try {
+      var d = new Date(s);
+      if (isNaN(d)) return null;
+      var diff = Math.floor((Date.now() - d.getTime()) / (1000*60*60*24));
+      return diff >= 0 ? diff : null;
+    } catch (e) { return null; }
+  }
+
+  function rdSplit(v) {
+    if (!v) return [];
+    return String(v).split(/[,;|\s]+/).map(function (s) { return s.trim(); }).filter(Boolean);
+  }
+
+  function renderDetail() {
+    var rid = STATE.detailId;
+    if (!rid || typeof DATA === 'undefined') {
+      STATE.view = 'dashboard';
+      document.body.classList.remove('mob-detail');
+      return renderDash();
+    }
+    var r = DATA.find(function (x) { return x['#'] === rid; });
+    if (!r) {
+      STATE.view = 'dashboard';
+      document.body.classList.remove('mob-detail');
+      return renderDash();
+    }
+
+    var status = r.STATUS || 'In Camera';
+    var statusIdx = STATUS_FLOW.indexOf(status);
+    var sw = rdSwatch(r);
+    var pushVal = String(r['PUSH/PULL'] || '0').trim();
+    var hasPush = pushVal && pushVal !== '0' && pushVal !== '+0';
+    var rating = Number(r.RATING) || 0;
+    var notes = String(r.NOTES || '').trim();
+    var tags = rdSplit(r.TAGS);
+    var cats = rdSplit(r['PHOTO TYPE']);
+    var locs = rdSplit(r.LOCATIONS);
+    var daysSince = rdDaysSince(r.STARTED);
+    var expTaken = (r['# EXP'] != null && r['# EXP'] !== '') ? r['# EXP'] : null;
+    var expMax = (r['EXP'] != null && r['EXP'] !== '') ? r['EXP'] : null;
+
+    // Topbar
+    var top = '<div class="mob-shell-top">' +
+      '<button type="button" class="mob-back" onclick="window._mobApp.closeDetail()">' +
+        '<span class="ar">‹</span><span>Atrás</span>' +
+      '</button>' +
+      '<button type="button" class="mob-edit-link" onclick="window._mobApp.editRoll(\'' + esc(rid) + '\')">Editar</button>' +
+    '</div>';
+
+    // Hero
+    var metaParts = [
+      '<span class="swc" style="background:' + sw.color + '"></span>',
+      '<span>' + esc(sw.label) + '</span>',
+      '<span>·</span><span>ISO ' + esc(r.ISO || '?') + '</span>'
+    ];
+    if (hasPush) metaParts.push('<span>·</span><span>Push ' + esc(pushVal) + '</span>');
+    else if (r['EXP/FRESH']) metaParts.push('<span>·</span><span>' + esc(r['EXP/FRESH']) + '</span>');
+    var hero = '<div class="mob-rd-hero">' +
+      '<div class="kicker">' + esc(STATUS_LABELS[status] || status) + '</div>' +
+      '<div class="rid">' + esc(r['#']) + '</div>' +
+      '<div class="stk">' + esc(r['FILM STOCK'] || '—') + '</div>' +
+      '<div class="meta">' + metaParts.join('') + '</div>' +
+    '</div>';
+
+    // Stats strip — only render cells that have data
+    var statsCells = [];
+    if (expTaken != null || expMax != null) {
+      var et = expTaken != null ? expTaken : '—';
+      var em = expMax != null ? '<small> /' + esc(expMax) + '</small>' : '';
+      statsCells.push('<div><div class="l">Disparadas</div><div class="v">' + esc(et) + em + '</div></div>');
+    }
+    statsCells.push('<div><div class="l">Push/Pull</div><div class="v">' + esc(pushVal || '0') + '</div></div>');
+    if (daysSince != null) {
+      statsCells.push('<div><div class="l">Días</div><div class="v">' + daysSince + '</div></div>');
+    }
+    var stats = statsCells.length ? '<div class="mob-rd-stats">' + statsCells.join('') + '</div>' : '';
+
+    // Cronología — 5 steps mapped from status idx
+    var tlSteps = [
+      { nm: 'Cargado',       idx: 0 },
+      { nm: 'Disparando',    idx: 0 },
+      { nm: 'Por revelar',   idx: 1 },
+      { nm: 'En laboratorio',idx: 2 },
+      { nm: 'Revelado',      idx: 3 }
+    ];
+    var tlHTML = '<div class="mob-rd-tl">' + tlSteps.map(function (s, i) {
+      var cls = '';
+      var sb = '— pendiente';
+      var dt = '—';
+      if (i === 0) {
+        // Cargado: always done if there's a STARTED date
+        if (r.STARTED) {
+          cls = 'done';
+          sb = rdDateLabel(r.STARTED);
+          dt = '✓';
+        } else if (statusIdx >= 0) {
+          cls = 'done';
+        }
+      } else if (i === 1) {
+        // Disparando: now if In Camera, done if past
+        if (status === 'In Camera') {
+          cls = 'now'; sb = '● En curso'; dt = 'hoy';
+        } else if (statusIdx > 0) {
+          cls = 'done'; sb = 'completo';
+        }
+      } else if (i === 2) {
+        if (status === 'To Develop') { cls = 'now'; sb = '● Listo para entregar'; dt = 'hoy'; }
+        else if (statusIdx > 1) { cls = 'done'; sb = 'entregado'; }
+      } else if (i === 3) {
+        if (status === 'In Development') { cls = 'now'; sb = '● En lab'; dt = 'hoy'; }
+        else if (statusIdx > 2) { cls = 'done'; sb = 'revelado'; }
+      } else if (i === 4) {
+        if (status === 'Developed') {
+          cls = 'done';
+          sb = r.FINISHED ? rdDateLabel(r.FINISHED) : 'completo';
+          dt = '✓';
+        }
+      }
+      return '<div class="stp ' + cls + '">' +
+        '<div class="pt"></div>' +
+        '<div class="lbl">' +
+          '<div class="nm">' + esc(s.nm) + '</div>' +
+          '<div class="sb">' + esc(sb) + '</div>' +
+        '</div>' +
+        '<div class="dt">' + esc(dt) + '</div>' +
+      '</div>';
+    }).join('') + '</div>';
+
+    // Ficha técnica — only fields with data
+    var techRows = [];
+    var camera = String((r.MAKER || '') + ' ' + (r['MODEL NAME'] || '')).trim();
+    if (camera) techRows.push({ l: 'Cámara', v: camera });
+    if (r.LENS) techRows.push({ l: 'Lente', v: r.LENS });
+    if (locs.length) techRows.push({ l: 'Lugar', v: locs.join(' · ') });
+    if (r['ISO @'] && String(r['ISO @']) !== String(r.ISO || '')) techRows.push({ l: 'ISO @', v: r['ISO @'] });
+    if (r.DEV) techRows.push({ l: 'Revelado', v: r.DEV });
+    if (r.SCAN) techRows.push({ l: 'Scan', v: r.SCAN });
+    if (rating > 0) {
+      var stars = Array.from({length:5}, function (_, j) {
+        return '<span class="' + (j < rating ? 'mob-rd-stars' : 'mob-rd-stars-empty') + '">★</span>';
+      }).join('');
+      techRows.push({ l: 'Rating', v: '<div class="mob-rd-stars">' + stars + '</div>' });
+    }
+    var tech = techRows.length
+      ? '<div class="mob-rd-tech">' + techRows.map(function (row) {
+          return '<div class="row"><span class="l">' + esc(row.l) + '</span><span class="v">' + row.v + '</span></div>';
+        }).join('') + '</div>'
+      : '';
+
+    // Notas
+    var notesHTML = notes
+      ? '<div class="mob-rd-notes"><span class="qm">"</span>' + esc(notes) + '</div>'
+      : '';
+
+    // Tags & categories
+    var allTags = '';
+    if (cats.length || tags.length) {
+      var pieces = [];
+      cats.forEach(function (c) {
+        pieces.push('<span class="mob-rd-tag cat">' + esc(c) + '</span>');
+      });
+      tags.forEach(function (t) {
+        pieces.push('<span class="mob-rd-tag"><span class="h">#</span>' + esc(t) + '</span>');
+      });
+      allTags = '<div class="mob-rd-tags">' + pieces.join('') + '</div>';
+    }
+
+    // Section heads (only render when section has content)
+    var sections = '';
+    var sectionIdx = 0;
+    var section = function (title, body) {
+      if (!body) return '';
+      sectionIdx++;
+      var roman = ['I.', 'II.', 'III.', 'IV.', 'V.'][sectionIdx - 1] || '·';
+      return '<div class="mob-subhead"><span class="n">' + roman + '</span><span class="t">' + esc(title) + '</span></div>' + body;
+    };
+    sections += section('Cronología', tlHTML);
+    sections += section('Ficha técnica', tech);
+    sections += section('Notas', notesHTML);
+    sections += section('Categorías y tags', allTags);
+
+    // Sticky CTA
+    var ctaLabel = STATUS_CTA[status];
+    var cta;
+    if (ctaLabel) {
+      cta = '<div class="mob-cta-bar">' +
+        '<button type="button" class="mob-cta-back" onclick="window._mobApp.closeDetail()">‹ Volver</button>' +
+        '<button type="button" class="mob-cta-next" onclick="window._mobApp.advanceRoll(\'' + esc(rid) + '\')">' +
+          esc(ctaLabel) + ' <span class="ar">→</span>' +
+        '</button>' +
+      '</div>';
+    } else {
+      cta = '<div class="mob-cta-bar">' +
+        '<button type="button" class="mob-cta-back" onclick="window._mobApp.closeDetail()">‹ Volver</button>' +
+        '<button type="button" class="mob-cta-next archived" disabled>Archivado</button>' +
+      '</div>';
+    }
+
+    return top +
+      '<div class="mob-view" id="mobView">' +
+        hero +
+        (stats ? stats : '') +
+        sections +
+      '</div>' +
+      cta;
+  }
+
   // ── admin mobile view ──────────────────────────────────────────────
   function renderAdminMobile() {
     // Topbar with back to Cuenta + theme placeholder
@@ -9086,6 +9547,7 @@ function updateLocationCheckbox(id) {
       case 'database':  html = renderTbl();        break;
       case 'stats':     html = renderStatsView();  break;
       case 'admin':     html = renderAdminMobile();break;
+      case 'detail':    html = renderDetail();     break;
       case '__account':
       case 'account':   html = renderAccount();    break;
       case 'dashboard':
@@ -9126,9 +9588,41 @@ function updateLocationCheckbox(id) {
       if (typeof DATA === 'undefined') return;
       var r = DATA.find(function (x) { return x['#'] === rid; });
       if (!r) return;
-      // openModal is the read-first detail view; falls back to editor if absent
-      if (typeof openModal === 'function') openModal(r);
-      else if (typeof openRollEditor === 'function') openRollEditor(r);
+      // Mobile: render the editorial detail view inside mob-app.
+      // Desktop fallback (rare — bnav is hidden): open the legacy modal.
+      if (isMobile()) {
+        STATE.detailId = rid;
+        STATE.view = 'detail';
+        document.body.classList.add('mob-detail');
+        render('detail');
+      } else {
+        if (typeof openModal === 'function') openModal(r);
+        else if (typeof openRollEditor === 'function') openRollEditor(r);
+      }
+    },
+    closeDetail: function () {
+      STATE.detailId = null;
+      STATE.view = 'dashboard';
+      document.body.classList.remove('mob-detail');
+      render('dashboard');
+    },
+    editRoll: function (rid) {
+      if (typeof DATA === 'undefined') return;
+      var r = DATA.find(function (x) { return x['#'] === rid; });
+      if (!r) return;
+      if (typeof openRollEditor === 'function') openRollEditor(r);
+    },
+    advanceRoll: function (rid) {
+      if (typeof moveRollStatus !== 'function') return;
+      if (typeof DATA === 'undefined') return;
+      var r = DATA.find(function (x) { return x['#'] === rid; });
+      if (!r) return;
+      var flow = ['In Camera', 'To Develop', 'In Development', 'Developed'];
+      var i = flow.indexOf(r.STATUS || 'In Camera');
+      if (i < 0 || i >= flow.length - 1) return;
+      moveRollStatus(rid, flow[i + 1]);
+      // moveRollStatus mutates DATA + persists. Re-render to reflect new state.
+      setTimeout(function () { render('detail'); }, 50);
     },
     setTblSearch: function (q, preserveFocus) {
       TBL.search = q;
