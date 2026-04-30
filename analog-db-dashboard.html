@@ -9259,18 +9259,9 @@ function updateLocationCheckbox(id) {
       '<div class="meta">' + metaParts.join('') + '</div>' +
     '</div>';
 
-    // Stats strip — only render cells that have data
-    var statsCells = [];
-    if (expTaken != null || expMax != null) {
-      var et = expTaken != null ? expTaken : '—';
-      var em = expMax != null ? '<small> /' + esc(expMax) + '</small>' : '';
-      statsCells.push('<div><div class="l">Disparadas</div><div class="v">' + esc(et) + em + '</div></div>');
-    }
-    statsCells.push('<div><div class="l">Push/Pull</div><div class="v">' + esc(pushVal || '0') + '</div></div>');
-    if (daysSince != null) {
-      statsCells.push('<div><div class="l">Días</div><div class="v">' + daysSince + '</div></div>');
-    }
-    var stats = statsCells.length ? '<div class="mob-rd-stats">' + statsCells.join('') + '</div>' : '';
+    // (Stats strip removed per UX review — Push/Pull and Días lived in
+    // the meta row already; Disparadas now appears in Ficha técnica when
+    // present. Keeps the page tighter on the phone.)
 
     // Cronología — 5 steps mapped from status idx
     var tlSteps = [
@@ -9325,10 +9316,17 @@ function updateLocationCheckbox(id) {
 
     // Ficha técnica — only fields with data
     var techRows = [];
-    var camera = String((r.MAKER || '') + ' ' + (r['MODEL NAME'] || '')).trim();
-    if (camera) techRows.push({ l: 'Cámara', v: camera });
+    // Camera: model only, maker omitted (review feedback 2026-04-28).
+    // The maker often duplicates the model brand prefix and adds noise.
+    var cameraModel = String(r['MODEL NAME'] || '').trim();
+    if (cameraModel) techRows.push({ l: 'Cámara', v: cameraModel });
     if (r.LENS) techRows.push({ l: 'Lente', v: r.LENS });
     if (locs.length) techRows.push({ l: 'Lugar', v: locs.join(' · ') });
+    if (expTaken != null) {
+      var em = expMax != null ? ' <span style="color:rgba(232,223,209,0.4);font-family:DM Mono,monospace;font-size:11px;letter-spacing:0.1em">/ ' + esc(expMax) + '</span>' : '';
+      techRows.push({ l: 'Disparadas', v: esc(expTaken) + em });
+    }
+    if (hasPush) techRows.push({ l: 'Push/Pull', v: pushVal });
     if (r['ISO @'] && String(r['ISO @']) !== String(r.ISO || '')) techRows.push({ l: 'ISO @', v: r['ISO @'] });
     if (r.DEV) techRows.push({ l: 'Revelado', v: r.DEV });
     if (r.SCAN) techRows.push({ l: 'Scan', v: r.SCAN });
@@ -9396,7 +9394,6 @@ function updateLocationCheckbox(id) {
     return top +
       '<div class="mob-view" id="mobView">' +
         hero +
-        (stats ? stats : '') +
         sections +
       '</div>' +
       cta;
