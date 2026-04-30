@@ -1,0 +1,35 @@
+project_id = "analogdb"
+
+[auth]
+site_url = "https://dperabeles.github.io/analogdb/analog-db-dashboard.html"
+additional_redirect_urls = [
+  "https://dperabeles.github.io/analogdb/",
+  "https://dperabeles.github.io/analogdb/analog-db-dashboard.html",
+  "https://dperabeles.github.io/analogdb/reset-password.html",
+]
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+double_confirm_changes = true
+secure_password_change = false
+max_frequency = "1m0s"
+otp_length = 8
+otp_expiry = 3600
+
+[auth.mfa]
+max_enrolled_factors = 10
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
+[auth.mfa.phone]
+enroll_enabled = false
+verify_enabled = false
+
+
+[auth.email.template.recovery]
+subject = "Restablece tu acceso a Analogdb"
+content_path = "./supabase/templates/recovery.html"
