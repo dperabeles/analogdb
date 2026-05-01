@@ -4073,6 +4073,312 @@ body.mob-detail .mob-app .mob-view {
   letter-spacing: 0.2em; text-transform: uppercase;
   color: rgba(232,223,209,0.28);
 }
+
+/* ═══════════════════════════════════════════
+   LIGHT MODE — editorial cream, warm paper
+   Overrides the darkroom theme when body.light-mode is active
+═══════════════════════════════════════════ */
+
+body.light-mode {
+  background: #f5ede0 !important;
+  color: #1a1510 !important;
+}
+
+body.light-mode::before {
+  mix-blend-mode: multiply;
+  opacity: 0.035;
+}
+
+/* Inline style overrides — restore editorial light colors */
+body.light-mode [style*="background:#1a1510"] { background: rgba(26,21,16,0.08) !important; }
+body.light-mode [style*="background:#f5ede0"] { background: #f5ede0 !important; }
+body.light-mode [style*="color:#1a1510"] { color: #1a1510 !important; }
+body.light-mode [style*="color:#8a3a22"] { color: #8a3a22 !important; }
+body.light-mode [style*="background:#8a3a22"] { background: #8a3a22 !important; color: #f5ede0 !important; }
+body.light-mode [style*="background:#7a3018"] { background: #7a3018 !important; }
+body.light-mode [style*="background:#7a2e18"] { background: #7a2e18 !important; }
+body.light-mode [style*="color:rgba(26,21,16"] { color: rgba(26,21,16,0.7) !important; }
+body.light-mode [style*="border-bottom: 1px solid #1a1510"] { border-bottom-color: #1a1510 !important; }
+body.light-mode [style*="background:rgba(138,58,34"] { background: rgba(138,58,34,0.15) !important; }
+body.light-mode [style*="color:#e8dcc5"] { color: #1a1510 !important; }
+body.light-mode [style*="color:rgba(232,220,197"] { color: rgba(26,21,16,0.55) !important; }
+body.light-mode [style*="border:1px solid rgba(232,220,197"] { border-color: rgba(26,21,16,0.15) !important; }
+body.light-mode [style*="background:rgba(232,220,197"] { background: rgba(26,21,16,0.06) !important; }
+
+/* Inline dark colors in .main area → flip to light */
+body.light-mode .main [style*="color:#e8dfd1"] { color: #1a1510 !important; }
+body.light-mode .main [style*="color:#f3eadb"] { color: #1a1510 !important; }
+body.light-mode .main [style*="color:rgba(232,223,209"] { color: rgba(26,21,16,0.65) !important; }
+body.light-mode .main [style*="color:#d94a2a"] { color: #8a3a22 !important; }
+body.light-mode .topbar [style*="color:#e8dfd1"] { color: rgba(26,21,16,0.75) !important; }
+
+/* Topbar */
+body.light-mode .topbar { background: #f5ede0 !important; border-bottom: 1px solid rgba(26,21,16,0.12) !important; }
+body.light-mode .topbar .bc-root, body.light-mode .topbar .bc-sep { color: rgba(26,21,16,0.4) !important; }
+body.light-mode .topbar .bc-page { color: rgba(26,21,16,0.75) !important; }
+body.light-mode #mainTopbar { background: #f5ede0 !important; border-bottom: 1px solid rgba(26,21,16,0.12) !important; }
+body.light-mode .search-box { background: rgba(26,21,16,0.05) !important; border-color: rgba(26,21,16,0.15) !important; }
+body.light-mode .search-box input { color: #1a1510 !important; }
+body.light-mode .search-box input::placeholder { color: rgba(26,21,16,0.4) !important; }
+
+/* Sidebar stays dark in light mode — only restore correct darkroom values */
+body.light-mode .ed-sidebar { background: #2a2620 !important; }
+body.light-mode .sidebar-footer { border-top-color: rgba(232,220,197,0.12) !important; }
+body.light-mode .nav-section-label { color: rgba(244,237,226,0.25) !important; }
+body.light-mode .nav-item { color: rgba(232,223,209,0.6) !important; }
+body.light-mode .nav-item:hover { background: rgba(244,237,226,0.06) !important; color: #e8dfd1 !important; }
+body.light-mode .nav-item.active { background: rgba(244,237,226,0.09) !important; color: #e8dfd1 !important; }
+body.light-mode .nav-badge { background: rgba(244,237,226,0.08) !important; color: rgba(232,223,209,0.5) !important; }
+body.light-mode .ed-brand { border-bottom: 1px solid rgba(232,220,197,0.15) !important; }
+
+/* Section heads */
+body.light-mode .ed-section-head { border-bottom: 1px solid #1a1510 !important; }
+body.light-mode .ed-section-num { color: #8a3a22 !important; }
+body.light-mode .ed-section-title { color: #1a1510 !important; }
+body.light-mode .ed-section-sub { color: rgba(26,21,16,0.55) !important; }
+
+/* Index / kickers */
+body.light-mode .ed-index-kicker { border-bottom: 1px solid rgba(26,21,16,0.15) !important; color: rgba(26,21,16,0.5) !important; }
+body.light-mode .ed-big-num { color: #1a1510 !important; }
+body.light-mode .ed-format-boxes { border: 1px solid rgba(26,21,16,0.15) !important; }
+body.light-mode .ed-format-box { border-left: 1px solid rgba(26,21,16,0.15) !important; }
+body.light-mode .ed-format-box-label { color: rgba(26,21,16,0.5) !important; }
+body.light-mode .ed-format-num { color: #1a1510 !important; }
+body.light-mode .ed-format-pct { color: rgba(26,21,16,0.4) !important; }
+
+/* Stock rows */
+body.light-mode .ed-stock-row { border-bottom: 1px dotted rgba(26,21,16,0.12) !important; }
+body.light-mode .ed-stock-swatch { border: 1px solid rgba(26,21,16,0.15) !important; }
+body.light-mode .ed-stock-name { color: #1a1510 !important; }
+body.light-mode .ed-stock-brand { color: rgba(26,21,16,0.5) !important; }
+body.light-mode .ed-stock-bar-wrap { background: rgba(26,21,16,0.1) !important; }
+body.light-mode .ed-stock-bar { background: #8a3a22 !important; }
+body.light-mode .ed-stock-count { color: #1a1510 !important; }
+body.light-mode .ed-stock-num { color: #8a3a22 !important; }
+
+/* Workflow */
+body.light-mode .ed-workflow { border-top: 1px solid rgba(26,21,16,0.1) !important; border-bottom: 1px solid rgba(26,21,16,0.1) !important; }
+body.light-mode .ed-workflow-col { border-right: 1px solid rgba(26,21,16,0.1) !important; }
+body.light-mode .ed-workflow-head { border-bottom: 1px solid rgba(26,21,16,0.1) !important; }
+body.light-mode .ed-workflow-title { color: #1a1510 !important; }
+body.light-mode .ed-workflow-count { color: rgba(26,21,16,0.15) !important; }
+body.light-mode .ed-workflow-count.live { color: #1a1510 !important; }
+body.light-mode .ed-add-card { border: 1px dashed rgba(26,21,16,0.22) !important; color: rgba(26,21,16,0.4) !important; background: transparent !important; }
+body.light-mode .ed-add-card:hover { border-color: rgba(26,21,16,0.4) !important; color: rgba(26,21,16,0.7) !important; }
+
+/* Roll cards */
+body.light-mode .roll-card { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .roll-card:hover { box-shadow: 0 4px 20px rgba(26,21,16,0.12) !important; }
+body.light-mode .roll-card-name { color: #1a1510 !important; }
+body.light-mode .roll-card-maker { color: rgba(26,21,16,0.5) !important; }
+body.light-mode .roll-card-chip { background: rgba(26,21,16,0.07) !important; border-color: rgba(26,21,16,0.14) !important; color: rgba(26,21,16,0.6) !important; }
+
+/* Recent chronicle */
+body.light-mode .ed-recent-item { color: #1a1510 !important; }
+body.light-mode .ed-recent-item span { color: #1a1510 !important; }
+body.light-mode .ed-recent-rule { background: rgba(26,21,16,0.1) !important; }
+
+/* Masthead */
+body.light-mode #edMastheadDate { color: rgba(26,21,16,0.5) !important; }
+body.light-mode #edMastheadSummary { color: rgba(26,21,16,0.6) !important; }
+
+/* Colophon */
+body.light-mode .ed-colophon-inner { color: rgba(26,21,16,0.4) !important; }
+
+/* Page headers */
+body.light-mode .ed-page-header-kicker { color: rgba(26,21,16,0.45) !important; }
+body.light-mode .ed-page-header-title { color: #1a1510 !important; }
+body.light-mode .ed-page-header-sub { color: rgba(26,21,16,0.5) !important; }
+
+/* Buttons */
+body.light-mode .btn-primary { background: #ede5d8 !important; color: #1a1510 !important; border: 1px solid rgba(26,21,16,0.2) !important; }
+body.light-mode .btn-primary:hover { background: #e5ddd0 !important; }
+body.light-mode .ed-btn-primary { background: #8a3a22 !important; color: #f5ede0 !important; font-weight: 700 !important; }
+body.light-mode .ed-btn-primary:hover { background: #7a2e18 !important; }
+body.light-mode .btn-ghost { background: rgba(26,21,16,0.04) !important; border-color: rgba(26,21,16,0.18) !important; color: rgba(26,21,16,0.6) !important; }
+body.light-mode .btn-ghost:hover { border-color: rgba(26,21,16,0.35) !important; color: #1a1510 !important; }
+body.light-mode .btn-danger { border-color: rgba(138,58,34,0.35) !important; color: #8a3a22 !important; }
+body.light-mode .btn-danger:hover { background: rgba(138,58,34,0.08) !important; }
+
+/* Filters / selects */
+body.light-mode .filter-select { background-color: rgba(26,21,16,0.04) !important; border-color: rgba(26,21,16,0.14) !important; color: #1a1510 !important; }
+body.light-mode .filter-select option { background: #f5ede0; color: #1a1510; }
+body.light-mode .filter-count { color: rgba(26,21,16,0.4) !important; }
+
+/* Table */
+body.light-mode .table-card { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
+body.light-mode thead th { background: #e5ddd0 !important; color: rgba(26,21,16,0.55) !important; border-bottom: 1px solid rgba(26,21,16,0.12) !important; }
+body.light-mode thead th:hover { color: #1a1510 !important; }
+body.light-mode tbody tr { border-bottom: 1px solid rgba(26,21,16,0.07) !important; }
+body.light-mode tbody tr:hover { background: #e8e0d2 !important; }
+body.light-mode td { color: #1a1510 !important; }
+
+/* KPI cards */
+body.light-mode .kpi-card, body.light-mode .kpi-card-sm { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .kpi-footer { border-top-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .spark-bar { background: rgba(26,21,16,0.1) !important; }
+body.light-mode .spark-bar.hi { background: #1a1510 !important; }
+
+/* Chart card */
+body.light-mode .chart-card { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .chart-head { border-bottom-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .chart-xlabel { color: rgba(26,21,16,0.4) !important; }
+body.light-mode .chart-xlabel.active { color: #1a1510 !important; }
+body.light-mode .leg-item { color: rgba(26,21,16,0.5) !important; }
+body.light-mode .period-tab { color: rgba(26,21,16,0.5) !important; border-color: transparent !important; }
+body.light-mode .period-tab:hover { color: #1a1510 !important; }
+body.light-mode .period-tab.active { background: #1a1510 !important; color: #f5ede0 !important; border-color: #1a1510 !important; }
+
+/* Stats grid */
+body.light-mode .stat-card { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .bar-track { background: rgba(26,21,16,0.1) !important; }
+body.light-mode .bar-fill { background: #8a3a22 !important; }
+body.light-mode .bar-lbl { color: #1a1510 !important; }
+body.light-mode .bar-num { color: rgba(26,21,16,0.45) !important; }
+body.light-mode .pill-circle { border: 1px solid rgba(26,21,16,0.15) !important; }
+
+/* Timeline */
+body.light-mode .tl-row { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .tl-row:hover { border-color: rgba(138,58,34,0.35) !important; }
+body.light-mode .tl-date { color: rgba(26,21,16,0.4) !important; }
+body.light-mode .tl-month-year { color: rgba(26,21,16,0.4) !important; }
+body.light-mode .tl-header { border-bottom-color: rgba(26,21,16,0.1) !important; }
+
+/* Modal overlay */
+body.light-mode .modal-overlay { background: rgba(26,21,16,0.45) !important; }
+
+/* Ed modal sections */
+body.light-mode .ed-modal-section { background: #ede5d8 !important; border-bottom: 1px solid rgba(26,21,16,0.1) !important; }
+body.light-mode .ed-modal-section:nth-child(odd) { border-right: 1px solid rgba(26,21,16,0.1) !important; }
+body.light-mode .ed-modal-sec-title { color: #1a1510 !important; }
+body.light-mode .ed-modal-row { border-bottom: 1px solid rgba(26,21,16,0.07) !important; }
+body.light-mode .ed-modal-key { color: rgba(26,21,16,0.45) !important; }
+body.light-mode .ed-modal-val { color: #1a1510 !important; }
+
+/* Cronologia */
+body.light-mode .ed-cronologia { border-top: 1px solid rgba(26,21,16,0.1) !important; border-bottom: 1px solid rgba(26,21,16,0.1) !important; }
+body.light-mode .ed-cron-kicker { color: rgba(26,21,16,0.4) !important; }
+body.light-mode .ed-cron-dot { background: #f5ede0 !important; border: 1.5px solid rgba(26,21,16,0.25) !important; }
+body.light-mode .ed-cron-dot.filled { background: #8a3a22 !important; border-color: #8a3a22 !important; }
+body.light-mode .ed-cron-step-label { color: rgba(26,21,16,0.45) !important; }
+body.light-mode .ed-cron-step-date { color: rgba(26,21,16,0.55) !important; }
+
+/* Notes */
+body.light-mode .ed-modal-notes { color: rgba(26,21,16,0.65) !important; border-bottom: 1px solid rgba(26,21,16,0.1) !important; background: transparent !important; }
+
+/* Modal action buttons */
+body.light-mode .ed-modal-edit-btn { background: #e5ddd0 !important; color: #1a1510 !important; }
+body.light-mode .ed-modal-edit-btn:hover { background: #ddd5c8 !important; }
+body.light-mode .ed-modal-move-btn { background: #8a3a22 !important; color: #f5ede0 !important; font-weight: 700 !important; }
+body.light-mode .ed-modal-move-btn:hover { background: #7a2e18 !important; }
+
+/* Chips */
+body.light-mode .chip { background: rgba(26,21,16,0.06) !important; border-color: rgba(26,21,16,0.16) !important; color: rgba(26,21,16,0.6) !important; }
+body.light-mode .chip:hover { border-color: rgba(26,21,16,0.3) !important; color: #1a1510 !important; }
+body.light-mode .chip.selected { background: #1a1510 !important; color: #f5ede0 !important; border-color: #1a1510 !important; }
+body.light-mode .chip-add { color: #8a3a22 !important; border-color: rgba(138,58,34,0.38) !important; background: transparent !important; }
+body.light-mode .chip-add:hover { background: rgba(138,58,34,0.08) !important; }
+body.light-mode .chip-add-input input { background: rgba(26,21,16,0.04) !important; border-color: rgba(138,58,34,0.35) !important; color: #1a1510 !important; }
+
+/* Star rating */
+body.light-mode .star-rating .star { color: rgba(26,21,16,0.15) !important; }
+body.light-mode .star-rating .star.on { color: #c07820 !important; }
+body.light-mode .star-rating .star.hover { color: #d08030 !important; }
+
+/* Smart add */
+body.light-mode .smart-add-input { border-color: rgba(138,58,34,0.3) !important; background: #f0e8dc !important; color: #1a1510 !important; }
+body.light-mode .smart-add-input:focus { border-color: #8a3a22 !important; }
+body.light-mode .smart-add-btn { background: #8a3a22 !important; color: #f5ede0 !important; }
+body.light-mode .smart-add-cancel { color: rgba(26,21,16,0.5) !important; border-color: rgba(26,21,16,0.18) !important; }
+body.light-mode .modal .smart-add-btn { background: #8a3a22 !important; color: #f5ede0 !important; }
+body.light-mode .modal .smart-add-cancel { border: 1px solid rgba(26,21,16,0.18) !important; color: rgba(26,21,16,0.45) !important; }
+
+/* Smart select */
+body.light-mode .smart-select-wrap select { background-color: rgba(26,21,16,0.04) !important; border-color: rgba(26,21,16,0.16) !important; color: #1a1510 !important; }
+
+/* Notes block */
+body.light-mode .notes-block { background: rgba(26,21,16,0.04) !important; border-color: rgba(26,21,16,0.12) !important; color: rgba(26,21,16,0.7) !important; }
+
+/* Delete confirm */
+body.light-mode .delete-confirm { background: rgba(26,21,16,0.03) !important; border-color: rgba(138,58,34,0.22) !important; }
+body.light-mode .delete-confirm p { color: rgba(26,21,16,0.7) !important; }
+body.light-mode .delete-confirm .btn-danger-confirm { background: #8a3a22 !important; }
+
+/* Camera modal & cards */
+body.light-mode .cam-modal { background: #ede5d8 !important; border: 1px solid rgba(26,21,16,0.14) !important; }
+body.light-mode .cam-modal-title { color: #1a1510 !important; }
+body.light-mode .cam-modal-label { color: rgba(26,21,16,0.55) !important; }
+body.light-mode .cam-modal-input, body.light-mode .cam-modal-select { background: rgba(26,21,16,0.04) !important; border-color: rgba(26,21,16,0.14) !important; color: #1a1510 !important; }
+body.light-mode .cam-modal-input:focus, body.light-mode .cam-modal-select:focus { border-color: #8a3a22 !important; }
+body.light-mode .cam-modal-save { background: #8a3a22 !important; color: #f5ede0 !important; font-weight: 700 !important; }
+body.light-mode .cam-modal-save:hover { background: #7a2e18 !important; }
+body.light-mode .cam-modal-cancel { border-color: rgba(26,21,16,0.18) !important; color: rgba(26,21,16,0.5) !important; }
+body.light-mode .cam-card { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .cam-card:hover { border-color: rgba(138,58,34,0.35) !important; box-shadow: 0 4px 18px rgba(26,21,16,0.12) !important; }
+body.light-mode .cam-empty-state { border-color: rgba(26,21,16,0.12) !important; }
+body.light-mode .btn-add-camera { background: #8a3a22 !important; }
+body.light-mode .btn-add-camera:hover { background: #7a2e18 !important; }
+
+/* Cam chart */
+body.light-mode .cam-chart-wrap { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .cam-bar-track { background: rgba(26,21,16,0.1) !important; }
+
+/* Sync toast */
+body.light-mode .sync-toast { background: #ede5d8 !important; border: 1px solid rgba(26,21,16,0.12) !important; border-left: 3px solid #5aaf7a !important; color: #1a1510 !important; }
+body.light-mode .sync-toast.error { background: #ede5d8 !important; border-left-color: #e05555 !important; color: #c02020 !important; }
+
+/* Empty state */
+body.light-mode .empty-state .es-frame { border-color: rgba(138,58,34,0.25) !important; background: repeating-linear-gradient(45deg, transparent 0 10px, rgba(138,58,34,.03) 10px 11px) !important; }
+body.light-mode .empty-state .es-title { color: #1a1510 !important; }
+
+/* Dash add button */
+body.light-mode .dash-add-btn { background: #8a3a22 !important; }
+body.light-mode .dash-add-btn:hover { background: #7a2e18 !important; }
+
+/* Editor (outside modal) */
+body.light-mode .editor-key { color: rgba(26,21,16,0.45) !important; }
+body.light-mode .editor-val input, body.light-mode .editor-val select, body.light-mode .editor-val textarea { background: rgba(26,21,16,0.04) !important; border-color: rgba(26,21,16,0.16) !important; color: #1a1510 !important; }
+body.light-mode .editor-val input:focus, body.light-mode .editor-val select:focus, body.light-mode .editor-val textarea:focus { border-color: #8a3a22 !important; background: rgba(138,58,34,0.04) !important; }
+body.light-mode .editor-val input::placeholder { color: rgba(26,21,16,0.3) !important; }
+body.light-mode .editor-val input[type="date"] { color-scheme: light !important; }
+body.light-mode .editor-val input[type="date"]::-webkit-calendar-picker-indicator { filter: none !important; opacity: 0.5 !important; }
+body.light-mode .editor-actions { border-top-color: rgba(26,21,16,0.1) !important; }
+
+/* Page title */
+body.light-mode .page-title { color: #1a1510 !important; }
+
+/* Detail grid */
+body.light-mode .detail-sec-title { border-bottom-color: rgba(26,21,16,0.1) !important; color: rgba(26,21,16,0.45) !important; }
+body.light-mode .detail-key { color: rgba(26,21,16,0.45) !important; }
+body.light-mode .detail-val { color: #1a1510 !important; }
+
+/* Status pills */
+body.light-mode .status-pill.s-incamera { background: rgba(106,157,224,.12) !important; color: #4070b0 !important; border-color: rgba(106,157,224,.3) !important; }
+body.light-mode .status-pill.s-todevelop { background: rgba(217,130,10,.1) !important; color: #a06008 !important; border-color: rgba(217,130,10,.3) !important; }
+body.light-mode .status-pill.s-indevelopment { background: rgba(160,112,208,.1) !important; color: #7040a8 !important; border-color: rgba(160,112,208,.3) !important; }
+body.light-mode .status-pill.s-developed { background: rgba(90,175,122,.1) !important; color: #2a8050 !important; border-color: rgba(90,175,122,.25) !important; }
+
+/* Scrollbar */
+body.light-mode ::-webkit-scrollbar-track { background: rgba(26,21,16,0.05); }
+body.light-mode ::-webkit-scrollbar-thumb { background: rgba(26,21,16,0.18); }
+body.light-mode ::-webkit-scrollbar-thumb:hover { background: rgba(26,21,16,0.3); }
+
+/* Theme toggle button */
+#themeToggleBtn {
+  width: 32px; height: 32px;
+  background: none;
+  border: 1px solid rgba(244,237,226,0.18);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 2px;
+  transition: border-color .18s, background .18s;
+  flex-shrink: 0;
+  color: rgba(232,223,209,0.7);
+}
+#themeToggleBtn:hover { border-color: rgba(244,237,226,0.4); background: rgba(244,237,226,0.07); color: #e8dfd1; }
+body.light-mode #themeToggleBtn { border-color: rgba(26,21,16,0.18); color: rgba(26,21,16,0.6); }
+body.light-mode #themeToggleBtn:hover { border-color: rgba(26,21,16,0.35); background: rgba(26,21,16,0.05); color: #1a1510; }
+#themeToggleBtn svg { width: 15px; height: 15px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./auth-recovery.js"></script>
@@ -4187,6 +4493,22 @@ body.mob-detail .mob-app .mob-view {
         <span style="opacity:0.4;">/</span>
         <span id="edMastheadDate" style="opacity:0.7;"></span>
       </div>
+    </div>
+    <div class="topbar-right">
+      <button id="themeToggleBtn" type="button" aria-label="Cambiar tema" onclick="toggleTheme()" title="Modo claro">
+        <!-- Moon — shown in dark mode -->
+        <svg id="themeIconMoon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+        <!-- Sun — shown in light mode -->
+        <svg id="themeIconSun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -4517,6 +4839,31 @@ body.mob-detail .mob-app .mob-view {
 <script>
 const RAW = [];
 const LOCAL_DEMO_DATA = [];
+
+// ═══════════════════════════════════════════
+//  THEME TOGGLE — light / dark mode
+// ═══════════════════════════════════════════
+(function() {
+  var saved = localStorage.getItem('analogdb_theme');
+  if (saved === 'light') document.body.classList.add('light-mode');
+  _syncThemeIcon();
+})();
+
+function toggleTheme() {
+  var isLight = document.body.classList.toggle('light-mode');
+  try { localStorage.setItem('analogdb_theme', isLight ? 'light' : 'dark'); } catch(e) {}
+  _syncThemeIcon();
+}
+
+function _syncThemeIcon() {
+  var isLight = document.body.classList.contains('light-mode');
+  var moon = document.getElementById('themeIconMoon');
+  var sun  = document.getElementById('themeIconSun');
+  var btn  = document.getElementById('themeToggleBtn');
+  if (moon) moon.style.display = isLight ? 'none' : '';
+  if (sun)  sun.style.display  = isLight ? ''     : 'none';
+  if (btn)  btn.title = isLight ? 'Modo oscuro' : 'Modo claro';
+}
 
 // ═══════════════════════════════════════════
 //  STORAGE & UTILITIES
