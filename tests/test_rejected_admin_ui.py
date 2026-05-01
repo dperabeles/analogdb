@@ -43,6 +43,12 @@ class RejectedAdminUiTests(unittest.TestCase):
         self.assertIn("techRows.push({ l: 'Lugar', text: locs.join(' · ') })", html)
         self.assertIn("techRows.push({ l: 'Rating', html:", html)
 
+    def test_still_life_is_a_default_photo_type(self):
+        html = HTML_PATH.read_text()
+
+        self.assertIn("const DEFAULT_PHOTO_TYPES = ['Still Life'];", html)
+        self.assertIn("if (key === 'PHOTO TYPE') DEFAULT_PHOTO_TYPES.forEach(v => set.add(v));", html)
+
 
 if __name__ == "__main__":
     unittest.main()
