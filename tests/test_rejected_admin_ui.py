@@ -34,6 +34,15 @@ class RejectedAdminUiTests(unittest.TestCase):
         self.assertIn("create or replace function public.admin_set_profile_status", migration)
         self.assertIn("if p_status not in ('pending', 'approved', 'rejected') then", migration)
 
+    def test_mobile_detail_technical_rows_escape_user_data_by_default(self):
+        html = HTML_PATH.read_text()
+
+        self.assertIn("row.html != null ? row.html : esc(row.text)", html)
+        self.assertNotIn('row.v +', html)
+        self.assertIn("techRows.push({ l: 'Cámara', text: cameraModel })", html)
+        self.assertIn("techRows.push({ l: 'Lugar', text: locs.join(' · ') })", html)
+        self.assertIn("techRows.push({ l: 'Rating', html:", html)
+
 
 if __name__ == "__main__":
     unittest.main()

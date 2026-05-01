@@ -9545,33 +9545,36 @@ function updateLocationCheckbox(id) {
     // is visible and the user can spot rolls missing the field.
     var cameraModel = String(r['MODEL NAME'] || '').trim();
     if (cameraModel) {
-      techRows.push({ l: 'Cámara', v: cameraModel });
+      techRows.push({ l: 'Cámara', text: cameraModel });
       var lensVal = r.LENS && String(r.LENS).trim()
-        ? esc(r.LENS)
+        ? String(r.LENS).trim()
         : '<span style="color:rgba(232,223,209,0.28);font-family:DM Mono,monospace;font-size:11px;letter-spacing:0.18em;text-transform:uppercase">Sin asignar</span>';
-      techRows.push({ l: 'Lente', v: lensVal });
+      techRows.push(r.LENS && String(r.LENS).trim()
+        ? { l: 'Lente', text: lensVal }
+        : { l: 'Lente', html: lensVal });
     } else if (r.LENS) {
       // Fallback: lens recorded but no camera model
-      techRows.push({ l: 'Lente', v: esc(r.LENS) });
+      techRows.push({ l: 'Lente', text: String(r.LENS).trim() });
     }
-    if (locs.length) techRows.push({ l: 'Lugar', v: locs.join(' · ') });
+    if (locs.length) techRows.push({ l: 'Lugar', text: locs.join(' · ') });
     if (expTaken != null) {
       var em = expMax != null ? ' <span style="color:rgba(232,223,209,0.4);font-family:DM Mono,monospace;font-size:11px;letter-spacing:0.1em">/ ' + esc(expMax) + '</span>' : '';
-      techRows.push({ l: 'Disparadas', v: esc(expTaken) + em });
+      techRows.push({ l: 'Disparadas', html: esc(expTaken) + em });
     }
-    if (hasPush) techRows.push({ l: 'Push/Pull', v: pushVal });
-    if (r['ISO @'] && String(r['ISO @']) !== String(r.ISO || '')) techRows.push({ l: 'ISO @', v: r['ISO @'] });
-    if (r.DEV) techRows.push({ l: 'Revelado', v: r.DEV });
-    if (r.SCAN) techRows.push({ l: 'Scan', v: r.SCAN });
+    if (hasPush) techRows.push({ l: 'Push/Pull', text: pushVal });
+    if (r['ISO @'] && String(r['ISO @']) !== String(r.ISO || '')) techRows.push({ l: 'ISO @', text: r['ISO @'] });
+    if (r.DEV) techRows.push({ l: 'Revelado', text: r.DEV });
+    if (r.SCAN) techRows.push({ l: 'Scan', text: r.SCAN });
     if (rating > 0) {
       var stars = Array.from({length:5}, function (_, j) {
         return '<span class="' + (j < rating ? 'mob-rd-stars' : 'mob-rd-stars-empty') + '">★</span>';
       }).join('');
-      techRows.push({ l: 'Rating', v: '<div class="mob-rd-stars">' + stars + '</div>' });
+      techRows.push({ l: 'Rating', html: '<div class="mob-rd-stars">' + stars + '</div>' });
     }
     var tech = techRows.length
       ? '<div class="mob-rd-tech">' + techRows.map(function (row) {
-          return '<div class="row"><span class="l">' + esc(row.l) + '</span><span class="v">' + row.v + '</span></div>';
+          var value = row.html != null ? row.html : esc(row.text);
+          return '<div class="row"><span class="l">' + esc(row.l) + '</span><span class="v">' + value + '</span></div>';
         }).join('') + '</div>'
       : '';
 
