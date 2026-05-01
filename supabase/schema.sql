@@ -383,7 +383,7 @@ begin
     raise exception 'admin required';
   end if;
 
-  if p_status not in ('approved', 'rejected') then
+  if p_status not in ('pending', 'approved', 'rejected') then
     raise exception 'invalid status';
   end if;
 
