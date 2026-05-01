@@ -9667,16 +9667,24 @@ function updateLocationCheckbox(id) {
       container.innerHTML = '<div class="mob-empty">Panel admin no disponible en este contexto</div>';
       return;
     }
+    // loadRejectedUsers exists from the merge with main (f0e5de9). If we're
+    // running against an older bundle without it, fall back to an empty list.
+    var rejectedLoader = (typeof loadRejectedUsers === 'function')
+      ? loadRejectedUsers()
+      : Promise.resolve([]);
+
     Promise.all([
       loadPendingUsers(),
       loadApprovedUsers(),
+      rejectedLoader,
       loadAdminRoster(),
       loadAdminActions()
     ]).then(function (results) {
       var pending = results[0] || [];
       var approved = results[1] || [];
-      var roster = results[2] || [];
-      var actions = results[3] || [];
+      var rejected = results[2] || [];
+      var roster = results[3] || [];
+      var actions = results[4] || [];
       var adminIds = new Set(roster.map(function (r) { return r.user_id; }));
       var founderIds = new Set(roster.filter(function (r) { return r.is_founder; }).map(function (r) { return r.user_id; }));
       var pendingActions = actions.filter(function (a) { return a.status === 'pending'; });
@@ -9736,9 +9744,36 @@ function updateLocationCheckbox(id) {
           }).join('') + '</div>'
         : '<div class="mob-empty">Sin usuarios aprobados</div>';
 
-      // Section III — Acciones admin (votes)
+      // Section III — Usuarios rechazados (con botón Reactivar)
+      // Mirrors the desktop "Usuarios rechazados" section from main (f0e5de9).
+      // Hide the section entirely when there are no rejected users — it's
+      // a corrective workflow, not a primary surface.
+      var rejectedHtml = '';
+      if (rejected.length) {
+        rejectedHtml = '<div class="mob-subhead">' +
+          '<span class="n">III.</span><span class="t">Usuarios rechazados</span>' +
+          '<span class="a">' + rejected.length + '</span>' +
+        '</div>' +
+        '<div class="mob-adm-list">' + rejected.map(function (p) {
+          var uid = esc(p.user_id);
+          return '<div class="mob-adm-card">' +
+            '<div class="row1">' +
+              '<span class="nm">' + esc(p.display_name || '—') + '</span>' +
+              '<span class="mob-adm-pill">Rechazado</span>' +
+            '</div>' +
+            '<div class="em">' + esc(p.email || '') + '</div>' +
+            '<div class="mob-adm-actions single">' +
+              '<button type="button" class="mob-adm-btn primary" onclick="window._mobApp.adminReactivate(\'' + uid + '\')">↺ Reactivar solicitud</button>' +
+            '</div>' +
+          '</div>';
+        }).join('') + '</div>';
+      }
+
+      // Section IV — Acciones admin (votes)
+      // Numeral shifts based on whether rejected section was rendered
+      var votesNumeral = rejected.length ? 'IV.' : 'III.';
       var actionsHtml = '<div class="mob-subhead">' +
-        '<span class="n">III.</span><span class="t">Votaciones abiertas</span>' +
+        '<span class="n">' + votesNumeral + '</span><span class="t">Votaciones abiertas</span>' +
         '<span class="a">' + pendingActions.length + '</span>' +
       '</div>';
       actionsHtml += pendingActions.length
@@ -9760,7 +9795,7 @@ function updateLocationCheckbox(id) {
           }).join('') + '</div>'
         : '<div class="mob-empty">Sin votaciones abiertas</div>';
 
-      container.innerHTML = pendingHtml + approvedHtml + actionsHtml;
+      container.innerHTML = pendingHtml + approvedHtml + rejectedHtml + actionsHtml;
     }).catch(function (err) {
       console.error('mob admin load failed', err);
       container.innerHTML = '<div class="mob-empty" style="border-color:#ff9c82;color:#ff9c82">No se pudo cargar el panel admin</div>';
@@ -9910,6 +9945,19 @@ function updateLocationCheckbox(id) {
     adminVote: function (actionId, decision) {
       if (typeof voteAdminAction !== 'function') return;
       voteAdminAction(actionId, decision).then(loadAdminMobileContent).catch(adminErr);
+    },
+    // Reactivate a previously-rejected user (rejected → pending).
+    // Mirrors the desktop "Reactivar" button shipped in main (f0e5de9).
+    adminReactivate: function (uid) {
+      if (typeof sb === 'undefined' || !sb.rpc) return;
+      if (!window.confirm('¿Reactivar este usuario? Volverá a estado pendiente.')) return;
+      sb.rpc('admin_set_profile_status', {
+        p_target_user_id: uid,
+        p_status: 'pending'
+      }).then(function (res) {
+        if (res && res.error) throw res.error;
+        loadAdminMobileContent();
+      }).catch(adminErr);
     }
   };
 
