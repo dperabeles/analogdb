@@ -4079,14 +4079,47 @@ body.mob-detail .mob-app .mob-view {
    Overrides the darkroom theme when body.light-mode is active
 ═══════════════════════════════════════════ */
 
+/* ── Smooth mode transition ── */
+body,
+body .main,
+body .topbar,
+body #mainTopbar,
+body .kpi-card,
+body .kpi-card-sm,
+body .chart-card,
+body .stat-card,
+body .table-card,
+body .roll-card,
+body .tl-row,
+body .cam-card,
+body .cam-chart-wrap,
+body .ed-modal-section,
+body .chip,
+body .btn-primary,
+body .btn-ghost,
+body .filter-select,
+body .ed-section-num,
+body .ed-section-title,
+body .ed-mast-title,
+body .ed-page-header-title {
+  transition:
+    background 0.28s ease,
+    background-color 0.28s ease,
+    color 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
+}
+
 body.light-mode {
   background: #f5ede0 !important;
   color: #1a1510 !important;
 }
 
+/* Warm paper noise overlay — replaces the dark film grain */
 body.light-mode::before {
   mix-blend-mode: multiply;
-  opacity: 0.035;
+  opacity: 0.055;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.25 0 0 0 0 0.1 0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Inline style overrides — restore editorial light colors */
@@ -4113,10 +4146,10 @@ body.light-mode .main [style*="color:#d94a2a"] { color: #8a3a22 !important; }
 body.light-mode .topbar [style*="color:#e8dfd1"] { color: rgba(26,21,16,0.75) !important; }
 
 /* Topbar */
-body.light-mode .topbar { background: #f5ede0 !important; border-bottom: 1px solid rgba(26,21,16,0.12) !important; }
+body.light-mode .topbar { background: #f0e8da !important; border-bottom: 1px solid rgba(26,21,16,0.14) !important; box-shadow: 0 1px 8px rgba(26,21,16,0.08) !important; }
 body.light-mode .topbar .bc-root, body.light-mode .topbar .bc-sep { color: rgba(26,21,16,0.4) !important; }
 body.light-mode .topbar .bc-page { color: rgba(26,21,16,0.75) !important; }
-body.light-mode #mainTopbar { background: #f5ede0 !important; border-bottom: 1px solid rgba(26,21,16,0.12) !important; }
+body.light-mode #mainTopbar { background: #f0e8da !important; border-bottom: 1px solid rgba(26,21,16,0.14) !important; box-shadow: 0 1px 8px rgba(26,21,16,0.08) !important; }
 body.light-mode .search-box { background: rgba(26,21,16,0.05) !important; border-color: rgba(26,21,16,0.15) !important; }
 body.light-mode .search-box input { color: #1a1510 !important; }
 body.light-mode .search-box input::placeholder { color: rgba(26,21,16,0.4) !important; }
@@ -4132,10 +4165,10 @@ body.light-mode .nav-badge { background: rgba(244,237,226,0.08) !important; colo
 body.light-mode .ed-brand { border-bottom: 1px solid rgba(232,220,197,0.15) !important; }
 
 /* Section heads */
-body.light-mode .ed-section-head { border-bottom: 1px solid #1a1510 !important; }
-body.light-mode .ed-section-num { color: #8a3a22 !important; }
-body.light-mode .ed-section-title { color: #1a1510 !important; }
-body.light-mode .ed-section-sub { color: rgba(26,21,16,0.55) !important; }
+body.light-mode .ed-section-head { border-bottom: 2px solid rgba(26,21,16,0.85) !important; }
+body.light-mode .ed-section-num { color: #8a3a22 !important; font-weight: 900 !important; }
+body.light-mode .ed-section-title { color: #1a1510 !important; font-weight: 700 !important; }
+body.light-mode .ed-section-sub { color: rgba(26,21,16,0.5) !important; }
 
 /* Index / kickers */
 body.light-mode .ed-index-kicker { border-bottom: 1px solid rgba(26,21,16,0.15) !important; color: rgba(26,21,16,0.5) !important; }
@@ -4157,18 +4190,18 @@ body.light-mode .ed-stock-count { color: #1a1510 !important; }
 body.light-mode .ed-stock-num { color: #8a3a22 !important; }
 
 /* Workflow */
-body.light-mode .ed-workflow { border-top: 1px solid rgba(26,21,16,0.1) !important; border-bottom: 1px solid rgba(26,21,16,0.1) !important; }
-body.light-mode .ed-workflow-col { border-right: 1px solid rgba(26,21,16,0.1) !important; }
-body.light-mode .ed-workflow-head { border-bottom: 1px solid rgba(26,21,16,0.1) !important; }
-body.light-mode .ed-workflow-title { color: #1a1510 !important; }
-body.light-mode .ed-workflow-count { color: rgba(26,21,16,0.15) !important; }
-body.light-mode .ed-workflow-count.live { color: #1a1510 !important; }
-body.light-mode .ed-add-card { border: 1px dashed rgba(26,21,16,0.22) !important; color: rgba(26,21,16,0.4) !important; background: transparent !important; }
-body.light-mode .ed-add-card:hover { border-color: rgba(26,21,16,0.4) !important; color: rgba(26,21,16,0.7) !important; }
+body.light-mode .ed-workflow { border-top: 1.5px solid rgba(26,21,16,0.18) !important; border-bottom: 1.5px solid rgba(26,21,16,0.18) !important; background: rgba(26,21,16,0.025) !important; }
+body.light-mode .ed-workflow-col { border-right: 1px solid rgba(26,21,16,0.12) !important; background: rgba(255,252,248,0.6) !important; }
+body.light-mode .ed-workflow-head { border-bottom: 1px solid rgba(26,21,16,0.12) !important; padding-bottom: 10px !important; }
+body.light-mode .ed-workflow-title { color: #1a1510 !important; font-weight: 700 !important; letter-spacing: 0.02em !important; }
+body.light-mode .ed-workflow-count { color: rgba(26,21,16,0.12) !important; }
+body.light-mode .ed-workflow-count.live { color: rgba(26,21,16,0.65) !important; }
+body.light-mode .ed-add-card { border: 1px dashed rgba(26,21,16,0.2) !important; color: rgba(26,21,16,0.38) !important; background: rgba(255,252,248,0.4) !important; }
+body.light-mode .ed-add-card:hover { border-color: #8a3a22 !important; color: #8a3a22 !important; background: rgba(138,58,34,0.04) !important; }
 
 /* Roll cards */
-body.light-mode .roll-card { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
-body.light-mode .roll-card:hover { box-shadow: 0 4px 20px rgba(26,21,16,0.12) !important; }
+body.light-mode .roll-card { background: #faf5ee !important; border-color: rgba(26,21,16,0.1) !important; box-shadow: 0 1px 3px rgba(26,21,16,0.06) !important; }
+body.light-mode .roll-card:hover { box-shadow: 0 4px 16px rgba(26,21,16,0.14) !important; border-color: rgba(138,58,34,0.25) !important; }
 body.light-mode .roll-card-name { color: #1a1510 !important; }
 body.light-mode .roll-card-maker { color: rgba(26,21,16,0.5) !important; }
 body.light-mode .roll-card-chip { background: rgba(26,21,16,0.07) !important; border-color: rgba(26,21,16,0.14) !important; color: rgba(26,21,16,0.6) !important; }
@@ -4206,21 +4239,21 @@ body.light-mode .filter-select option { background: #f5ede0; color: #1a1510; }
 body.light-mode .filter-count { color: rgba(26,21,16,0.4) !important; }
 
 /* Table */
-body.light-mode .table-card { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
-body.light-mode thead th { background: #e5ddd0 !important; color: rgba(26,21,16,0.55) !important; border-bottom: 1px solid rgba(26,21,16,0.12) !important; }
+body.light-mode .table-card { background: #faf5ee !important; border-color: rgba(26,21,16,0.1) !important; box-shadow: 0 1px 4px rgba(26,21,16,0.07), 0 3px 12px rgba(26,21,16,0.05) !important; }
+body.light-mode thead th { background: #f0e8da !important; color: rgba(26,21,16,0.5) !important; border-bottom: 1px solid rgba(26,21,16,0.12) !important; }
 body.light-mode thead th:hover { color: #1a1510 !important; }
-body.light-mode tbody tr { border-bottom: 1px solid rgba(26,21,16,0.07) !important; }
-body.light-mode tbody tr:hover { background: #e8e0d2 !important; }
+body.light-mode tbody tr { border-bottom: 1px solid rgba(26,21,16,0.06) !important; }
+body.light-mode tbody tr:hover { background: rgba(138,58,34,0.04) !important; }
 body.light-mode td { color: #1a1510 !important; }
 
 /* KPI cards */
-body.light-mode .kpi-card, body.light-mode .kpi-card-sm { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
-body.light-mode .kpi-footer { border-top-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .kpi-card, body.light-mode .kpi-card-sm { background: #faf5ee !important; border-color: rgba(26,21,16,0.1) !important; box-shadow: 0 1px 4px rgba(26,21,16,0.07), 0 3px 12px rgba(26,21,16,0.05) !important; }
+body.light-mode .kpi-footer { border-top-color: rgba(26,21,16,0.08) !important; }
 body.light-mode .spark-bar { background: rgba(26,21,16,0.1) !important; }
-body.light-mode .spark-bar.hi { background: #1a1510 !important; }
+body.light-mode .spark-bar.hi { background: #8a3a22 !important; }
 
 /* Chart card */
-body.light-mode .chart-card { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .chart-card { background: #faf5ee !important; border-color: rgba(26,21,16,0.1) !important; box-shadow: 0 1px 4px rgba(26,21,16,0.07), 0 3px 12px rgba(26,21,16,0.05) !important; }
 body.light-mode .chart-head { border-bottom-color: rgba(26,21,16,0.1) !important; }
 body.light-mode .chart-xlabel { color: rgba(26,21,16,0.4) !important; }
 body.light-mode .chart-xlabel.active { color: #1a1510 !important; }
@@ -4230,8 +4263,8 @@ body.light-mode .period-tab:hover { color: #1a1510 !important; }
 body.light-mode .period-tab.active { background: #1a1510 !important; color: #f5ede0 !important; border-color: #1a1510 !important; }
 
 /* Stats grid */
-body.light-mode .stat-card { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
-body.light-mode .bar-track { background: rgba(26,21,16,0.1) !important; }
+body.light-mode .stat-card { background: #faf5ee !important; border-color: rgba(26,21,16,0.1) !important; box-shadow: 0 1px 4px rgba(26,21,16,0.07) !important; }
+body.light-mode .bar-track { background: rgba(26,21,16,0.09) !important; }
 body.light-mode .bar-fill { background: #8a3a22 !important; }
 body.light-mode .bar-lbl { color: #1a1510 !important; }
 body.light-mode .bar-num { color: rgba(26,21,16,0.45) !important; }
@@ -4365,20 +4398,38 @@ body.light-mode ::-webkit-scrollbar-thumb:hover { background: rgba(26,21,16,0.3)
 
 /* Theme toggle button */
 #themeToggleBtn {
-  width: 32px; height: 32px;
-  background: none;
-  border: 1px solid rgba(244,237,226,0.18);
+  width: 34px; height: 34px;
+  background: rgba(244,237,226,0.06);
+  border: 1px solid rgba(244,237,226,0.22);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   border-radius: 2px;
-  transition: border-color .18s, background .18s;
+  transition: border-color .22s, background .22s, color .22s, box-shadow .22s;
   flex-shrink: 0;
-  color: rgba(232,223,209,0.7);
+  color: rgba(232,223,209,0.75);
 }
-#themeToggleBtn:hover { border-color: rgba(244,237,226,0.4); background: rgba(244,237,226,0.07); color: #e8dfd1; }
-body.light-mode #themeToggleBtn { border-color: rgba(26,21,16,0.18); color: rgba(26,21,16,0.6); }
-body.light-mode #themeToggleBtn:hover { border-color: rgba(26,21,16,0.35); background: rgba(26,21,16,0.05); color: #1a1510; }
-#themeToggleBtn svg { width: 15px; height: 15px; }
+#themeToggleBtn:hover {
+  border-color: rgba(244,237,226,0.5);
+  background: rgba(244,237,226,0.1);
+  color: #e8dfd1;
+  box-shadow: 0 0 0 3px rgba(244,237,226,0.06);
+}
+body.light-mode #themeToggleBtn {
+  background: rgba(26,21,16,0.05);
+  border-color: rgba(26,21,16,0.2);
+  color: rgba(26,21,16,0.55);
+}
+body.light-mode #themeToggleBtn:hover {
+  border-color: rgba(26,21,16,0.4);
+  background: rgba(26,21,16,0.07);
+  color: #1a1510;
+  box-shadow: 0 0 0 3px rgba(26,21,16,0.04);
+}
+#themeToggleBtn svg {
+  width: 15px; height: 15px;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.22s;
+}
+#themeToggleBtn:active svg { transform: rotate(30deg) scale(0.9); }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./auth-recovery.js"></script>
