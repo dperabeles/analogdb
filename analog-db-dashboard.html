@@ -4111,7 +4111,9 @@ body .ed-page-header-title {
 }
 
 body.light-mode {
-  /* Redefine CSS variables so every var(--text) / var(--border) etc. resolves correctly */
+  /* Redefine CSS variables so every var(--text) / var(--border) etc. resolves correctly.
+     --inv / --inv-dim are intentionally kept at their :root cream values —
+     they serve the dark sidebar which stays dark in light mode. */
   --bg:         #f5ede0;
   --bg2:        #ede5d8;
   --surface:    #faf5ee;
@@ -4119,9 +4121,7 @@ body.light-mode {
   --border:     rgba(26,21,16,0.12);
   --text:       #1a1510;
   --text-mid:   rgba(26,21,16,0.65);
-  --text-dim:   rgba(26,21,16,0.45);
-  --inv:        #1a1510;
-  --inv-dim:    rgba(26,21,16,0.55);
+  --text-dim:   rgba(26,21,16,0.6);
   --shadow:     0 1px 3px rgba(26,21,16,0.08), 0 3px 12px rgba(26,21,16,0.05);
   --shadow-md:  0 4px 20px rgba(26,21,16,0.12);
   background: #f5ede0 !important;
@@ -4146,24 +4146,43 @@ body.light-mode [style*="background:#7a2e18"] { background: #7a2e18 !important; 
 body.light-mode [style*="color:rgba(26,21,16"] { color: rgba(26,21,16,0.7) !important; }
 body.light-mode [style*="border-bottom: 1px solid #1a1510"] { border-bottom-color: #1a1510 !important; }
 body.light-mode [style*="background:rgba(138,58,34"] { background: rgba(138,58,34,0.15) !important; }
-body.light-mode [style*="color:#e8dcc5"] { color: #1a1510 !important; }
-body.light-mode [style*="color:rgba(232,220,197"] { color: rgba(26,21,16,0.55) !important; }
+body.light-mode .main [style*="color:#e8dcc5"],
+body.light-mode .modal-overlay [style*="color:#e8dcc5"],
+body.light-mode .qa-overlay [style*="color:#e8dcc5"] { color: #1a1510 !important; }
 body.light-mode [style*="border:1px solid rgba(232,220,197"] { border-color: rgba(26,21,16,0.15) !important; }
 body.light-mode [style*="background:rgba(232,220,197"] { background: rgba(26,21,16,0.06) !important; }
 
-/* Inline dark colors anywhere in the page → flip to light
-   (sidebar text is class-based, not inline, so global scope is safe) */
-body.light-mode [style*="color:#e8dfd1"] { color: #1a1510 !important; }
-body.light-mode [style*="color:#f3eadb"] { color: #1a1510 !important; }
-body.light-mode [style*="color:rgba(232,223,209"] { color: rgba(26,21,16,0.65) !important; }
-body.light-mode [style*="color:#d94a2a"] { color: #8a3a22 !important; }
-/* Background inversions */
-body.light-mode [style*="background:#14110d"] { background: #f5ede0 !important; }
-body.light-mode [style*="background:#221a15"] { background: rgba(26,21,16,0.05) !important; border-color: rgba(26,21,16,0.14) !important; }
-body.light-mode [style*="background:#1c1612"] { background: #faf5ee !important; }
-/* Border inversions */
-body.light-mode [style*="border:1px solid rgba(244,237,226"] { border-color: rgba(26,21,16,0.15) !important; }
-body.light-mode [style*="border-color:rgba(244,237,226"] { border-color: rgba(26,21,16,0.15) !important; }
+/* Inline dark colors → flip to light in main + all overlay containers.
+   Scoped to exclude .ed-sidebar (which keeps its dark background in light mode). */
+body.light-mode .main [style*="color:#e8dfd1"],
+body.light-mode .modal-overlay [style*="color:#e8dfd1"],
+body.light-mode .cam-modal-overlay [style*="color:#e8dfd1"],
+body.light-mode .stats-modal-overlay [style*="color:#e8dfd1"],
+body.light-mode .qa-overlay [style*="color:#e8dfd1"] { color: #1a1510 !important; }
+
+body.light-mode .main [style*="color:#f3eadb"],
+body.light-mode .modal-overlay [style*="color:#f3eadb"],
+body.light-mode .cam-modal-overlay [style*="color:#f3eadb"],
+body.light-mode .stats-modal-overlay [style*="color:#f3eadb"],
+body.light-mode .qa-overlay [style*="color:#f3eadb"] { color: #1a1510 !important; }
+
+body.light-mode .main [style*="color:rgba(232,223,209"],
+body.light-mode .modal-overlay [style*="color:rgba(232,223,209"],
+body.light-mode .cam-modal-overlay [style*="color:rgba(232,223,209"],
+body.light-mode .stats-modal-overlay [style*="color:rgba(232,223,209"],
+body.light-mode .qa-overlay [style*="color:rgba(232,223,209"] { color: rgba(26,21,16,0.65) !important; }
+
+body.light-mode .main [style*="color:rgba(232,220,197"],
+body.light-mode .modal-overlay [style*="color:rgba(232,220,197"],
+body.light-mode .qa-overlay [style*="color:rgba(232,220,197"] { color: rgba(26,21,16,0.55) !important; }
+
+/* Background inversions in main content */
+body.light-mode .main [style*="background:#14110d"] { background: #f5ede0 !important; }
+body.light-mode .main [style*="background:#221a15"] { background: rgba(26,21,16,0.05) !important; border-color: rgba(26,21,16,0.14) !important; }
+body.light-mode .main [style*="background:#1c1612"] { background: #faf5ee !important; }
+/* Border inversions in main content */
+body.light-mode .main [style*="border:1px solid rgba(244,237,226"],
+body.light-mode .modal-overlay [style*="border:1px solid rgba(244,237,226"] { border-color: rgba(26,21,16,0.15) !important; }
 
 /* Topbar */
 body.light-mode .topbar { background: #f0e8da !important; border-bottom: 1px solid rgba(26,21,16,0.14) !important; box-shadow: 0 1px 8px rgba(26,21,16,0.08) !important; }
@@ -4375,6 +4394,11 @@ body.light-mode .btn-add-camera:hover { background: #7a2e18 !important; }
 /* Cam chart */
 body.light-mode .cam-chart-wrap { background: #ede5d8 !important; border-color: rgba(26,21,16,0.1) !important; }
 body.light-mode .cam-bar-track { background: rgba(26,21,16,0.1) !important; }
+body.light-mode .cam-chart-title { color: rgba(26,21,16,0.65) !important; }
+body.light-mode .cam-stats-label { color: rgba(26,21,16,0.65) !important; border-bottom-color: rgba(26,21,16,0.12) !important; }
+body.light-mode .cam-bar-maker { color: rgba(26,21,16,0.5) !important; }
+body.light-mode .cam-bar-model { color: #1a1510 !important; }
+body.light-mode .cam-bar-count { color: rgba(26,21,16,0.55) !important; }
 
 /* Sync toast */
 body.light-mode .sync-toast { background: #ede5d8 !important; border: 1px solid rgba(26,21,16,0.12) !important; border-left: 3px solid #5aaf7a !important; color: #1a1510 !important; }
