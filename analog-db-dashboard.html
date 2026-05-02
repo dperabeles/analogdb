@@ -4396,6 +4396,123 @@ body.light-mode ::-webkit-scrollbar-track { background: rgba(26,21,16,0.05); }
 body.light-mode ::-webkit-scrollbar-thumb { background: rgba(26,21,16,0.18); }
 body.light-mode ::-webkit-scrollbar-thumb:hover { background: rgba(26,21,16,0.3); }
 
+/* ═══════════════════════════════════════════
+   MOBILE LIGHT MODE — mob-* components
+═══════════════════════════════════════════ */
+
+/* App shell */
+body.light-mode .mob-app { background: #f5ede0 !important; }
+
+/* Mobile topbar */
+body.light-mode .mob-shell-top {
+  background: #f0e8da !important;
+  border-bottom: 1px solid rgba(26,21,16,0.1) !important;
+  box-shadow: 0 1px 6px rgba(26,21,16,0.07) !important;
+}
+body.light-mode .mob-shell-top .brand .b1 { color: #1a1510 !important; }
+body.light-mode .mob-shell-top .brand .b2 { color: #8a3a22 !important; }
+body.light-mode .mob-shell-top .acct { color: rgba(26,21,16,0.5) !important; }
+body.light-mode .mob-shell-top .acct-av {
+  background: #ede5d8 !important;
+  border-color: rgba(26,21,16,0.15) !important;
+  color: #1a1510 !important;
+}
+
+/* Bottom nav */
+body.light-mode .mob-bnav {
+  background: rgba(245,237,224,0.97) !important;
+  box-shadow: 0 -1px 0 rgba(26,21,16,0.1), 0 -4px 20px rgba(26,21,16,0.06) !important;
+}
+body.light-mode .mob-bnav-btn { color: rgba(26,21,16,0.45) !important; }
+body.light-mode .mob-bnav-btn.on { color: #8a3a22 !important; }
+body.light-mode .mob-bnav-btn.on .mob-bnav-glyph { color: #8a3a22 !important; }
+body.light-mode .mob-bnav-btn.on .mob-bnav-num { color: #8a3a22 !important; }
+body.light-mode .mob-bnav-btn.on::before { background: #8a3a22 !important; }
+/* FAB stays terracotta — primary CTA */
+body.light-mode .mob-bnav-fab { background: #8a3a22 !important; color: #f5ede0 !important; box-shadow: 0 4px 14px rgba(138,58,34,0.35) !important; }
+body.light-mode .mob-bnav-fab-wrap:active .mob-bnav-fab { background: #7a2e18 !important; }
+
+/* KPI strip */
+body.light-mode .mob-kpi { background: #faf5ee !important; border-color: rgba(26,21,16,0.1) !important; box-shadow: 0 1px 4px rgba(26,21,16,0.07) !important; }
+
+/* Status tabs */
+body.light-mode .mob-status-tabs { background: #faf5ee !important; border-color: rgba(26,21,16,0.1) !important; }
+
+/* Roll list cards */
+body.light-mode .mob-roll { background: #faf5ee !important; border-color: rgba(26,21,16,0.1) !important; box-shadow: 0 1px 3px rgba(26,21,16,0.06) !important; }
+body.light-mode .mob-roll:active { background: #f0e8da !important; }
+
+/* Search box */
+body.light-mode .mob-search { background: #faf5ee !important; border-color: rgba(26,21,16,0.12) !important; }
+
+/* Filter pills */
+body.light-mode .mob-pills button { background: rgba(26,21,16,0.04) !important; color: rgba(26,21,16,0.5) !important; border: 1px solid rgba(26,21,16,0.12) !important; }
+body.light-mode .mob-pills button.on { background: #1a1510 !important; color: #f5ede0 !important; border-color: #1a1510 !important; }
+
+/* Tags */
+body.light-mode .mob-tag { background: rgba(26,21,16,0.06) !important; border-color: rgba(26,21,16,0.12) !important; color: rgba(26,21,16,0.65) !important; }
+
+/* Account avatar (mobile) */
+body.light-mode .mob-acav { background: #faf5ee !important; border-color: rgba(26,21,16,0.16) !important; color: #1a1510 !important; }
+body.light-mode .mob-acname { color: #1a1510 !important; }
+body.light-mode .mob-acemail { color: rgba(26,21,16,0.55) !important; }
+body.light-mode .mob-acstatus { color: #8a3a22 !important; border-color: rgba(138,58,34,0.4) !important; }
+body.light-mode .mob-acstatus .dt { background: #8a3a22 !important; }
+
+/* Account rows */
+body.light-mode .mob-acrow { border-bottom-color: rgba(26,21,16,0.07) !important; }
+body.light-mode .mob-acrow:active { background: rgba(26,21,16,0.03) !important; }
+body.light-mode .mob-acrow .lb { color: rgba(26,21,16,0.4) !important; }
+body.light-mode .mob-acrow .vl { color: #1a1510 !important; }
+body.light-mode .mob-acrow .vl.warn { color: #8a3a22 !important; }
+body.light-mode .mob-acrow .ar { color: rgba(26,21,16,0.25) !important; }
+body.light-mode .mob-acrow.danger .vl { color: #c03030 !important; }
+
+/* Admin cards */
+body.light-mode .mob-adm-card { background: #faf5ee !important; border-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .mob-adm-card.urgent { border-left-color: #8a3a22 !important; }
+body.light-mode .mob-adm-card .nm { color: #1a1510 !important; }
+body.light-mode .mob-adm-card .em { color: rgba(26,21,16,0.55) !important; }
+body.light-mode .mob-adm-pill { color: rgba(26,21,16,0.5) !important; border-color: rgba(26,21,16,0.16) !important; }
+body.light-mode .mob-adm-btn.primary { background: #8a3a22 !important; color: #f5ede0 !important; }
+body.light-mode .mob-adm-btn.ghost { color: rgba(26,21,16,0.6) !important; border-color: rgba(26,21,16,0.18) !important; }
+
+/* Roll detail view */
+body.light-mode .mob-rd-hero { border-bottom-color: rgba(26,21,16,0.08) !important; }
+body.light-mode .mob-rd-stats { background: #faf5ee !important; border-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .mob-rd-tech { background: #faf5ee !important; border-color: rgba(26,21,16,0.1) !important; }
+body.light-mode .mob-rd-notes { background: rgba(245,237,224,0.8) !important; border-left-color: #8a3a22 !important; color: rgba(26,21,16,0.7) !important; }
+body.light-mode .mob-rd-tag { background: #faf5ee !important; border-color: rgba(26,21,16,0.1) !important; }
+
+/* Back / edit links */
+body.light-mode .mob-back { color: rgba(26,21,16,0.5) !important; }
+body.light-mode .mob-back:active { color: #1a1510 !important; }
+body.light-mode .mob-edit-link { color: #8a3a22 !important; }
+
+/* CTA bar */
+body.light-mode .mob-cta-bar { background: rgba(245,237,224,0.97) !important; box-shadow: 0 -1px 0 rgba(26,21,16,0.1) !important; }
+body.light-mode .mob-cta-next { background: #8a3a22 !important; color: #f5ede0 !important; }
+
+/* Empty state */
+body.light-mode .mob-empty { border-color: rgba(26,21,16,0.12) !important; color: rgba(26,21,16,0.35) !important; }
+
+/* Mobile theme toggle button */
+.mob-theme-btn {
+  width: 28px; height: 28px;
+  background: rgba(244,237,226,0.07);
+  border: 1px solid rgba(244,237,226,0.22);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 2px;
+  color: rgba(232,223,209,0.7);
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color .18s, background .18s, color .18s;
+  flex-shrink: 0;
+}
+.mob-theme-btn:active { transform: scale(0.92); }
+.mob-theme-btn svg { width: 13px; height: 13px; }
+body.light-mode .mob-theme-btn { background: rgba(26,21,16,0.05); border-color: rgba(26,21,16,0.2); color: rgba(26,21,16,0.55); }
+
 /* Theme toggle button */
 #themeToggleBtn {
   width: 34px; height: 34px;
@@ -4908,12 +5025,20 @@ function toggleTheme() {
 
 function _syncThemeIcon() {
   var isLight = document.body.classList.contains('light-mode');
+  // Desktop toggle
   var moon = document.getElementById('themeIconMoon');
   var sun  = document.getElementById('themeIconSun');
   var btn  = document.getElementById('themeToggleBtn');
   if (moon) moon.style.display = isLight ? 'none' : '';
   if (sun)  sun.style.display  = isLight ? ''     : 'none';
   if (btn)  btn.title = isLight ? 'Modo oscuro' : 'Modo claro';
+  // Mobile toggles (rendered via innerHTML, use class selectors)
+  document.querySelectorAll('.mob-theme-moon').forEach(function(el) {
+    el.style.display = isLight ? 'none' : '';
+  });
+  document.querySelectorAll('.mob-theme-sun').forEach(function(el) {
+    el.style.display = isLight ? '' : 'none';
+  });
 }
 
 // ═══════════════════════════════════════════
@@ -9486,12 +9611,14 @@ function updateLocationCheckbox(id) {
   }
 
   // ── shell topbar ───────────────────────────────────────────────────
-  // The right-hand slot is a placeholder for the future theme toggle (light
-  // mode pending). Identity already lives in the Cuenta tab.
   function renderTop(view) {
+    var isLight = document.body.classList.contains('light-mode');
     return '<div class="mob-shell-top">' +
       '<div class="brand"><span class="b1">Analog</span><span class="b2">Archive</span></div>' +
-      '<div class="mob-shell-top-slot" aria-label="Tema (próximamente)" title="Tema (próximamente)"></div>' +
+      '<button type="button" class="mob-theme-btn" onclick="toggleTheme()" aria-label="Cambiar tema">' +
+        '<svg class="mob-theme-moon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"' + (isLight ? ' style="display:none"' : '') + '><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>' +
+        '<svg class="mob-theme-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"' + (isLight ? '' : ' style="display:none"') + '><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>' +
+      '</button>' +
     '</div>';
   }
 
@@ -10035,12 +10162,15 @@ function updateLocationCheckbox(id) {
 
   // ── admin mobile view ──────────────────────────────────────────────
   function renderAdminMobile() {
-    // Topbar with back to Cuenta + theme placeholder
+    var isLight = document.body.classList.contains('light-mode');
     var top = '<div class="mob-shell-top">' +
       '<button type="button" class="mob-back" onclick="window._mobApp.render(\'account\')">' +
         '<span class="ar">‹</span><span>Cuenta</span>' +
       '</button>' +
-      '<div class="mob-shell-top-slot" aria-label="Tema (próximamente)"></div>' +
+      '<button type="button" class="mob-theme-btn" onclick="toggleTheme()" aria-label="Cambiar tema">' +
+        '<svg class="mob-theme-moon" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"' + (isLight ? ' style="display:none"' : '') + '><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>' +
+        '<svg class="mob-theme-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"' + (isLight ? '' : ' style="display:none"') + '><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>' +
+      '</button>' +
     '</div>';
     return top +
       '<div class="mob-view" id="mobView">' +
