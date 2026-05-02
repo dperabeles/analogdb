@@ -1,6 +1,15 @@
 # Backups — no los subimos al repo
 *.backup-*.html
 HANDOFF.md
+DESIGN-SYSTEM.md
+ROADMAP.md
+
+# Graphify outputs are local-only; they may summarize private project docs.
+graphify-out/
+.graphify_*.json
+.graphify_*.txt
+.graphifyignore
+scripts/graphify-update.sh
 
 # Claude Code internals
 .claude/
