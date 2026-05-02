@@ -4669,7 +4669,7 @@ body.mob-detail .mob-app .mob-view {
 </div>
 
 <!-- ════════════════════ MODAL ════════════════════ -->
-<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)this.classList.remove('open')">
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModalOverlay()">
   <div class="modal">
     <div class="modal-head">
       <div class="modal-roll-id" id="modalId"></div>
@@ -4678,7 +4678,7 @@ body.mob-detail .mob-app .mob-view {
         <div class="modal-tag" id="modalTag">Núm. de rollo</div>
         <div class="modal-roll-name" id="modalTitle"></div>
       </div>
-      <button class="modal-close" onclick="document.getElementById('modalOverlay').classList.remove('open')">✕</button>
+      <button class="modal-close" onclick="closeModalOverlay()">✕</button>
     </div>
     <div class="modal-body" id="modalBody"></div>
   </div>
@@ -5789,9 +5789,35 @@ function collectEditorRecord() {
   return out;
 }
 
+function isMobileViewport() {
+  return window.matchMedia && window.matchMedia('(max-width: 640px)').matches;
+}
+
+function shouldExitEditorToMobileShell() {
+  return isMobileViewport() && rollEditorOpenedFromMobile && window._mobApp &&
+    typeof window._mobApp.finishRollEditor === 'function';
+}
+
+function finishMobileRollEditor(updatedId) {
+  document.getElementById('modalOverlay').classList.remove('open');
+  rollEditorActive = false;
+  window._mobApp.finishRollEditor(updatedId || editingOriginalId || null);
+}
+
+function closeModalOverlay() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  if (rollEditorActive && shouldExitEditorToMobileShell()) {
+    finishMobileRollEditor();
+    return;
+  }
+  rollEditorActive = false;
+}
+
 function openRollEditor(r) {
   editingIsNew = !r;
   editingOriginalId = r ? r['#'] : null;
+  rollEditorActive = true;
+  rollEditorOpenedFromMobile = isMobileViewport();
   const rec = r ? { ...r } : emptyRoll();
   document.getElementById('modalTag').textContent = editingIsNew ? 'Nuevo rollo' : 'Editar rollo';
   document.getElementById('modalId').textContent = rec['#'] || '—';
@@ -5830,6 +5856,10 @@ function saveRollFromEditor() {
   persistData(rec);
   refreshAll();
   modalRollId = rec['#'];
+  if (shouldExitEditorToMobileShell()) {
+    finishMobileRollEditor(rec['#']);
+    return;
+  }
   openModal(rec);
 }
 
@@ -5931,6 +5961,7 @@ async function saveExposureSettingsFromModal() {
 
 
 function openModal(r) {
+  rollEditorActive = false;
   modalRollId = r['#'];
   document.getElementById('modalTag').textContent = 'NÚM. DE ROLLO';
   document.getElementById('modalId').textContent = r['#'];
@@ -6093,6 +6124,11 @@ function confirmDeleteRoll() {
 
 function cancelRollEditor() {
   document.getElementById('modalOverlay').classList.remove('open');
+  if (shouldExitEditorToMobileShell()) {
+    finishMobileRollEditor();
+    return;
+  }
+  rollEditorActive = false;
   if (!editingIsNew && editingOriginalId) {
     const prev = DATA.find(x => x['#'] === editingOriginalId);
     if (prev) openModal(prev);
@@ -7293,7 +7329,7 @@ document.addEventListener('keydown', e => {
     closeMobileSidebar();
     return;
   }
-  document.getElementById('modalOverlay').classList.remove('open');
+  closeModalOverlay();
 });
 
 // ═══════════════════════════════════════════
@@ -7302,6 +7338,7 @@ document.addEventListener('keydown', e => {
 let DATA     = [];
 let filtered = [];
 let modalRollId = null, editingIsNew = false, editingOriginalId = null;
+let rollEditorActive = false, rollEditorOpenedFromMobile = false;
 let sortCol = '#', sortDir = -1;  // default: # descendente (R093 → R001)
 let SESSION = null;
 let PROFILE = null;
@@ -9407,7 +9444,7 @@ function updateLocationCheckbox(id) {
      roll details. Only active below 640px; desktop is untouched. -->
 <script>
 (function () {
-  var STATE = { view: 'dashboard', filter: 'In Camera' };
+  var STATE = { view: 'dashboard', filter: 'In Camera', returnView: 'dashboard' };
 
   // ── helpers ────────────────────────────────────────────────────────
   function esc(v) {
@@ -10336,6 +10373,7 @@ function updateLocationCheckbox(id) {
       // Mobile: render the editorial detail view inside mob-app.
       // Desktop fallback (rare — bnav is hidden): open the legacy modal.
       if (isMobile()) {
+        STATE.returnView = STATE.view === 'database' ? 'database' : 'dashboard';
         STATE.detailId = rid;
         STATE.view = 'detail';
         document.body.classList.add('mob-detail');
@@ -10346,16 +10384,24 @@ function updateLocationCheckbox(id) {
       }
     },
     closeDetail: function () {
+      var returnView = STATE.returnView === 'database' ? 'database' : 'dashboard';
       STATE.detailId = null;
-      STATE.view = 'dashboard';
+      STATE.view = returnView;
       document.body.classList.remove('mob-detail');
-      render('dashboard');
+      render(returnView);
     },
     editRoll: function (rid) {
       if (typeof DATA === 'undefined') return;
       var r = DATA.find(function (x) { return x['#'] === rid; });
       if (!r) return;
       if (typeof openRollEditor === 'function') openRollEditor(r);
+    },
+    finishRollEditor: function (rid) {
+      var returnView = STATE.returnView === 'database' ? 'database' : 'dashboard';
+      STATE.detailId = null;
+      STATE.view = returnView;
+      document.body.classList.remove('mob-detail');
+      render(returnView);
     },
     openExposureSettings: function (rid) {
       if (typeof DATA === 'undefined') return;

@@ -49,6 +49,16 @@ class RejectedAdminUiTests(unittest.TestCase):
         self.assertIn("const DEFAULT_PHOTO_TYPES = ['Still Life'];", html)
         self.assertIn("if (key === 'PHOTO TYPE') DEFAULT_PHOTO_TYPES.forEach(v => set.add(v));", html)
 
+    def test_mobile_roll_editor_exits_to_previous_mobile_view(self):
+        html = HTML_PATH.read_text()
+
+        self.assertIn("STATE.returnView = STATE.view === 'database' ? 'database' : 'dashboard';", html)
+        self.assertIn("finishRollEditor: function (rid)", html)
+        self.assertIn("shouldExitEditorToMobileShell()", html)
+        self.assertIn("finishMobileRollEditor(rec['#']);", html)
+        self.assertIn('onclick="if(event.target===this)closeModalOverlay()"', html)
+        self.assertIn('onclick="closeModalOverlay()"', html)
+
 
 if __name__ == "__main__":
     unittest.main()
