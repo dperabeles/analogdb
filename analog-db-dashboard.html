@@ -1367,6 +1367,86 @@ td { padding: 9px 13px; white-space: nowrap; font-size: 12px; color: var(--text)
 }
 .ed-modal-move-btn:hover { background: #7a3018; }
 
+/* Per-frame exposure settings */
+.exposure-settings-table-wrap { max-height: min(62vh, 620px); overflow: auto; }
+.exposure-settings-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.exposure-settings-table .col-frame { width: 72px; }
+.exposure-settings-table .col-aperture { width: 132px; }
+.exposure-settings-table .col-speed { width: 150px; }
+.exposure-settings-table .col-extras { width: 340px; }
+.exposure-settings-table th {
+  height: 34px; text-align: left;
+  font-family: 'DM Mono', monospace; font-size: 8px;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+  border-bottom: 1px solid rgba(244,237,226,0.10);
+  padding: 0 10px; font-weight: 400;
+}
+.exposure-settings-table td {
+  height: 48px; border-bottom: 1px solid rgba(244,237,226,.065);
+  padding: 7px 10px; vertical-align: middle;
+  color: #e8dfd1; font-size: 12px;
+}
+.exposure-frame-num {
+  font-family: 'DM Mono', monospace;
+  color: rgba(232,223,209,0.4);
+  letter-spacing: .08em;
+}
+.exposure-core-input,
+.exposure-core-select,
+.exposure-note-input {
+  width: 100%; border: 1px solid transparent; outline: 0;
+  background: transparent; color: #f3eadb;
+  font-family: 'Inter', sans-serif; font-size: 15px;
+  font-weight: 700; letter-spacing: 0; padding: 5px 0;
+}
+.exposure-core-select {
+  appearance: none;
+  cursor: pointer;
+}
+.exposure-note-input { font-size: 12px; font-weight: 500; color: rgba(232,223,209,0.72); }
+.exposure-core-input::placeholder,
+.exposure-note-input::placeholder { color: rgba(232,223,209,0.28); }
+.exposure-core-input:focus,
+.exposure-core-select:focus,
+.exposure-note-input:focus { border-bottom-color: rgba(217,74,42,0.5); }
+.exposure-toggles { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+.exposure-chip {
+  height: 24px; display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid rgba(244,237,226,0.12);
+  color: rgba(232,223,209,0.28);
+  font-family: 'DM Mono', monospace; font-size: 8px;
+  letter-spacing: .10em; text-transform: uppercase;
+  padding: 0 9px; cursor: pointer; user-select: none;
+}
+.exposure-chip input { display: none; }
+.exposure-chip:has(input:checked) {
+  color: #e8dfd1;
+  border-color: rgba(217,160,80,0.42);
+  background: rgba(217,160,80,0.08);
+}
+.exposure-loading {
+  padding: 34px 22px; color: rgba(232,223,209,0.45);
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  letter-spacing: .18em; text-transform: uppercase;
+}
+.frame-settings-mark {
+  margin-top: 3px;
+  color: rgba(217,160,80,0.8);
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.ed-modal-settings-btn {
+  background: transparent; color: rgba(232,223,209,0.72);
+  border: 1px solid rgba(244,237,226,0.16);
+  padding: 9px 16px; font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 1.5px;
+  cursor: pointer; font-weight: 600; text-transform: uppercase;
+}
+.ed-modal-settings-btn:hover { border-color: rgba(244,237,226,0.32); color: #f3eadb; }
+
 .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
 .detail-sec-title {
   font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
@@ -1875,6 +1955,7 @@ td { padding: 9px 13px; white-space: nowrap; font-size: 12px; color: var(--text)
 .roll-card-chip.fmt110   { background: rgba(184,92,0,.1);    color: #b85c00; border-color: rgba(184,92,0,.28); }
 .roll-card-chip.fmt16    { background: rgba(42,122,74,.1);   color: #2a7a4a; border-color: rgba(42,122,74,.28); }
 .roll-card-chip.fmtlarge { background: rgba(124,92,191,.08); color: #7c5cbf; border-color: rgba(124,92,191,.25); }
+.roll-card-chip.settings { color: #d9a050; border-color: rgba(217,160,80,.28); background: rgba(217,160,80,.08); }
 
 .roll-card-meta { display: flex; flex-direction: column; gap: 4px; }
 .roll-card-meta-row {
@@ -3755,6 +3836,96 @@ h1, h2 {
 .mob-rd-stars { color: #d9a050; font-size: 14px; letter-spacing: 0.06em; }
 .mob-rd-stars-empty { color: rgba(255,255,255,0.18); }
 
+.mob-exposure-list { display: flex; flex-direction: column; }
+.mob-exposure-row {
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(244,237,226,0.08);
+}
+.mob-exposure-row.active {
+  margin-left: -22px; margin-right: -22px;
+  padding-left: 22px; padding-right: 22px;
+  border-top: 1px solid rgba(217,74,42,0.22);
+  border-bottom: 1px solid rgba(217,74,42,0.22);
+  background: rgba(217,74,42,0.035);
+}
+.mob-exposure-top {
+  display: grid; grid-template-columns: 44px 1fr 1fr;
+  gap: 9px; align-items: end;
+}
+.mob-exposure-no {
+  color: rgba(232,223,209,0.4);
+  font-family: 'DM Mono', monospace; font-size: 16px;
+  letter-spacing: .08em; line-height: 1; padding-bottom: 4px;
+}
+.mob-exposure-label {
+  font-family: 'DM Mono', monospace; color: rgba(232,223,209,0.4);
+  font-size: 8px; letter-spacing: .20em;
+  text-transform: uppercase; margin-bottom: 5px;
+}
+.mob-exposure-input {
+  width: 100%; border: 0; outline: 0; background: transparent;
+  color: #f3eadb; font-family: 'Inter', sans-serif;
+  font-size: 20px; line-height: 1; font-weight: 800;
+  letter-spacing: 0; min-height: 22px; padding: 0;
+}
+.mob-exposure-select {
+  width: 100%; border: 0; outline: 0; appearance: none;
+  background: transparent; color: #f3eadb;
+  font-family: 'Inter', sans-serif; font-size: 20px;
+  line-height: 1; font-weight: 800; letter-spacing: 0;
+  min-height: 22px; padding: 0; cursor: pointer;
+}
+.mob-exposure-input::placeholder { color: rgba(232,223,209,0.26); }
+.mob-exposure-bottom {
+  display: grid; grid-template-columns: 44px 1fr;
+  gap: 9px; margin-top: 9px; align-items: start;
+}
+.mob-exposure-extras { display: flex; gap: 6px; flex-wrap: wrap; }
+.mob-exposure-chip {
+  height: 25px; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(244,237,226,0.12);
+  color: rgba(232,223,209,0.26);
+  font-family: 'DM Mono', monospace; font-size: 7.5px;
+  letter-spacing: .12em; text-transform: uppercase;
+  padding: 0 8px; cursor: pointer;
+}
+.mob-exposure-chip input { display: none; }
+.mob-exposure-chip:has(input:checked) {
+  color: #e8dfd1; background: rgba(217,160,80,0.07);
+  border-color: rgba(217,160,80,0.42);
+}
+.mob-exposure-note {
+  margin-top: 8px; width: 100%; min-height: 24px;
+  border: 0; outline: 0; background: transparent; resize: vertical;
+  color: rgba(232,223,209,0.55);
+  font-family: 'Inter', sans-serif; font-size: 12px; line-height: 1.45;
+  padding: 0;
+}
+.mob-exposure-note::placeholder {
+  color: rgba(232,223,209,0.26);
+  font-family: 'DM Mono', monospace; font-size: 8.5px;
+  letter-spacing: .18em; text-transform: uppercase;
+}
+.mob-settings-entry {
+  width: 100%; display: grid; grid-template-columns: 1fr auto;
+  align-items: center; gap: 12px; border: 1px solid rgba(244,237,226,0.10);
+  background: #1e1a15; padding: 11px 14px;
+  color: #e8dfd1; text-align: left; cursor: pointer;
+}
+.mob-settings-entry .l {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: rgba(232,223,209,0.4);
+}
+.mob-settings-entry .v {
+  font-family: 'Inter', sans-serif; font-weight: 600;
+  font-size: 13.5px; color: #f3eadb;
+}
+.mob-settings-entry .ar {
+  font-family: 'Inter', sans-serif; font-weight: 300;
+  color: rgba(232,223,209,0.28);
+}
+
 /* Sticky status-advance CTA (only on detail view) */
 .mob-cta-bar {
   position: fixed; left: 0; right: 0; bottom: 0;
@@ -4888,6 +5059,145 @@ async function deleteRollRemote(code) {
   if (error) throw error;
 }
 
+const EXPOSURES_BY_ROLL_KEY = new Map();
+let exposureEditorRoll = null;
+let exposureEditorSlots = [];
+const APERTURE_OPTIONS = ['', 'f/1.0', 'f/1.2', 'f/1.4', 'f/1.7', 'f/1.8', 'f/2', 'f/2.2', 'f/2.4', 'f/2.8', 'f/3.5', 'f/4', 'f/4.5', 'f/5.6', 'f/6.3', 'f/8', 'f/11', 'f/16', 'f/22', 'f/32'];
+const SHUTTER_SPEED_OPTIONS = ['', 'Bulbo', '4s', '2s', '1s', '1/2', '1/4', '1/8', '1/15', '1/30', '1/60', '1/125', '1/250', '1/500', '1/1000', '1/2000', '1/4000', '1/8000'];
+
+function rollExposureKey(roll) {
+  if (!roll) return '';
+  return roll.id ? `db:${roll.id}` : `local:${roll['#']}`;
+}
+
+function exposureSlotCountForRoll(roll) {
+  const fmt = typeof formatKey === 'function' ? formatKey(roll?.FORMAT) : String(roll?.FORMAT || '');
+  if (fmt === '35') return 36;
+  if (fmt === '120') return 16;
+  const exp = Number(roll?.EXP);
+  return Number.isFinite(exp) && exp > 0 ? exp : 36;
+}
+
+function emptyExposureSlot(roll, frameNumber) {
+  return {
+    roll_id: roll?.id || null,
+    frame_number: frameNumber,
+    apertura: '',
+    shutter_speed: '',
+    tripie: false,
+    filtros: false,
+    flash: false,
+    luz_natural: false,
+    multiple_exposures: false,
+    notes: '',
+  };
+}
+
+function normalizeExposureRow(row, roll) {
+  return {
+    id: row?.id || null,
+    roll_id: row?.roll_id || roll?.id || null,
+    frame_number: Number(row?.frame_number) || 0,
+    apertura: row?.apertura || '',
+    shutter_speed: row?.shutter_speed || '',
+    tripie: !!row?.tripie,
+    filtros: !!row?.filtros,
+    flash: !!row?.flash,
+    luz_natural: !!row?.luz_natural,
+    multiple_exposures: !!row?.multiple_exposures,
+    notes: row?.notes || '',
+  };
+}
+
+function buildExposureSlots(roll, savedRows) {
+  const count = exposureSlotCountForRoll(roll);
+  const byFrame = new Map((savedRows || []).map(row => [Number(row.frame_number), normalizeExposureRow(row, roll)]));
+  return Array.from({ length: count }, (_, idx) => {
+    const frame = idx + 1;
+    return byFrame.get(frame) || emptyExposureSlot(roll, frame);
+  });
+}
+
+function exposureHasData(slot) {
+  return !!(
+    String(slot.apertura || '').trim() ||
+    String(slot.shutter_speed || '').trim() ||
+    String(slot.notes || '').trim() ||
+    slot.tripie ||
+    slot.filtros ||
+    slot.flash ||
+    slot.luz_natural ||
+    slot.multiple_exposures
+  );
+}
+
+function exposureSettingsCountForRoll(roll) {
+  return Number(roll?.['FRAME SETTINGS'] || roll?.FRAME_SETTINGS || 0) || 0;
+}
+
+function updateRollExposureSettingsCount(roll, slots) {
+  const count = (slots || []).filter(exposureHasData).length;
+  if (roll) roll['FRAME SETTINGS'] = count;
+  return count;
+}
+
+function exposureOptionsHtml(options, selected) {
+  const cur = String(selected || '').trim();
+  const hasCur = !cur || options.includes(cur);
+  return [
+    ...options.map(value => {
+      const label = value || '—';
+      return `<option value="${escAttr(value)}"${cur === value ? ' selected' : ''}>${escAttr(label)}</option>`;
+    }),
+    ...(hasCur ? [] : [`<option value="${escAttr(cur)}" selected>${escAttr(cur)}</option>`])
+  ].join('');
+}
+
+async function loadRollExposures(roll) {
+  const key = rollExposureKey(roll);
+  if (EXPOSURES_BY_ROLL_KEY.has(key)) return EXPOSURES_BY_ROLL_KEY.get(key);
+  if (!roll?.id) {
+    EXPOSURES_BY_ROLL_KEY.set(key, []);
+    return [];
+  }
+  const { data, error } = await sb.from('roll_exposures')
+    .select('*')
+    .eq('roll_id', roll.id)
+    .order('frame_number', { ascending: true });
+  if (error) throw error;
+  const rows = (data || []).map(row => normalizeExposureRow(row, roll));
+  EXPOSURES_BY_ROLL_KEY.set(key, rows);
+  return rows;
+}
+
+async function persistRollExposures(roll, slots) {
+  const key = rollExposureKey(roll);
+  const normalizedSlots = slots.map(slot => normalizeExposureRow(slot, roll));
+  const count = normalizedSlots.filter(exposureHasData).length;
+  if (!roll?.id) {
+    updateRollExposureSettingsCount(roll, normalizedSlots);
+    EXPOSURES_BY_ROLL_KEY.set(key, normalizedSlots);
+    return { remote: false, count };
+  }
+  const rows = slots.map(slot => ({
+    roll_id: roll.id,
+    frame_number: slot.frame_number,
+    apertura: String(slot.apertura || '').trim() || null,
+    shutter_speed: String(slot.shutter_speed || '').trim() || null,
+    tripie: !!slot.tripie,
+    filtros: !!slot.filtros,
+    flash: !!slot.flash,
+    luz_natural: !!slot.luz_natural,
+    multiple_exposures: !!slot.multiple_exposures,
+    notes: String(slot.notes || '').trim() || null,
+  }));
+  const { error } = await sb.from('roll_exposures').upsert(rows, { onConflict: 'roll_id,frame_number' });
+  if (error) throw error;
+  updateRollExposureSettingsCount(roll, normalizedSlots);
+  EXPOSURES_BY_ROLL_KEY.set(key, normalizedSlots);
+  return { remote: true, count };
+}
+
 // ── loadData: async fetch from Supabase view, fallback to localStorage ──
 // Normaliza PUSH/PULL a la escala [+5..-5] con 0 como default
 function normalizePushPull(v) {
@@ -4917,7 +5227,7 @@ async function loadData(accessToken = null) {
           return data;
         })();
     const clean = (data || []).filter(r => r['#']).map(r => {
-      const { id, updated_at, ...rest } = r;
+      const { updated_at, ...rest } = r;
       rest['PUSH/PULL'] = normalizePushPull(rest['PUSH/PULL']);
       rest['FORMAT'] = normalizeFormatValue(rest['FORMAT']);
       return rest;
@@ -5521,6 +5831,102 @@ function saveRollFromEditor() {
   openModal(rec);
 }
 
+function renderExposureChip(slot, field, label, mobile) {
+  const cls = mobile ? 'mob-exposure-chip' : 'exposure-chip';
+  return `<label class="${cls}">
+    <input type="checkbox" data-frame="${slot.frame_number}" data-field="${field}" ${slot[field] ? 'checked' : ''}>
+    ${label}
+  </label>`;
+}
+
+function renderExposureSettingsTable(roll, slots) {
+  return `
+    <div class="exposure-settings-table-wrap">
+      <table class="exposure-settings-table">
+        <thead>
+          <tr>
+            <th class="col-frame">Frame</th>
+            <th class="col-aperture">Apertura</th>
+            <th class="col-speed">Shutter speed</th>
+            <th class="col-extras">Extras</th>
+            <th>Nota</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${slots.map(slot => `
+            <tr>
+              <td class="exposure-frame-num">${String(slot.frame_number).padStart(2, '0')}</td>
+              <td><select class="exposure-core-select" data-frame="${slot.frame_number}" data-field="apertura">${exposureOptionsHtml(APERTURE_OPTIONS, slot.apertura)}</select></td>
+              <td><select class="exposure-core-select" data-frame="${slot.frame_number}" data-field="shutter_speed">${exposureOptionsHtml(SHUTTER_SPEED_OPTIONS, slot.shutter_speed)}</select></td>
+              <td>
+                <div class="exposure-toggles">
+                  ${renderExposureChip(slot, 'luz_natural', 'Luz natural', false)}
+                  ${renderExposureChip(slot, 'tripie', 'Trípode', false)}
+                  ${renderExposureChip(slot, 'filtros', 'Filtro', false)}
+                  ${renderExposureChip(slot, 'flash', 'Flash', false)}
+                  ${renderExposureChip(slot, 'multiple_exposures', 'Multiple', false)}
+                </div>
+              </td>
+              <td><input class="exposure-note-input" data-frame="${slot.frame_number}" data-field="notes" value="${escAttr(slot.notes)}" placeholder="—"></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="editor-actions">
+      <button type="button" class="btn-ghost" onclick="openModal(DATA.find(x => x['#'] === modalRollId))">Cancelar</button>
+      <button type="button" class="btn-primary" onclick="saveExposureSettingsFromModal()">Guardar cambios</button>
+    </div>`;
+}
+
+function collectExposureSettingsFrom(root) {
+  const byFrame = new Map(exposureEditorSlots.map(slot => [slot.frame_number, { ...slot }]));
+  root.querySelectorAll('[data-frame][data-field]').forEach(el => {
+    const frame = Number(el.getAttribute('data-frame'));
+    const field = el.getAttribute('data-field');
+    const slot = byFrame.get(frame);
+    if (!slot || !field) return;
+    if (el.type === 'checkbox') slot[field] = el.checked;
+    else slot[field] = el.value;
+  });
+  return [...byFrame.values()].sort((a, b) => a.frame_number - b.frame_number);
+}
+
+async function openExposureSettings(roll) {
+  if (!roll) return;
+  exposureEditorRoll = roll;
+  modalRollId = roll['#'];
+  document.getElementById('modalTag').textContent = 'Settings por frame';
+  document.getElementById('modalId').textContent = roll['#'];
+  document.getElementById('modalTitle').innerHTML = `${escAttr(roll['FILM STOCK'] || '—')}<span class="sep">·</span>${exposureSlotCountForRoll(roll)} espacios`;
+  document.getElementById('modalBody').innerHTML = '<div class="exposure-loading">Cargando settings...</div>';
+  document.getElementById('modalOverlay').classList.add('open');
+  try {
+    const saved = await loadRollExposures(roll);
+    exposureEditorSlots = buildExposureSlots(roll, saved);
+    document.getElementById('modalBody').innerHTML = renderExposureSettingsTable(roll, exposureEditorSlots);
+  } catch (err) {
+    console.error(err);
+    document.getElementById('modalBody').innerHTML = '<div class="exposure-loading">No se pudieron cargar los settings.</div>';
+    showSyncStatus('⚠ Error al cargar settings', true);
+  }
+}
+
+async function saveExposureSettingsFromModal() {
+  const root = document.getElementById('modalBody');
+  if (!root || !exposureEditorRoll) return;
+  const slots = collectExposureSettingsFrom(root);
+  try {
+    await persistRollExposures(exposureEditorRoll, slots);
+    exposureEditorSlots = slots;
+    showSyncStatus('✓ Settings guardados');
+    if (typeof refreshAll === 'function') refreshAll();
+    openModal(exposureEditorRoll);
+  } catch (err) {
+    console.error(err);
+    showSyncStatus('⚠ Error al guardar settings', true);
+  }
+}
+
 
 function openModal(r) {
   modalRollId = r['#'];
@@ -5630,7 +6036,10 @@ function openModal(r) {
     ${r['NOTES'] ? `<div class="ed-modal-notes">"${escAttr(r['NOTES'])}"</div>` : ''}
 
     <div class="ed-modal-actions">
-      <button class="ed-modal-edit-btn" onclick="openRollEditor(DATA.find(x => x['#'] === modalRollId))">» Editar rollo</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="ed-modal-edit-btn" onclick="openRollEditor(DATA.find(x => x['#'] === modalRollId))">» Editar rollo</button>
+        <button class="ed-modal-settings-btn" onclick="openExposureSettings(DATA.find(x => x['#'] === modalRollId))">Settings por frame</button>
+      </div>
       ${nextStatus
         ? `<button class="ed-modal-move-btn" onclick="moveRollStatus('${escAttr(r['#'])}','${nextStatus.key}')">Mover a ${nextStatus.label} →</button>`
         : '<span></span>'}
@@ -6743,7 +7152,10 @@ function renderTable() {
   filtered.forEach(r => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><span class="roll-id">${r['#']}</span></td>
+      <td>
+        <span class="roll-id">${r['#']}</span>
+        ${exposureSettingsCountForRoll(r) ? `<div class="frame-settings-mark">Settings ${exposureSettingsCountForRoll(r)}</div>` : ''}
+      </td>
       <td>
         <div class="cell-main">${r['FILM STOCK']||'—'}</div>
         <div class="cell-sub">${r['MANUFACTURER']||''}</div>
@@ -7649,10 +8061,12 @@ function renderStatusSections() {
     const meta = formatMeta(r.FORMAT) || { chipClass: 'fmtsuper', label: String(r.FORMAT || '—') };
     const freshClass = r['EXP/FRESH'] === 'FRESH' ? 'fresh' : 'expired';
     const freshLabel = r['EXP/FRESH'] === 'FRESH' ? 'Fresh' : 'Expired';
+    const settingsCount = exposureSettingsCountForRoll(r);
     return `
       <span class="roll-card-chip ${freshClass}">${freshLabel}</span>
       <span class="roll-card-chip ${meta.chipClass}">${meta.label}</span>
       ${r.ISO ? `<span class="roll-card-chip">ISO ${r.ISO}</span>` : ''}
+      ${settingsCount ? `<span class="roll-card-chip settings">Settings ${settingsCount}</span>` : ''}
     `;
   }
 
@@ -9067,6 +9481,8 @@ function updateLocationCheckbox(id) {
     var camLine = (maker + ' ' + model).trim() + (lens ? ' · ' + lens : '');
     var pushChip = (push && push !== '0') ? '<span>·</span><span>push ' + esc(push) + '</span>' : '';
     var expChip  = exp ? '<span>·</span><span>' + esc(exp) + (maxExp && maxExp !== exp ? '/' + esc(maxExp) : '') + '</span>' : '';
+    var settingsCount = exposureSettingsCountForRoll(r);
+    var settingsChip = settingsCount ? '<span>·</span><span>Settings ' + esc(settingsCount) + '</span>' : '';
     return '<div class="mob-roll" onclick="_mobApp.openRoll(\'' + esc(r['#']).replace(/'/g, "\\'") + '\')">' +
       '<div class="row1">' +
         '<span class="rid">' + esc(r['#']) + '</span>' +
@@ -9078,6 +9494,7 @@ function updateLocationCheckbox(id) {
         '<span>' + esc(fmtLabel(fmt)) + '</span>' +
         '<span>·</span><span>ISO ' + esc(iso) + '</span>' +
         expChip +
+        settingsChip +
         pushChip +
       '</div>' +
       '<div class="row3">' +
@@ -9607,6 +10024,11 @@ function updateLocationCheckbox(id) {
     };
     sections += section('Cronología', tlHTML);
     sections += section('Ficha técnica', tech);
+    sections += section('Frame settings',
+      '<button type="button" class="mob-settings-entry" onclick="window._mobApp.openExposureSettings(\'' + esc(rid) + '\')">' +
+        '<span><span class="l">Exposiciones</span><br><span class="v">' + exposureSlotCountForRoll(r) + ' espacios de captura</span></span>' +
+        '<span class="ar">›</span>' +
+      '</button>');
     sections += section('Notas', notesHTML);
     sections += section('Categorías y tags', allTags);
 
@@ -9633,6 +10055,58 @@ function updateLocationCheckbox(id) {
         sections +
       '</div>' +
       cta;
+  }
+
+  function renderExposureSettingsMobile() {
+    var rid = STATE.detailId;
+    var r = (typeof DATA !== 'undefined') ? DATA.find(function (x) { return x['#'] === rid; }) : null;
+    if (!r) {
+      STATE.view = 'dashboard';
+      document.body.classList.remove('mob-detail');
+      return renderDash();
+    }
+    var slots = exposureEditorSlots && exposureEditorRoll && exposureEditorRoll['#'] === rid
+      ? exposureEditorSlots
+      : buildExposureSlots(r, EXPOSURES_BY_ROLL_KEY.get(rollExposureKey(r)) || []);
+    var sw = rdSwatch(r);
+    var top = '<div class="mob-shell-top">' +
+      '<button type="button" class="mob-back" onclick="window._mobApp.openRoll(\'' + esc(rid) + '\')">' +
+        '<span class="ar">‹</span><span>Atrás</span>' +
+      '</button>' +
+      '<button type="button" class="mob-edit-link" onclick="window._mobApp.saveExposureSettings()">Guardar</button>' +
+    '</div>';
+    var hero = '<div class="mob-rd-hero">' +
+      '<div class="kicker">Settings por frame</div>' +
+      '<div class="rid">' + esc(r['#']) + '</div>' +
+      '<div class="stk">' + esc(r['FILM STOCK'] || '—') + '</div>' +
+      '<div class="meta"><span class="swc" style="background:' + sw.color + '"></span><span>' + esc(sw.label) + '</span><span>·</span><span>' + slots.length + ' frames</span></div>' +
+    '</div>';
+    var rows = slots.map(function (slot, idx) {
+      return '<article class="mob-exposure-row ' + (idx === 0 ? 'active' : '') + '">' +
+        '<div class="mob-exposure-top">' +
+          '<div class="mob-exposure-no">' + String(slot.frame_number).padStart(2, '0') + '</div>' +
+          '<div><div class="mob-exposure-label">Apertura</div><select class="mob-exposure-select" data-frame="' + slot.frame_number + '" data-field="apertura">' + exposureOptionsHtml(APERTURE_OPTIONS, slot.apertura) + '</select></div>' +
+          '<div><div class="mob-exposure-label">Shutter speed</div><select class="mob-exposure-select" data-frame="' + slot.frame_number + '" data-field="shutter_speed">' + exposureOptionsHtml(SHUTTER_SPEED_OPTIONS, slot.shutter_speed) + '</select></div>' +
+        '</div>' +
+        '<div class="mob-exposure-bottom"><div></div><div>' +
+          '<div class="mob-exposure-extras">' +
+            renderExposureChip(slot, 'luz_natural', 'Luz natural', true) +
+            renderExposureChip(slot, 'tripie', 'Trípode', true) +
+            renderExposureChip(slot, 'filtros', 'Filtro', true) +
+            renderExposureChip(slot, 'flash', 'Flash', true) +
+            renderExposureChip(slot, 'multiple_exposures', 'Multiple', true) +
+          '</div>' +
+          '<textarea class="mob-exposure-note" data-frame="' + slot.frame_number + '" data-field="notes" placeholder="Sin datos">' + esc(slot.notes) + '</textarea>' +
+        '</div></div>' +
+      '</article>';
+    }).join('');
+    var body = '<div class="mob-subhead"><span class="n">I.</span><span class="t">Exposiciones</span></div>' +
+      '<div class="mob-exposure-list">' + rows + '</div>';
+    var cta = '<div class="mob-cta-bar">' +
+      '<button type="button" class="mob-cta-back" onclick="window._mobApp.openRoll(\'' + esc(rid) + '\')">‹ Volver</button>' +
+      '<button type="button" class="mob-cta-next" onclick="window._mobApp.saveExposureSettings()">Guardar cambios <span class="ar">→</span></button>' +
+    '</div>';
+    return top + '<div class="mob-view" id="mobView">' + hero + body + '</div>' + cta;
   }
 
   // ── admin mobile view ──────────────────────────────────────────────
@@ -9816,6 +10290,7 @@ function updateLocationCheckbox(id) {
       case 'stats':     html = renderStatsView();  break;
       case 'admin':     html = renderAdminMobile();break;
       case 'detail':    html = renderDetail();     break;
+      case 'exposureSettings': html = renderExposureSettingsMobile(); break;
       case '__account':
       case 'account':   html = renderAccount();    break;
       case 'dashboard':
@@ -9879,6 +10354,37 @@ function updateLocationCheckbox(id) {
       var r = DATA.find(function (x) { return x['#'] === rid; });
       if (!r) return;
       if (typeof openRollEditor === 'function') openRollEditor(r);
+    },
+    openExposureSettings: function (rid) {
+      if (typeof DATA === 'undefined') return;
+      var r = DATA.find(function (x) { return x['#'] === rid; });
+      if (!r) return;
+      STATE.detailId = rid;
+      document.body.classList.add('mob-detail');
+      if (typeof loadRollExposures === 'function') {
+        loadRollExposures(r).then(function (saved) {
+          exposureEditorRoll = r;
+          exposureEditorSlots = buildExposureSlots(r, saved);
+          STATE.view = 'exposureSettings';
+          render('exposureSettings');
+        }).catch(function (err) {
+          console.error(err);
+          showSyncStatus('⚠ Error al cargar settings', true);
+        });
+      }
+    },
+    saveExposureSettings: function () {
+      var root = document.getElementById('mobView');
+      if (!root || !exposureEditorRoll) return;
+      var slots = collectExposureSettingsFrom(root);
+      persistRollExposures(exposureEditorRoll, slots).then(function () {
+        exposureEditorSlots = slots;
+        showSyncStatus('✓ Settings guardados');
+        render('detail');
+      }).catch(function (err) {
+        console.error(err);
+        showSyncStatus('⚠ Error al guardar settings', true);
+      });
     },
     advanceRoll: function (rid) {
       if (typeof moveRollStatus !== 'function') return;

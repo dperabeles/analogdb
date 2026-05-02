@@ -24,6 +24,7 @@ drop function if exists public.touch_updated_at() cascade;
 drop table if exists public.admin_action_approvals cascade;
 drop table if exists public.admin_actions cascade;
 drop table if exists public.private_app_config cascade;
+drop table if exists public.roll_exposures cascade;
 drop table if exists public.frame_tags cascade;
 drop table if exists public.rolls cascade;
 drop table if exists public.cameras cascade;
@@ -122,6 +123,24 @@ create table public.frame_tags (
   created_at timestamptz default now()
 );
 
+create table public.roll_exposures (
+  id uuid primary key default gen_random_uuid(),
+  roll_id bigint not null references public.rolls(id) on delete cascade,
+  frame_number integer not null check (frame_number > 0),
+  apertura text,
+  shutter_speed text,
+  tripie boolean,
+  filtros boolean,
+  flash boolean,
+  luz_natural boolean,
+  multiple_exposures boolean,
+  notes text,
+  captured_at timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (roll_id, frame_number)
+);
+
 create table public.admin_actions (
   id uuid primary key default gen_random_uuid(),
   action_type text not null check (action_type in ('promote_to_admin', 'demote_from_admin')),
@@ -149,6 +168,8 @@ create index rolls_owner_user_id_idx on public.rolls(owner_user_id);
 create index cameras_owner_user_id_idx on public.cameras(owner_user_id);
 create index idx_frame_tags_roll_id on public.frame_tags(roll_id);
 create index idx_frame_tags_tag on public.frame_tags(tag);
+create index roll_exposures_roll_id_idx on public.roll_exposures(roll_id);
+create index roll_exposures_roll_frame_idx on public.roll_exposures(roll_id, frame_number);
 
 create or replace function public.touch_updated_at()
 returns trigger
@@ -162,6 +183,11 @@ $$;
 
 create trigger rolls_touch
 before update on public.rolls
+for each row
+execute function public.touch_updated_at();
+
+create trigger roll_exposures_touch
+before update on public.roll_exposures
 for each row
 execute function public.touch_updated_at();
 
@@ -624,12 +650,27 @@ select
   r.status as "STATUS",
   r.rating as "RATING",
   r.notes as "NOTES",
-  r.updated_at
+  r.updated_at,
+  coalesce(re_stats.frame_settings_count, 0)::integer as "FRAME SETTINGS"
 from public.rolls r
 left join public.film_stocks fs on fs.id = r.film_stock_id
 left join public.cameras c on c.id = r.camera_id
 left join public.labs dl on dl.id = r.dev_lab_id
-left join public.labs sl on sl.id = r.scan_lab_id;
+left join public.labs sl on sl.id = r.scan_lab_id
+left join lateral (
+  select count(*) filter (
+    where re.apertura is not null
+       or re.shutter_speed is not null
+       or coalesce(re.tripie, false)
+       or coalesce(re.filtros, false)
+       or coalesce(re.flash, false)
+       or coalesce(re.luz_natural, false)
+       or coalesce(re.multiple_exposures, false)
+       or re.notes is not null
+  ) as frame_settings_count
+  from public.roll_exposures re
+  where re.roll_id = r.id
+) re_stats on true;
 
 grant usage on schema public to anon, authenticated, service_role;
 grant usage, select on all sequences in schema public to authenticated, service_role;
@@ -640,6 +681,7 @@ grant select, insert, update on public.film_stocks to authenticated;
 grant select, insert, update on public.labs to authenticated;
 grant select, insert, update, delete on public.cameras to authenticated;
 grant select, insert, update, delete on public.rolls to authenticated;
+grant select, insert, update, delete on public.roll_exposures to authenticated;
 grant select on public.admin_actions to authenticated;
 grant select on public.admin_action_approvals to authenticated;
 grant select on public.rolls_flat to authenticated;
@@ -653,6 +695,7 @@ alter table public.film_stocks enable row level security;
 alter table public.labs enable row level security;
 alter table public.cameras enable row level security;
 alter table public.rolls enable row level security;
+alter table public.roll_exposures enable row level security;
 alter table public.admin_actions enable row level security;
 alter table public.admin_action_approvals enable row level security;
 alter table public.frame_tags enable row level security;
@@ -854,6 +897,76 @@ using (
     select 1
     from public.profiles p
     where p.user_id = auth.uid()
+      and p.status = 'approved'
+  )
+);
+
+create policy roll_exposures_owner_select
+on public.roll_exposures
+for select
+to public
+using (
+  exists (
+    select 1
+    from public.rolls r
+    join public.profiles p on p.user_id = auth.uid()
+    where r.id = roll_exposures.roll_id
+      and r.owner_user_id = auth.uid()
+      and p.status = 'approved'
+  )
+);
+
+create policy roll_exposures_owner_insert
+on public.roll_exposures
+for insert
+to public
+with check (
+  exists (
+    select 1
+    from public.rolls r
+    join public.profiles p on p.user_id = auth.uid()
+    where r.id = roll_exposures.roll_id
+      and r.owner_user_id = auth.uid()
+      and p.status = 'approved'
+  )
+);
+
+create policy roll_exposures_owner_update
+on public.roll_exposures
+for update
+to public
+using (
+  exists (
+    select 1
+    from public.rolls r
+    join public.profiles p on p.user_id = auth.uid()
+    where r.id = roll_exposures.roll_id
+      and r.owner_user_id = auth.uid()
+      and p.status = 'approved'
+  )
+)
+with check (
+  exists (
+    select 1
+    from public.rolls r
+    join public.profiles p on p.user_id = auth.uid()
+    where r.id = roll_exposures.roll_id
+      and r.owner_user_id = auth.uid()
+      and p.status = 'approved'
+  )
+);
+
+create policy roll_exposures_owner_delete
+on public.roll_exposures
+for delete
+to public
+using (
+  exists (
+    select 1
+    from public.rolls r
+    join public.profiles p on p.user_id = auth.uid()
+    where r.id = roll_exposures.roll_id
+      and r.owner_user_id = auth.uid()
       and p.status = 'approved'
   )
 );
