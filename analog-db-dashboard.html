@@ -4111,6 +4111,19 @@ body .ed-page-header-title {
 }
 
 body.light-mode {
+  /* Redefine CSS variables so every var(--text) / var(--border) etc. resolves correctly */
+  --bg:         #f5ede0;
+  --bg2:        #ede5d8;
+  --surface:    #faf5ee;
+  --surface2:   #ede5d8;
+  --border:     rgba(26,21,16,0.12);
+  --text:       #1a1510;
+  --text-mid:   rgba(26,21,16,0.65);
+  --text-dim:   rgba(26,21,16,0.45);
+  --inv:        #1a1510;
+  --inv-dim:    rgba(26,21,16,0.55);
+  --shadow:     0 1px 3px rgba(26,21,16,0.08), 0 3px 12px rgba(26,21,16,0.05);
+  --shadow-md:  0 4px 20px rgba(26,21,16,0.12);
   background: #f5ede0 !important;
   color: #1a1510 !important;
 }
@@ -4138,12 +4151,19 @@ body.light-mode [style*="color:rgba(232,220,197"] { color: rgba(26,21,16,0.55) !
 body.light-mode [style*="border:1px solid rgba(232,220,197"] { border-color: rgba(26,21,16,0.15) !important; }
 body.light-mode [style*="background:rgba(232,220,197"] { background: rgba(26,21,16,0.06) !important; }
 
-/* Inline dark colors in .main area → flip to light */
-body.light-mode .main [style*="color:#e8dfd1"] { color: #1a1510 !important; }
-body.light-mode .main [style*="color:#f3eadb"] { color: #1a1510 !important; }
-body.light-mode .main [style*="color:rgba(232,223,209"] { color: rgba(26,21,16,0.65) !important; }
-body.light-mode .main [style*="color:#d94a2a"] { color: #8a3a22 !important; }
-body.light-mode .topbar [style*="color:#e8dfd1"] { color: rgba(26,21,16,0.75) !important; }
+/* Inline dark colors anywhere in the page → flip to light
+   (sidebar text is class-based, not inline, so global scope is safe) */
+body.light-mode [style*="color:#e8dfd1"] { color: #1a1510 !important; }
+body.light-mode [style*="color:#f3eadb"] { color: #1a1510 !important; }
+body.light-mode [style*="color:rgba(232,223,209"] { color: rgba(26,21,16,0.65) !important; }
+body.light-mode [style*="color:#d94a2a"] { color: #8a3a22 !important; }
+/* Background inversions */
+body.light-mode [style*="background:#14110d"] { background: #f5ede0 !important; }
+body.light-mode [style*="background:#221a15"] { background: rgba(26,21,16,0.05) !important; border-color: rgba(26,21,16,0.14) !important; }
+body.light-mode [style*="background:#1c1612"] { background: #faf5ee !important; }
+/* Border inversions */
+body.light-mode [style*="border:1px solid rgba(244,237,226"] { border-color: rgba(26,21,16,0.15) !important; }
+body.light-mode [style*="border-color:rgba(244,237,226"] { border-color: rgba(26,21,16,0.15) !important; }
 
 /* Topbar */
 body.light-mode .topbar { background: #f0e8da !important; border-bottom: 1px solid rgba(26,21,16,0.14) !important; box-shadow: 0 1px 8px rgba(26,21,16,0.08) !important; }
@@ -4495,6 +4515,67 @@ body.light-mode .mob-cta-next { background: #8a3a22 !important; color: #f5ede0 !
 
 /* Empty state */
 body.light-mode .mob-empty { border-color: rgba(26,21,16,0.12) !important; color: rgba(26,21,16,0.35) !important; }
+
+/* KPI grid text */
+body.light-mode .mob-kpi .l { color: rgba(26,21,16,0.4) !important; }
+body.light-mode .mob-kpi .v { color: #1a1510 !important; }
+body.light-mode .mob-kpi .v sup { color: rgba(26,21,16,0.4) !important; }
+body.light-mode .mob-kpi > div { border-right-color: rgba(26,21,16,0.06) !important; border-bottom-color: rgba(26,21,16,0.06) !important; }
+
+/* Status tabs text */
+body.light-mode .mob-status-tabs button { color: rgba(26,21,16,0.45) !important; border-right-color: rgba(26,21,16,0.05) !important; }
+body.light-mode .mob-status-tabs button .c { color: #1a1510 !important; }
+body.light-mode .mob-status-tabs button.on { color: #8a3a22 !important; }
+body.light-mode .mob-status-tabs button.on .c { color: #8a3a22 !important; }
+
+/* Section subhead */
+body.light-mode .mob-subhead { border-bottom-color: rgba(26,21,16,0.06) !important; }
+body.light-mode .mob-subhead .t { color: #1a1510 !important; }
+body.light-mode .mob-subhead .a { color: rgba(26,21,16,0.4) !important; }
+
+/* Roll cards text */
+body.light-mode .mob-roll .stk { color: #1a1510 !important; }
+body.light-mode .mob-roll .badge { border-color: rgba(26,21,16,0.14) !important; color: rgba(26,21,16,0.4) !important; }
+body.light-mode .mob-roll .row2 { color: rgba(26,21,16,0.55) !important; }
+body.light-mode .mob-roll .row3 { color: rgba(26,21,16,0.28) !important; border-top-color: rgba(26,21,16,0.06) !important; }
+
+/* Search input */
+body.light-mode .mob-search input { color: #1a1510 !important; }
+body.light-mode .mob-search input::placeholder { color: rgba(26,21,16,0.4) !important; }
+
+/* Table meta row */
+body.light-mode .mob-meta { color: rgba(26,21,16,0.4) !important; border-bottom-color: rgba(26,21,16,0.06) !important; }
+body.light-mode .mob-meta .c { color: #1a1510 !important; }
+
+/* Stats bars */
+body.light-mode .mob-stbar { border-bottom-color: rgba(26,21,16,0.06) !important; }
+body.light-mode .mob-stbar .nm { color: #1a1510 !important; }
+body.light-mode .mob-stbar .meter { background: rgba(26,21,16,0.06) !important; }
+body.light-mode .mob-stbar .ct { color: #1a1510 !important; }
+body.light-mode .mob-strank { border-bottom-color: rgba(26,21,16,0.06) !important; }
+body.light-mode .mob-strank .nm { color: #1a1510 !important; }
+body.light-mode .mob-strank .sb { color: rgba(26,21,16,0.4) !important; }
+body.light-mode .mob-strank .meter { background: rgba(26,21,16,0.06) !important; }
+body.light-mode .mob-strank .ct { color: #1a1510 !important; }
+
+/* Tag counts */
+body.light-mode .mob-tag .ct { color: #1a1510 !important; }
+
+/* Account hero border */
+body.light-mode .mob-achero { border-bottom-color: rgba(26,21,16,0.08) !important; }
+
+/* Roll detail text */
+body.light-mode .mob-rd-hero .kicker { color: rgba(26,21,16,0.45) !important; }
+body.light-mode .mob-rd-hero .rid { color: #8a3a22 !important; }
+body.light-mode .mob-rd-hero .stk { color: #1a1510 !important; }
+body.light-mode .mob-rd-hero .meta { color: rgba(26,21,16,0.5) !important; }
+body.light-mode .mob-rd-tl .nm { color: rgba(26,21,16,0.5) !important; }
+body.light-mode .mob-rd-tl .stp.now .nm,
+body.light-mode .mob-rd-tl .stp.done .nm { color: #1a1510 !important; }
+body.light-mode .mob-rd-tl .dt { color: rgba(26,21,16,0.4) !important; }
+body.light-mode .mob-rd-field { border-bottom-color: rgba(26,21,16,0.05) !important; }
+body.light-mode .mob-rd-field .lbl { color: rgba(26,21,16,0.4) !important; }
+body.light-mode .mob-rd-field .val { color: #1a1510 !important; }
 
 /* Mobile theme toggle button */
 .mob-theme-btn {
