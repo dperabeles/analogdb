@@ -4827,6 +4827,7 @@ const SHARED_LABS = [
   'El Petate',
   'Expendio Fotográfico'
 ];
+const DEFAULT_PHOTO_TYPES = ['Still Life'];
 
 function normalizeFormatValue(v) {
   if (v == null || v === '') return null;
@@ -5317,6 +5318,7 @@ function buildEditorForm(rec) {
   // Unique sorted values from existing DATA for a given key
   function optsFor(key) {
     const set = new Set();
+    if (key === 'PHOTO TYPE') DEFAULT_PHOTO_TYPES.forEach(v => set.add(v));
     DATA.forEach(r => { if (r[key]) String(r[key]).split(',').forEach(v => { const t = v.trim(); if (t) set.add(t); }); });
     if (key === 'DEV' || key === 'SCAN') SHARED_LABS.forEach(v => set.add(v));
     return [...set].sort((a,b) => a.localeCompare(b));
