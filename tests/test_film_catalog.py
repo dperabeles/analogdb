@@ -145,6 +145,15 @@ class FilmCatalogTests(unittest.TestCase):
         self.assertEqual(catalog["Kodak"]["Ektachrome E100"], (100, "SLIDE"))
         self.assertEqual(catalog["Kodak"]["Ektachrome E100G"], (100, "SLIDE"))
 
+    def test_mobile_quick_add_stock_swatch_falls_back_to_manufacturer_colors(self):
+        html = HTML_PATH.read_text()
+
+        self.assertIn("function qaSwatchForStock(name, manufacturer)", html)
+        self.assertIn("m.indexOf('fujifilm') >= 0 || m.indexOf('fuji') >= 0) return '#5a8a6a'", html)
+        self.assertIn("m.indexOf('kodak') >= 0) return '#d4a050'", html)
+        self.assertIn("qaSwatchForStock(s.name, s.mfr)", html)
+        self.assertIn("qaSwatchForStock(qaState.stock, qaState.manufacturer)", html)
+
 
 if __name__ == "__main__":
     unittest.main()

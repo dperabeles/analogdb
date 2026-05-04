@@ -9163,14 +9163,18 @@ function updateLocationCheckbox(id) {
     'Large Format': { name: 'Large Format', sb: '1 sheet',    swatch: '#7c5cbf' }
   };
 
-  function qaSwatchForStock(name) {
+  function qaSwatchForStock(name, manufacturer) {
     var s = (name || '').toLowerCase();
+    var m = (manufacturer || '').toLowerCase();
     if (s.indexOf('portra') >= 0 || s.indexOf('ektar') >= 0) return '#c8785a';
     if (s.indexOf('gold') >= 0 || s.indexOf('ultramax') >= 0) return '#d4a050';
     if (s.indexOf('hp5') >= 0 || s.indexOf('delta') >= 0 || s.indexOf('fp4') >= 0) return '#6a6a6a';
     if (s.indexOf('velvia') >= 0 || s.indexOf('provia') >= 0 || s.indexOf('fuji') >= 0) return '#5a8a6a';
     if (s.indexOf('tmax') >= 0 || s.indexOf('tri-x') >= 0 || s.indexOf('400tx') >= 0) return '#505050';
     if (s.indexOf('cinestill') >= 0) return '#c84848';
+    if (m.indexOf('fujifilm') >= 0 || m.indexOf('fuji') >= 0) return '#5a8a6a';
+    if (m.indexOf('kodak') >= 0) return '#d4a050';
+    if (m.indexOf('ilford') >= 0) return '#6a6a6a';
     return '#9c9284';
   }
 
@@ -9280,7 +9284,7 @@ function updateLocationCheckbox(id) {
       var recentHTML = recent.map(function (s) {
         var sel = qaState.stock === s.name;
         return '<button type="button" class="qa-list-it ' + (sel ? 'sel' : '') + '" onclick="window._qaSelStock(\'' + qaEsc(s.name).replace(/&#39;/g, "\\'") + '\')">' +
-          '<span class="qa-swc" style="background:' + qaSwatchForStock(s.name) + '"></span>' +
+          '<span class="qa-swc" style="background:' + qaSwatchForStock(s.name, s.mfr) + '"></span>' +
           '<span class="qa-list-it-nm">' + qaEsc(s.name) + '</span>' +
           '<span class="qa-list-it-meta">ISO ' + qaEsc(s.iso || '?') + ' · ' + qaEsc(s.type || '') + '</span>' +
         '</button>';
@@ -9295,7 +9299,7 @@ function updateLocationCheckbox(id) {
         searchHTML = matches.length ? '<div class="qa-list">' + matches.map(function (s) {
           var sel = qaState.stock === s.name;
           return '<button type="button" class="qa-list-it ' + (sel ? 'sel' : '') + '" onclick="window._qaSelStock(\'' + qaEsc(s.name).replace(/&#39;/g, "\\'") + '\')">' +
-            '<span class="qa-swc" style="background:' + qaSwatchForStock(s.name) + '"></span>' +
+            '<span class="qa-swc" style="background:' + qaSwatchForStock(s.name, s.mfr) + '"></span>' +
             '<span class="qa-list-it-nm">' + qaEsc(s.mfr) + ' · ' + qaEsc(s.name) + '</span>' +
             '<span class="qa-list-it-meta">ISO ' + s.iso + '</span>' +
           '</button>';
@@ -9327,7 +9331,7 @@ function updateLocationCheckbox(id) {
         : '<div class="qa-help" style="padding:14px;border:1px dashed rgba(244,237,226,0.10)"><b>›</b> No hay cámaras registradas todavía. Se guardará el rollo sin cámara — puedes asignarla después desde el detalle.</div>';
 
       var fmtMeta = QA_FORMAT_META[qaState.format] || {};
-      var stockSwatch = qaSwatchForStock(qaState.stock);
+      var stockSwatch = qaSwatchForStock(qaState.stock, qaState.manufacturer);
       stepHTML = '<div class="qa-q">¿Qué <em>cámara</em>?</div>' +
         '<div class="qa-h">Puedes cambiarla después desde el detalle</div>' +
         (cams.length ? '<div class="qa-list">' + camsHTML + '</div>' : camsHTML) +
