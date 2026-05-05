@@ -2121,7 +2121,14 @@ td { padding: 9px 13px; white-space: nowrap; font-size: 12px; color: var(--text)
   opacity: 0; transition: opacity .15s, color .15s; font-size: 14px; padding: 2px 6px;
   border-radius: 3px;
 }
-.cam-card:hover .cam-card-del { opacity: 1; }
+.cam-card-edit {
+  border: none; background: none; color: var(--text-dim); cursor: pointer;
+  opacity: 0; transition: opacity .15s, color .15s; font-size: 11px; padding: 2px 6px;
+  border-radius: 3px; font-family: 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase;
+}
+.cam-card:hover .cam-card-del,
+.cam-card:hover .cam-card-edit { opacity: 1; }
+.cam-card-edit:hover { color: var(--amber-dark); background: rgba(200,146,42,.08); }
 .cam-card-del:hover { color: #c0392b; background: rgba(192,57,43,.08); }
 .cam-empty-state {
   text-align: center; padding: 56px 20px;
@@ -2615,11 +2622,21 @@ td { color: #e8dfd1 !important; }
 .cam-modal-label { color: rgba(232,223,209,0.5) !important; }
 .cam-modal-input, .cam-modal-select { background: rgba(244,237,226,0.04) !important; border-color: rgba(244,237,226,0.12) !important; color: #e8dfd1 !important; }
 .cam-modal-input:focus, .cam-modal-select:focus { border-color: #d94a2a !important; }
+.cam-modal-check {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'DM Mono', monospace; font-size: 11px; color: rgba(232,223,209,0.5);
+  cursor: pointer; user-select: none;
+}
+.cam-modal-check input { accent-color: #d94a2a; }
 .cam-modal-save { background: #d94a2a !important; color: #14100d !important; border-radius: 2px !important; font-weight: 700 !important; }
 .cam-modal-save:hover { background: #c03a1a !important; }
 .cam-modal-cancel { border-color: rgba(244,237,226,0.18) !important; color: rgba(232,223,209,0.5) !important; border-radius: 2px !important; }
 .cam-card { background: #1c1612 !important; border-color: rgba(244,237,226,0.08) !important; border-radius: 2px !important; }
 .cam-card:hover { border-color: rgba(217,74,42,0.35) !important; box-shadow: 0 4px 18px rgba(0,0,0,.35) !important; }
+.cam-badge.muted {
+  background: rgba(127,127,127,.08) !important; border-color: rgba(127,127,127,.18) !important;
+  color: rgba(232,223,209,0.45) !important;
+}
 .cam-empty-state { border-color: rgba(244,237,226,0.1) !important; border-radius: 2px !important; }
 .btn-add-camera { background: #d94a2a !important; border-radius: 2px !important; }
 .btn-add-camera:hover { background: #c03a1a !important; }
@@ -4644,6 +4661,7 @@ body.mob-detail .mob-app .mob-view {
       <select class="cam-modal-select" id="camInputFormat">
         <option value="">— Seleccionar —</option>
         <option value="35mm">35mm</option>
+        <option value="120">120</option>
         <option value="6x4.5">6×4.5 (120)</option>
         <option value="6x6">6×6 (120)</option>
         <option value="6x7">6×7 (120)</option>
@@ -4668,6 +4686,10 @@ body.mob-detail .mob-app .mob-view {
         <option value="Otro">Otro</option>
       </select>
     </div>
+    <label class="cam-modal-check">
+      <input id="camInputQuickMode" type="checkbox" checked>
+      <span>Mostrar en modo rápido</span>
+    </label>
     <div class="cam-modal-actions">
       <button class="cam-modal-cancel" onclick="closeCameraModal()">Cancelar</button>
       <button class="cam-modal-save" onclick="saveCameraForm()">Guardar cámara</button>
@@ -4745,7 +4767,8 @@ const LS_MIGRATION_KEY = 'filmRollDB_migration';
 const CURRENT_MIGRATION = 'v3_stocks_normalized';
 
 // ─── Camera catalog (populated from Supabase or seeded from rolls) ───
-let CAMERAS_CATALOG = []; // [{id, maker, model, format, type}]
+let CAMERAS_CATALOG = []; // [{id, maker, model, format, type, show_in_quick_mode}]
+let editingCameraId = null;
 
 // Current-production film stocks by manufacturer (Wikipedia, excl. Instax/Polaroid)
 // Each entry: [stockName, ISO, type]
@@ -5356,7 +5379,8 @@ function buildEditorForm(rec) {
     const extra = v && !options.includes(v) ? [v] : [];
     const all = [...extra, ...options];
     const os = all.map(o => `<option value="${escAttr(o)}"${v===o?' selected':''}>${o}</option>`).join('');
-    return `<select data-k="${escAttr(key)}">${os}</select>`;
+    const onChange = key === 'FORMAT' ? ' onchange="refreshModelDropdown(selectedMakerForCameraFilter())"' : '';
+    return `<select data-k="${escAttr(key)}"${onChange}>${os}</select>`;
   }
 
   // Smart single-select dropdown
@@ -5408,20 +5432,9 @@ function buildEditorForm(rec) {
       const ml = maker.toLowerCase();
       const fromCatalog = CAMERAS_CATALOG
         .filter(c => !maker || (c.maker||'').toLowerCase() === ml)
+        .filter(c => quickModeCamerasForRoll(rec['FORMAT']).includes(c))
         .map(c => c.model).filter(Boolean);
       filtered = [...new Set(fromCatalog)].sort();
-      // supplement with roll history if none found in catalog
-      if (filtered.length === 0) {
-        const makerMap = {};
-        DATA.forEach(r => {
-          if (r['MAKER'] && r['MODEL NAME']) {
-            if (!makerMap[r['MAKER']]) makerMap[r['MAKER']] = new Set();
-            makerMap[r['MAKER']].add(r['MODEL NAME']);
-          }
-        });
-        const all = [...new Set(DATA.map(r => r['MODEL NAME']).filter(Boolean))].sort();
-        filtered = maker && makerMap[maker] ? [...makerMap[maker]].sort() : all;
-      }
     } else {
       const makerMap = {};
       DATA.forEach(r => {
@@ -8232,20 +8245,47 @@ function renderStatusSections() {
 
 // Cameras already known from roll history (to seed the catalog on first run)
 const SEED_CAMERAS = [
-  { maker: 'PENTAX', model: 'Super Program',  format: '35mm',   type: 'SLR'         },
-  { maker: 'PENTAX', model: 'PC-330',         format: '35mm',   type: 'P&S'         },
-  { maker: 'PENTAX', model: 'IQ Zoom 115M',   format: '35mm',   type: 'P&S'         },
-  { maker: 'MAMIYA', model: 'M645J',          format: '6x4.5',  type: 'SLR'         },
-  { maker: 'CANON',  model: 'Canon 7',        format: '35mm',   type: 'Rangefinder' },
-  { maker: 'CANON',  model: 'Canon 514XL',    format: 'Super 8',type: 'Otro'        },
+  { maker: 'PENTAX', model: 'Super Program',  format: '35mm',   type: 'SLR',         show_in_quick_mode: true },
+  { maker: 'PENTAX', model: 'PC-330',         format: '35mm',   type: 'P&S',         show_in_quick_mode: true },
+  { maker: 'PENTAX', model: 'IQ Zoom 115M',   format: '35mm',   type: 'P&S',         show_in_quick_mode: true },
+  { maker: 'MAMIYA', model: 'M645J',          format: '6x4.5',  type: 'SLR',         show_in_quick_mode: true },
+  { maker: 'CANON',  model: 'Canon 7',        format: '35mm',   type: 'Rangefinder', show_in_quick_mode: true },
+  { maker: 'CANON',  model: 'Canon 514XL',    format: 'Super 8',type: 'Otro',        show_in_quick_mode: true },
 ];
+
+function cameraQuickModeVisible(camera) {
+  return !camera || camera.show_in_quick_mode !== false;
+}
+
+function cameraCatalogFormatKey(camera) {
+  const key = formatKey(camera && camera.format);
+  if (key === '120') return '120';
+  if (/^6x/i.test(String(camera && camera.format || ''))) return '120';
+  return key;
+}
+
+function formatCompatibleForQuickMode(camera, rollFormat) {
+  const rollKey = formatKey(rollFormat);
+  const cameraKey = cameraCatalogFormatKey(camera);
+  if (!rollKey || !cameraKey) return false;
+  return rollKey === cameraKey;
+}
+
+function quickModeCamerasForRoll(rollFormat) {
+  return CAMERAS_CATALOG
+    .filter(cameraQuickModeVisible)
+    .filter(c => formatCompatibleForQuickMode(c, rollFormat));
+}
 
 async function loadCamerasCatalog() {
   if (sb) {
     try {
       const { data, error } = await sb.from('cameras').select('*').order('maker').order('model');
       if (!error && data) {
-        CAMERAS_CATALOG = data;
+        CAMERAS_CATALOG = data.map(c => ({
+          ...c,
+          show_in_quick_mode: c.show_in_quick_mode !== false
+        }));
         // If DB is empty, push seed cameras
         if (CAMERAS_CATALOG.length === 0) await seedCamerasToDb();
         else await fixCameraTypos();
@@ -8287,16 +8327,34 @@ async function seedCamerasToDb() {
 }
 
 function openAddCameraModal() {
+  editingCameraId = null;
+  document.querySelector('#camModalOverlay .cam-modal-title').textContent = 'Nueva cámara';
   document.getElementById('camInputMaker').value  = '';
   document.getElementById('camInputModel').value  = '';
   document.getElementById('camInputFormat').value = '';
   document.getElementById('camInputType').value   = '';
+  document.getElementById('camInputQuickMode').checked = true;
+  document.getElementById('camModalOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('camInputMaker').focus(), 80);
+}
+
+function openEditCameraModal(id) {
+  const cam = CAMERAS_CATALOG.find(c => c.id == id);
+  if (!cam) return;
+  editingCameraId = cam.id;
+  document.querySelector('#camModalOverlay .cam-modal-title').textContent = 'Editar cámara';
+  document.getElementById('camInputMaker').value = cam.maker || '';
+  document.getElementById('camInputModel').value = cam.model || '';
+  document.getElementById('camInputFormat').value = cam.format || '';
+  document.getElementById('camInputType').value = cam.type || '';
+  document.getElementById('camInputQuickMode').checked = cameraQuickModeVisible(cam);
   document.getElementById('camModalOverlay').classList.add('open');
   setTimeout(() => document.getElementById('camInputMaker').focus(), 80);
 }
 
 function closeCameraModal() {
   document.getElementById('camModalOverlay').classList.remove('open');
+  editingCameraId = null;
 }
 
 async function saveCameraForm() {
@@ -8304,34 +8362,56 @@ async function saveCameraForm() {
   const model  = document.getElementById('camInputModel').value.trim();
   const format = document.getElementById('camInputFormat').value;
   const type   = document.getElementById('camInputType').value;
+  const showInQuickMode = document.getElementById('camInputQuickMode').checked;
   if (!maker || !model) {
     document.getElementById(maker ? 'camInputModel' : 'camInputMaker').focus();
     showSyncStatus('⚠ Fabricante y modelo son obligatorios');
     return;
   }
+  if (!format) {
+    document.getElementById('camInputFormat').focus();
+    showSyncStatus('⚠ El formato de la cámara es obligatorio');
+    return;
+  }
   const dup = CAMERAS_CATALOG.find(c =>
+    c.id != editingCameraId &&
     c.maker.toLowerCase() === maker.toLowerCase() &&
     c.model.toLowerCase() === model.toLowerCase()
   );
   if (dup) { showSyncStatus('⚠ Esa cámara ya está en el catálogo'); return; }
 
   try {
-    let newId = Date.now();
-    if (sb) {
-      newId = await upsertCameraRemote(maker, model, format || null, type || null);
+    const wasEditing = editingCameraId != null;
+    const payload = { maker, model, format, type: type || null, show_in_quick_mode: showInQuickMode };
+    if (wasEditing) {
+      if (sb) {
+        const { error } = await sb.from('cameras')
+          .update({ maker, model, format, type, show_in_quick_mode: showInQuickMode })
+          .eq('id', editingCameraId);
+        if (error) throw error;
+      }
+      const idx = CAMERAS_CATALOG.findIndex(c => c.id == editingCameraId);
+      if (idx >= 0) CAMERAS_CATALOG[idx] = { ...CAMERAS_CATALOG[idx], ...payload };
+    } else {
+      let newId = Date.now();
+      if (sb) {
+        const { data, error } = await sb.from('cameras')
+          .upsert({ owner_user_id: currentUserId(), maker, model, format, type, show_in_quick_mode: showInQuickMode },
+                   { onConflict: 'owner_user_id,maker,model' })
+          .select('id').single();
+        if (error) throw error;
+        newId = data.id;
+      }
+      CAMERAS_CATALOG.push({
+        id: newId,
+        ...payload,
+        owner_user_id: currentUserId() || null,
+      });
     }
-    CAMERAS_CATALOG.push({
-      id: newId,
-      maker,
-      model,
-      format: format || null,
-      type: type || null,
-      owner_user_id: currentUserId() || null,
-    });
     CAMERAS_CATALOG.sort((a,b) => a.maker.localeCompare(b.maker) || a.model.localeCompare(b.model));
     closeCameraModal();
     renderCamerasPage();
-    showSyncStatus('✓ Cámara agregada al catálogo');
+    showSyncStatus(wasEditing ? '✓ Cámara actualizada' : '✓ Cámara agregada al catálogo');
   } catch(e) {
     showSyncStatus('✗ Error: ' + e.message);
   }
@@ -8389,19 +8469,25 @@ function renderCamerasPage() {
       const lastStr = last
         ? new Date(last + 'T12:00:00').toLocaleDateString('es-MX', { day:'2-digit', month:'short', year:'numeric' })
         : 'Sin uso aún';
-      const fmtBadge = c.format ? `<span class="cam-badge fmt">${c.format}</span>` : '';
+      const fmtBadge = c.format
+        ? `<span class="cam-badge fmt">${c.format}</span>`
+        : `<span class="cam-badge muted">Formato pendiente</span>`;
       const typBadge = c.type   ? `<span class="cam-badge">${c.type}</span>` : '';
+      const quickBadge = cameraQuickModeVisible(c) ? '' : `<span class="cam-badge muted">Oculta modo rápido</span>`;
       return `
         <div class="cam-card">
           <div class="cam-card-maker">${c.maker || ''}</div>
           <div class="cam-card-model">${c.model || '—'}</div>
-          <div class="cam-card-badges">${fmtBadge}${typBadge}</div>
+          <div class="cam-card-badges">${fmtBadge}${typBadge}${quickBadge}</div>
           <div class="cam-card-footer">
             <div>
               <div class="cam-card-rolls"><b>${rolls}</b> rollo${rolls !== 1 ? 's' : ''} disparado${rolls !== 1 ? 's' : ''}</div>
               <div class="cam-card-last">Último uso: ${lastStr}</div>
             </div>
-            <button class="cam-card-del" onclick="deleteCameraById(${c.id})" title="Eliminar cámara">✕</button>
+            <div>
+              <button class="cam-card-edit" onclick="openEditCameraModal(${c.id})" title="Editar cámara">Editar</button>
+              <button class="cam-card-del" onclick="deleteCameraById(${c.id})" title="Eliminar cámara">✕</button>
+            </div>
           </div>
         </div>`;
     }).join('');
@@ -8547,30 +8633,31 @@ function cancelSmartAdd(id) {
   document.getElementById('addinput_' + id).value = '';
 }
 
+function selectedMakerForCameraFilter() {
+  const makerSel = document.getElementById('sel_ss_MAKER');
+  return makerSel ? makerSel.value : '';
+}
+
+function selectedRollFormatForCameraFilter() {
+  const formatSel = document.querySelector('#rollEditorForm select[data-k="FORMAT"]');
+  return formatSel ? formatSel.value : '';
+}
+
 function refreshModelDropdown(maker) {
   const wrap = document.getElementById('wrap_ss_MODEL_NAME');
   if (!wrap) return;
   const sel = wrap.querySelector('select');
   const curVal = sel ? sel.value : '';
+  const rollFormat = selectedRollFormatForCameraFilter();
 
   let filtered;
   if (CAMERAS_CATALOG.length > 0) {
     const ml = (maker||'').toLowerCase();
     const fromCatalog = CAMERAS_CATALOG
       .filter(c => !maker || (c.maker||'').toLowerCase() === ml)
+      .filter(c => quickModeCamerasForRoll(rollFormat).includes(c))
       .map(c => c.model).filter(Boolean);
     filtered = [...new Set(fromCatalog)].sort();
-    if (filtered.length === 0) {
-      const makerMap = {};
-      DATA.forEach(r => {
-        if (r['MAKER'] && r['MODEL NAME']) {
-          if (!makerMap[r['MAKER']]) makerMap[r['MAKER']] = new Set();
-          makerMap[r['MAKER']].add(r['MODEL NAME']);
-        }
-      });
-      const all = [...new Set(DATA.map(r => r['MODEL NAME']).filter(Boolean))].sort();
-      filtered = maker && makerMap[maker] ? [...makerMap[maker]].sort() : all;
-    }
   } else {
     const makerMap = {};
     DATA.forEach(r => {
@@ -9230,7 +9317,9 @@ function updateLocationCheckbox(id) {
 
   // ── Cameras list ────────────────────────────────────────────────────
   function qaCameras() {
+    var selectedFormat = qaState && qaState.format;
     if (typeof CAMERAS_CATALOG !== 'undefined' && Array.isArray(CAMERAS_CATALOG) && CAMERAS_CATALOG.length) {
+      if (typeof quickModeCamerasForRoll === 'function') return quickModeCamerasForRoll(selectedFormat);
       return CAMERAS_CATALOG.slice();
     }
     // Fallback: pull unique maker+model pairs from DATA
@@ -9240,6 +9329,7 @@ function updateLocationCheckbox(id) {
       DATA.forEach(function (r) {
         var key = (r['MAKER'] || '') + '|' + (r['MODEL NAME'] || '');
         if (!r['MODEL NAME'] || seen[key]) return;
+        if (typeof formatKey === 'function' && selectedFormat && formatKey(r.FORMAT) !== formatKey(selectedFormat)) return;
         seen[key] = true;
         out.push({ maker: r['MAKER'] || '', model: r['MODEL NAME'] || '', format: r['C. FORMAT'] || '', type: r['C. TYPE'] || '' });
       });
@@ -9322,13 +9412,14 @@ function updateLocationCheckbox(id) {
       var camsHTML = cams.length
         ? cams.map(function (c, i) {
             var sel = qaState.camera === i;
+            var meta = (typeof formatMeta === 'function' && formatMeta(c.format)) || QA_FORMAT_META[qaState.format] || {};
             return '<button type="button" class="qa-list-it ' + (sel ? 'sel' : '') + '" onclick="window._qaSelCamera(' + i + ')">' +
-              '<span class="qa-swc" style="background:' + (c.format === '120' ? '#5a8aad' : '#d97150') + '"></span>' +
+              '<span class="qa-swc" style="background:' + (meta.color || meta.swatch || '#9c9284') + '"></span>' +
               '<span class="qa-list-it-nm">' + qaEsc((c.maker || '') + ' ' + (c.model || '')) + '</span>' +
               '<span class="qa-list-it-meta">' + qaEsc(c.format || '—') + '</span>' +
             '</button>';
           }).join('')
-        : '<div class="qa-help" style="padding:14px;border:1px dashed rgba(244,237,226,0.10)"><b>›</b> No hay cámaras registradas todavía. Se guardará el rollo sin cámara — puedes asignarla después desde el detalle.</div>';
+        : '<div class="qa-help" style="padding:14px;border:1px dashed rgba(244,237,226,0.10)"><b>›</b> No hay cámaras visibles para este formato. Se guardará el rollo sin cámara — puedes asignarla después desde el detalle.</div>';
 
       var fmtMeta = QA_FORMAT_META[qaState.format] || {};
       var stockSwatch = qaSwatchForStock(qaState.stock, qaState.manufacturer);
@@ -9378,7 +9469,7 @@ function updateLocationCheckbox(id) {
   }
 
   // ── Selectors ───────────────────────────────────────────────────────
-  window._qaSelFormat = function (k) { qaState.format = k; qaRender(); };
+  window._qaSelFormat = function (k) { qaState.format = k; qaState.camera = null; qaRender(); };
   window._qaSelStock = function (name) {
     var all = qaAllStocks();
     var hit = all.find(function (s) { return s.name === name; });
