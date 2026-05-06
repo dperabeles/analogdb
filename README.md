@@ -69,3 +69,8 @@ The current product is still centered on a single-file frontend, [`analog-db-das
 ## Status
 
 Active development.
+
+## License
+
+This project is proprietary software. All rights reserved.
+See [LICENSE](./LICENSE).
