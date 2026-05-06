@@ -109,10 +109,10 @@ body::before {
 }
 
 .gate-metric-value {
-  font-family: 'Playfair Display', serif;
-  font-size: 29px;
+  font-family: 'DM Mono', monospace;
+  font-size: 26px;
   line-height: 1;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   color: #f3eadb;
   white-space: nowrap;
 }
@@ -4502,7 +4502,7 @@ body.mob-detail .mob-app .mob-view {
         <div style="height:1px;background:#1a1510;margin-bottom:12px;"></div>
         <div class="ed-colophon-inner">
           <span id="edColophonSync">v2.0 · —</span>
-          <span>creado por diego y berna</span>
+          <span>Creado por The Analog Archive</span>
         </div>
       </footer>
 
@@ -6721,7 +6721,7 @@ function renderDashPanels() {
       return `
         <div class="ed-recent-item" onclick="openModalById('${r['#']}')">
           <div style="display:flex;align-items:baseline;gap:10px;">
-            <span style="font-size:10px;opacity:0.45;font-family:'Inter',sans-serif;letter-spacing:1px;">${r['#']}</span>
+            <span style="font-size:10px;font-family:'DM Mono',monospace;color:var(--amber-dark);letter-spacing:0.04em;">${r['#']}</span>
             <span style="font-family:'Fraunces',serif;font-size:16px;flex:1;color:#1a1510;">${r['FILM STOCK'] || '—'}</span>
             <span style="font-size:9px;letter-spacing:1.5px;color:${statusColor};font-family:'Inter',sans-serif;font-weight:600;">${statusLabel}</span>
           </div>
@@ -7672,9 +7672,7 @@ function renderPublicLanding() {
     'PRIVATE BETA',
     `<div id="gateLandingMarqueeMount">${renderLandingMarquee()}</div>
     <div style="margin-top:14px;font-family:'Inter',sans-serif;font-size:12px;line-height:1.6;color:rgba(232,223,209,0.52);letter-spacing:.03em;">Un proyecto de:
-      <a href="https://www.instagram.com/perabeles.jpg?igsh=MXg1dXczaDgwaWJobg%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" style="color:#f3eadb;text-decoration:none;border-bottom:1px solid rgba(243,234,219,0.28);">Diego Perabeles</a>
-      y
-      <a href="https://www.instagram.com/beautyviafilm?igsh=NDZ1bjYzbWh6amd5" target="_blank" rel="noopener noreferrer" style="color:#f3eadb;text-decoration:none;border-bottom:1px solid rgba(243,234,219,0.28);">Bernabé del Moral</a>.
+      <a href="https://www.instagram.com/perabeles.jpg?igsh=MXg1dXczaDgwaWJobg%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" style="color:#f3eadb;text-decoration:none;border-bottom:1px solid rgba(243,234,219,0.28);">Diego Perabeles</a>.
     </div>`
   );
   const panel = document.getElementById('accessGatePanel');
