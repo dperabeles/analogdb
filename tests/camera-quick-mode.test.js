@@ -15,7 +15,7 @@ expectIncludes("quickModeCamerasForRoll", 'quick-mode camera filtering helper sh
 expectIncludes("cameraQuickModeVisible", 'quick-mode camera filtering should exclude hidden cameras');
 expectIncludes(".filter(c => quickModeCamerasForRoll(rec['FORMAT']).includes(c))", 'roll editor model list should be filtered by roll format and quick-mode visibility');
 expectIncludes("selectedRollFormatForCameraFilter()", 'model refresh should use the currently selected roll format');
-expectIncludes(".update({ maker, model, format, type, show_in_quick_mode: showInQuickMode })", 'editing a camera should persist format and quick-mode visibility');
-expectIncludes(".upsert({ owner_user_id: currentUserId(), maker, model, format, type, show_in_quick_mode: showInQuickMode }", 'creating a camera should persist quick-mode visibility');
+expectIncludes("persistCameraRemoteCompat(payload, editingCameraId)", 'editing a camera should persist format, mount, lens mode, and quick-mode visibility');
+expectIncludes("persistCameraRemoteCompat(payload, null)", 'creating a camera should persist mount, lens mode, and quick-mode visibility');
 
 console.log('camera quick-mode static checks passed');
