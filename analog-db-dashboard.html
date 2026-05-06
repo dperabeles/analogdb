@@ -2751,6 +2751,11 @@ h1, h2 {
   font-style: italic !important;
   font-weight: 800 !important;
 }
+.ed-section-title em,
+.ed-page-header-title em {
+  font-style: normal !important;
+  color: #d94a2a !important;
+}
 
 /* Subtítulos y kickers */
 .ed-section-sub,
@@ -4427,7 +4432,7 @@ body.mob-detail .mob-app .mob-view {
         <div class="ed-section-head">
           <div class="ed-section-num">I.</div>
           <div style="flex:1;">
-            <h2 class="ed-section-title">Índice</h2>
+            <h2 class="ed-section-title">Tu film, <em>de un vistazo</em></h2>
             <div class="ed-section-sub">Inventario general del archivo</div>
           </div>
         </div>
@@ -4440,7 +4445,7 @@ body.mob-detail .mob-app .mob-view {
         <div class="ed-section-head">
           <div class="ed-section-num">II.</div>
           <div style="flex:1;">
-            <h2 class="ed-section-title">Workflow</h2>
+            <h2 class="ed-section-title">Tu film, <em>en curso</em></h2>
             <div class="ed-section-sub">Rollos activos, por etapa</div>
           </div>
         </div>
@@ -4485,7 +4490,7 @@ body.mob-detail .mob-app .mob-view {
         <div class="ed-section-head">
           <div class="ed-section-num">III.</div>
           <div style="flex:1;">
-            <h2 class="ed-section-title">Crónica reciente</h2>
+            <h2 class="ed-section-title">Tu film, <em>reciente</em></h2>
             <div class="ed-section-sub">Últimos rollos por orden cronológico</div>
           </div>
         </div>
@@ -4516,7 +4521,7 @@ body.mob-detail .mob-app .mob-view {
     <div class="page-inner" style="padding:28px 48px 60px;">
       <div class="ed-page-header">
         <div class="ed-page-header-kicker">PÁG·02 &nbsp;·&nbsp; BASE DE DATOS</div>
-        <h1 class="ed-page-header-title">Database</h1>
+        <h1 class="ed-page-header-title">Tu archivo, <em>en datos</em></h1>
         <div class="ed-page-header-sub">Registro completo de todos los rollos del archivo</div>
         <div style="height:1px;background:#1a1510;margin-top:12px;"></div>
       </div>
@@ -4584,7 +4589,7 @@ body.mob-detail .mob-app .mob-view {
     <div class="page-inner ed-page-inner">
       <div class="ed-page-header">
         <div class="ed-page-header-kicker">PÁG·05 &nbsp;·&nbsp; ANÁLISIS</div>
-        <h1 class="ed-page-header-title">Estadísticas</h1>
+        <h1 class="ed-page-header-title">Tu film, <em>en cifras</em></h1>
         <div class="ed-page-header-sub">Métricas y tendencias del archivo fotográfico</div>
         <div style="height:1px;background:#1a1510;margin-top:12px;"></div>
       </div>
@@ -4597,7 +4602,7 @@ body.mob-detail .mob-app .mob-view {
     <div class="page-inner" style="padding:28px 48px 60px;">
       <div class="ed-page-header">
         <div class="ed-page-header-kicker">PÁG·03 &nbsp;·&nbsp; CRONOLOGÍA</div>
-        <h1 class="ed-page-header-title">Timeline</h1>
+        <h1 class="ed-page-header-title">Tu film, <em>en el tiempo</em></h1>
         <div class="ed-page-header-sub">Historia cronológica del archivo, agrupada por mes</div>
         <div style="height:1px;background:#1a1510;margin-top:12px;"></div>
       </div>
@@ -4613,7 +4618,7 @@ body.mob-detail .mob-app .mob-view {
         <div style="display:flex;justify-content:space-between;align-items:flex-end;">
           <div>
             <div class="ed-page-header-kicker">PÁG·04 &nbsp;·&nbsp; EQUIPO</div>
-            <h1 class="ed-page-header-title">Cámaras</h1>
+            <h1 class="ed-page-header-title">Tus cámaras, <em>en cifras</em></h1>
             <div class="ed-page-header-sub"><span id="camCountBadge">0 cámaras</span> en el catálogo</div>
           </div>
           <button class="ed-btn-primary" onclick="openAddCameraModal()" style="margin-bottom:4px;">＋ Agregar cámara</button>
