@@ -16,10 +16,12 @@ function expectIncludes(source, needle, message) {
 expectIncludes(migration, 'alter table public.cameras', 'migration should extend cameras');
 expectIncludes(migration, 'add column if not exists mount text', 'cameras should get nullable mount');
 expectIncludes(migration, 'add column if not exists supports_interchangeable_lenses boolean not null default true', 'cameras should track fixed-lens vs interchangeable-lens bodies');
+expectIncludes(migration, 'add column if not exists show_in_quick_mode boolean not null default true', 'cameras should get quick-mode visibility');
 expectIncludes(migration, 'create table if not exists public.lenses', 'migration should create lenses table');
 expectIncludes(migration, 'maker text not null', 'lens maker should be required');
 expectIncludes(migration, 'add column if not exists lens_id bigint', 'rolls should get nullable lens_id');
 expectIncludes(migration, 'execute function public.touch_updated_at()', 'lenses should reuse the existing updated_at trigger helper');
+expectIncludes(migration, 'drop view if exists public.rolls_flat', 'rolls_flat should be recreated when adding/reordering columns');
 expectIncludes(migration, "coalesce(nullif(trim(concat_ws(' ', l.maker, l.model)), ''), r.lens)", 'rolls_flat should preserve legacy LENS text with lens fallback');
 
 expectIncludes(html, 'let LENSES_CATALOG = []', 'frontend should load a lens catalog');
@@ -40,6 +42,12 @@ expectIncludes(html, 'window._qaShowAddCamera', 'quick add should expose add-cam
 expectIncludes(html, 'window._qaSaveNewCamera', 'quick add should save a new camera');
 expectIncludes(html, 'window._qaShowAddLens', 'quick add should expose add-lens flow');
 expectIncludes(html, 'window._qaSaveNewLens', 'quick add should save a new lens');
+expectIncludes(html, 'id="lensModalOverlay"', 'mobile equipment should provide a lens modal');
+expectIncludes(html, 'openAddLensModal', 'equipment lens add button should open the lens modal');
+expectIncludes(html, 'onclick="openAddLensModal()"', 'equipment lens add button should be wired directly to the lens modal');
+expectIncludes(html, 'openEditLensModal', 'equipment lens cards should be editable');
+expectIncludes(html, 'saveLensForm', 'lens modal should save catalog changes');
+expectIncludes(html, 'persistLensRemoteCompat', 'lens save should tolerate preview DB migrations not being applied yet');
 expectIncludes(html, 'qa-list-it qa-add-row', 'quick add CTAs should use the highlighted add-row treatment');
 expectIncludes(html, "stepBar(5, 'Resumen')", 'quick add should have a dedicated summary step');
 expectIncludes(html, "qaState.step === 5 ? 'Crear rollo' : 'Continuar'", 'quick add should create the roll from the summary step');

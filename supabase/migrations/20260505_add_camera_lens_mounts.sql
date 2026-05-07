@@ -1,6 +1,7 @@
 alter table public.cameras
   add column if not exists mount text,
-  add column if not exists supports_interchangeable_lenses boolean not null default true;
+  add column if not exists supports_interchangeable_lenses boolean not null default true,
+  add column if not exists show_in_quick_mode boolean not null default true;
 
 create table if not exists public.lenses (
   id bigint generated always as identity primary key,
@@ -64,7 +65,9 @@ for delete
 to authenticated
 using (owner_user_id = auth.uid());
 
-create or replace view public.rolls_flat
+drop view if exists public.rolls_flat;
+
+create view public.rolls_flat
 with (security_invoker = true)
 as
 select
