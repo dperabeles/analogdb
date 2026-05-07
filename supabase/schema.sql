@@ -82,8 +82,23 @@ create table public.cameras (
   model text,
   format text,
   type text,
+  mount text,
+  supports_interchangeable_lenses boolean not null default true,
+  show_in_quick_mode boolean not null default true,
   owner_user_id uuid not null references auth.users(id) on delete cascade,
   unique (owner_user_id, maker, model)
+);
+
+create table public.lenses (
+  id bigint generated always as identity primary key,
+  maker text not null,
+  model text not null,
+  mount text,
+  show_in_quick_mode boolean not null default true,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  owner_user_id uuid not null references auth.users(id) on delete cascade,
+  unique (owner_user_id, maker, model, mount)
 );
 
 create table public.rolls (
@@ -97,6 +112,7 @@ create table public.rolls (
   fresh boolean,
   push_pull text,
   camera_id bigint references public.cameras(id) on delete set null,
+  lens_id bigint references public.lenses(id) on delete set null,
   lens text,
   locations text[] default '{}'::text[],
   photo_types text[] default '{}'::text[],
@@ -164,8 +180,11 @@ create index rolls_status_idx on public.rolls(status);
 create index rolls_started_idx on public.rolls(started);
 create index rolls_film_stock_id_idx on public.rolls(film_stock_id);
 create index rolls_camera_id_idx on public.rolls(camera_id);
+create index rolls_lens_id_idx on public.rolls(lens_id);
 create index rolls_owner_user_id_idx on public.rolls(owner_user_id);
 create index cameras_owner_user_id_idx on public.cameras(owner_user_id);
+create index lenses_owner_user_id_idx on public.lenses(owner_user_id);
+create index lenses_owner_mount_idx on public.lenses(owner_user_id, mount);
 create index idx_frame_tags_roll_id on public.frame_tags(roll_id);
 create index idx_frame_tags_tag on public.frame_tags(tag);
 create index roll_exposures_roll_id_idx on public.roll_exposures(roll_id);
@@ -188,6 +207,11 @@ execute function public.touch_updated_at();
 
 create trigger roll_exposures_touch
 before update on public.roll_exposures
+for each row
+execute function public.touch_updated_at();
+
+create trigger lenses_touch
+before update on public.lenses
 for each row
 execute function public.touch_updated_at();
 
@@ -636,7 +660,9 @@ select
   c.model as "MODEL NAME",
   c.format as "C. FORMAT",
   c.type as "C. TYPE",
-  r.lens as "LENS",
+  c.mount as "C. MOUNT",
+  coalesce(nullif(trim(concat_ws(' ', l.maker, l.model)), ''), r.lens) as "LENS",
+  l.mount as "LENS MOUNT",
   array_to_string(r.locations, ', ') as "LOCATIONS",
   array_to_string(r.photo_types, ', ') as "PHOTO TYPE",
   array_to_string(r.tags, ', ') as "TAGS",
@@ -655,6 +681,7 @@ select
 from public.rolls r
 left join public.film_stocks fs on fs.id = r.film_stock_id
 left join public.cameras c on c.id = r.camera_id
+left join public.lenses l on l.id = r.lens_id
 left join public.labs dl on dl.id = r.dev_lab_id
 left join public.labs sl on sl.id = r.scan_lab_id
 left join lateral (
@@ -680,6 +707,7 @@ grant select, insert on public.user_roles to authenticated;
 grant select, insert, update on public.film_stocks to authenticated;
 grant select, insert, update on public.labs to authenticated;
 grant select, insert, update, delete on public.cameras to authenticated;
+grant select, insert, update, delete on public.lenses to authenticated;
 grant select, insert, update, delete on public.rolls to authenticated;
 grant select, insert, update, delete on public.roll_exposures to authenticated;
 grant select on public.admin_actions to authenticated;
@@ -694,6 +722,7 @@ alter table public.private_app_config enable row level security;
 alter table public.film_stocks enable row level security;
 alter table public.labs enable row level security;
 alter table public.cameras enable row level security;
+alter table public.lenses enable row level security;
 alter table public.rolls enable row level security;
 alter table public.roll_exposures enable row level security;
 alter table public.admin_actions enable row level security;
@@ -832,6 +861,63 @@ with check (owner_user_id = auth.uid());
 
 create policy cameras_owner_delete
 on public.cameras
+for delete
+to public
+using (
+  owner_user_id = auth.uid()
+  and exists (
+    select 1
+    from public.profiles p
+    where p.user_id = auth.uid()
+      and p.status = 'approved'
+  )
+);
+
+create policy lenses_owner_select
+on public.lenses
+for select
+to public
+using (
+  owner_user_id = auth.uid()
+  and exists (
+    select 1
+    from public.profiles p
+    where p.user_id = auth.uid()
+      and p.status = 'approved'
+  )
+);
+
+create policy lenses_owner_insert
+on public.lenses
+for insert
+to public
+with check (
+  owner_user_id = auth.uid()
+  and exists (
+    select 1
+    from public.profiles p
+    where p.user_id = auth.uid()
+      and p.status = 'approved'
+  )
+);
+
+create policy lenses_owner_update
+on public.lenses
+for update
+to public
+using (
+  owner_user_id = auth.uid()
+  and exists (
+    select 1
+    from public.profiles p
+    where p.user_id = auth.uid()
+      and p.status = 'approved'
+  )
+)
+with check (owner_user_id = auth.uid());
+
+create policy lenses_owner_delete
+on public.lenses
 for delete
 to public
 using (

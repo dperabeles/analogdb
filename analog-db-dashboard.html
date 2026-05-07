@@ -3370,6 +3370,7 @@ h1, h2 {
 .qa-steps-ix {
   font-family: 'DM Mono', monospace; font-size: 8px;
   letter-spacing: 0.22em; text-transform: uppercase;
+  white-space: nowrap;
   color: rgba(232,223,209,0.28); transition: color .2s ease;
 }
 .qa-steps-stp.on .qa-steps-ix { color: #d94a2a; }
@@ -3465,6 +3466,51 @@ h1, h2 {
   letter-spacing: 0.12em; color: rgba(232,223,209,0.28); line-height: 1.7;
 }
 .qa-help b { color: #d94a2a; font-weight: 500; }
+.qa-list-it.qa-add-row {
+  background: rgba(200,160,72,0.12);
+  border-left: 2px solid #c8a048;
+  padding-left: 12px;
+}
+.qa-list-it.qa-add-row .qa-list-it-nm { color: #f3eadb; }
+.qa-list-it.qa-add-row .qa-list-it-meta { color: #c8a048; }
+.qa-inline-form {
+  border: 1px solid rgba(244,237,226,0.10);
+  background: #1e1a15;
+  padding: 14px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.qa-inline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.qa-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.qa-field.full { grid-column: 1 / -1; }
+.qa-field label {
+  font-family: 'DM Mono', monospace; font-size: 8px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(232,223,209,0.38);
+}
+.qa-mini-input {
+  width: 100%; min-width: 0;
+  border: 1px solid rgba(244,237,226,0.10);
+  background: rgba(14,12,10,0.62);
+  color: #f3eadb;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  padding: 12px;
+  outline: none;
+}
+.qa-mini-input:focus { border-color: rgba(217,74,42,0.62); }
+.qa-inline-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.qa-secondary-btn,
+.qa-primary-btn {
+  border: 1px solid rgba(244,237,226,0.12);
+  min-height: 42px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.qa-secondary-btn { background: transparent; color: rgba(232,223,209,0.72); }
+.qa-primary-btn { background: #d94a2a; color: #120f0c; border-color: #d94a2a; font-weight: 700; }
 .qa-summary {
   display: flex; flex-direction: column;
   border: 1px solid rgba(244,237,226,0.10);
@@ -4172,6 +4218,37 @@ body.mob-detail .mob-app .mob-view {
 }
 .mob-roll .row3 .lens { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mob-roll .stars { color: #d9a050; font-size: 11px; letter-spacing: 0.06em; }
+.mob-eq-chip { display: inline-flex; align-items: center; gap: 8px; }
+.mob-equipment-edit {
+  color: #d94a2a !important;
+  border: 1px solid rgba(217,74,42,0.32) !important;
+  padding: 7px 10px !important;
+}
+.mob-equipment-add-row {
+  border: 1px solid rgba(200,160,72,0.28);
+  background: rgba(200,160,72,0.10);
+  min-height: 52px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  cursor: pointer;
+}
+.mob-equipment-add-row .nm {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #f3eadb;
+}
+.mob-equipment-add-row .meta,
+.mob-equipment-add-row .ar {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #c8a048;
+}
 
 /* ── table view (mob) ── */
 .mob-search {
@@ -4694,6 +4771,15 @@ body.mob-detail .mob-app .mob-view {
         <option value="Otro">Otro</option>
       </select>
     </div>
+    <div class="cam-modal-field">
+      <label class="cam-modal-label">Montura</label>
+      <input class="cam-modal-input" id="camInputMount" type="text"
+        placeholder="Pentax K, Canon FD, LTM, M42…" autocomplete="off">
+    </div>
+    <label class="cam-modal-check">
+      <input id="camInputInterchangeable" type="checkbox" checked>
+      <span>Lente intercambiable</span>
+    </label>
     <label class="cam-modal-check">
       <input id="camInputQuickMode" type="checkbox" checked>
       <span>Mostrar en modo rápido</span>
@@ -4701,6 +4787,38 @@ body.mob-detail .mob-app .mob-view {
     <div class="cam-modal-actions">
       <button class="cam-modal-cancel" onclick="closeCameraModal()">Cancelar</button>
       <button class="cam-modal-save" onclick="saveCameraForm()">Guardar cámara</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ ADD LENS MODAL ════════════ -->
+<div class="cam-modal-overlay" id="lensModalOverlay" onclick="if(event.target===this)closeLensModal()">
+  <div class="cam-modal">
+    <div class="cam-modal-title">Nuevo lente</div>
+    <div class="cam-modal-field">
+      <label class="cam-modal-label">Fabricante</label>
+      <input class="cam-modal-input" id="lensInputMaker" type="text"
+        placeholder="Pentax, Canon, Mamiya..." autocomplete="off"
+        onkeydown="if(event.key==='Enter')document.getElementById('lensInputModel').focus()">
+    </div>
+    <div class="cam-modal-field">
+      <label class="cam-modal-label">Modelo</label>
+      <input class="cam-modal-input" id="lensInputModel" type="text"
+        placeholder="Pentax-A 50mm f2.0, FD 50mm f1.8..." autocomplete="off"
+        onkeydown="if(event.key==='Enter')document.getElementById('lensInputMount').focus()">
+    </div>
+    <div class="cam-modal-field">
+      <label class="cam-modal-label">Montura</label>
+      <input class="cam-modal-input" id="lensInputMount" type="text"
+        placeholder="Pentax K, Canon FD, LTM, Mamiya 645..." autocomplete="off">
+    </div>
+    <label class="cam-modal-check">
+      <input id="lensInputQuickMode" type="checkbox" checked>
+      <span>Mostrar en modo rápido</span>
+    </label>
+    <div class="cam-modal-actions">
+      <button class="cam-modal-cancel" onclick="closeLensModal()">Cancelar</button>
+      <button class="cam-modal-save" onclick="saveLensForm()">Guardar lente</button>
     </div>
   </div>
 </div>
@@ -4774,9 +4892,11 @@ function readLocalCache() {
 const LS_MIGRATION_KEY = 'filmRollDB_migration';
 const CURRENT_MIGRATION = 'v3_stocks_normalized';
 
-// ─── Camera catalog (populated from Supabase or seeded from rolls) ───
-let CAMERAS_CATALOG = []; // [{id, maker, model, format, type, show_in_quick_mode}]
+// ─── Camera/lens catalogs (populated from Supabase or seeded from rolls) ───
+let CAMERAS_CATALOG = []; // [{id, maker, model, format, type, mount, supports_interchangeable_lenses, show_in_quick_mode}]
+let LENSES_CATALOG = []; // [{id, maker, model, mount, show_in_quick_mode}]
 let editingCameraId = null;
+let editingLensId = null;
 
 // Current-production film stocks by manufacturer (Wikipedia, excl. Instax/Polaroid)
 // Each entry: [stockName, ISO, type]
@@ -5032,15 +5152,137 @@ async function upsertStockRemote(man, name, iso, type) {
   return retry.data?.id || null;
 }
 
-async function upsertCameraRemote(maker, model, fmt, ctype) {
+async function upsertCameraRemote(maker, model, fmt, ctype, mount, supportsInterchangeable) {
   const ownerUserId = assertApprovedSession();
   if (!maker && !model) return null;
+  const row = {
+    owner_user_id: ownerUserId,
+    maker: maker || null,
+    model: model || null,
+    format: fmt || null,
+    type: ctype || null,
+    mount: mount || null
+  };
+  if (supportsInterchangeable !== undefined) {
+    row.supports_interchangeable_lenses = supportsInterchangeable !== false;
+  }
   const { data, error } = await sb.from('cameras').upsert(
-    { owner_user_id: ownerUserId, maker: maker || null, model: model || null, format: fmt || null, type: ctype || null },
+    row,
     { onConflict: 'owner_user_id,maker,model', ignoreDuplicates: false }
   ).select('id').single();
   if (error) throw error;
   return data.id;
+}
+
+async function upsertLensRemote(maker, model, mount) {
+  const ownerUserId = assertApprovedSession();
+  if (!maker || !model) return null;
+  const { data, error } = await sb.from('lenses').upsert(
+    { owner_user_id: ownerUserId, maker: maker || null, model, mount: mount || null, show_in_quick_mode: true },
+    { onConflict: 'owner_user_id,maker,model,mount', ignoreDuplicates: false }
+  ).select('id').single();
+  if (error) throw error;
+  return data.id;
+}
+
+function cameraSchemaCacheMissing(error) {
+  return !!(error && /schema cache|column of 'cameras'|Could not find the 'mount' column|show_in_quick_mode|supports_interchangeable_lenses/i.test(String(error.message || error)));
+}
+
+function lensSchemaCacheMissing(error) {
+  return !!(error && /schema cache|relation .*lenses|Could not find .*lenses|lenses.*does not exist|PGRST/i.test(String(error.message || error)));
+}
+
+async function persistCameraRemoteCompat(payload, editingId) {
+  if (!sb) return null;
+  const row = { ...payload };
+  if (editingId != null) {
+    const { data, error } = await sb.from('cameras').update(row).eq('id', editingId).select('id').single();
+    if (!error) return data && data.id;
+    if (!cameraSchemaCacheMissing(error)) throw error;
+    const legacyRow = {
+      maker: row.maker,
+      model: row.model,
+      format: row.format,
+      type: row.type,
+      show_in_quick_mode: row.show_in_quick_mode
+    };
+    const retry = await sb.from('cameras').update(legacyRow).eq('id', editingId).select('id').single();
+    if (retry.error && !cameraSchemaCacheMissing(retry.error)) throw retry.error;
+    if (!retry.error) {
+      showSyncStatus('⚠ Preview guardada sin campos nuevos; falta aplicar migración', true);
+      return retry.data && retry.data.id;
+    }
+    const legacyBaseRow = {
+      maker: row.maker,
+      model: row.model,
+      format: row.format,
+      type: row.type
+    };
+    const finalRetry = await sb.from('cameras').update(legacyBaseRow).eq('id', editingId).select('id').single();
+    if (finalRetry.error) throw finalRetry.error;
+    showSyncStatus('⚠ Preview guardada sin campos nuevos; falta aplicar migración', true);
+    return finalRetry.data && finalRetry.data.id;
+  }
+
+  const insertRow = { owner_user_id: currentUserId(), ...row };
+  const { data, error } = await sb.from('cameras')
+    .upsert(insertRow, { onConflict: 'owner_user_id,maker,model' })
+    .select('id').single();
+  if (!error) return data && data.id;
+  if (!cameraSchemaCacheMissing(error)) throw error;
+  const legacyInsert = {
+    owner_user_id: currentUserId(),
+    maker: row.maker,
+    model: row.model,
+    format: row.format,
+    type: row.type,
+    show_in_quick_mode: row.show_in_quick_mode
+  };
+  const retry = await sb.from('cameras')
+    .upsert(legacyInsert, { onConflict: 'owner_user_id,maker,model' })
+    .select('id').single();
+  if (retry.error && !cameraSchemaCacheMissing(retry.error)) throw retry.error;
+  if (!retry.error) {
+    showSyncStatus('⚠ Preview guardada sin campos nuevos; falta aplicar migración', true);
+    return retry.data && retry.data.id;
+  }
+  const legacyBaseInsert = {
+    owner_user_id: currentUserId(),
+    maker: row.maker,
+    model: row.model,
+    format: row.format,
+    type: row.type
+  };
+  const finalRetry = await sb.from('cameras')
+    .upsert(legacyBaseInsert, { onConflict: 'owner_user_id,maker,model' })
+    .select('id').single();
+  if (finalRetry.error) throw finalRetry.error;
+  showSyncStatus('⚠ Preview guardada sin campos nuevos; falta aplicar migración', true);
+  return finalRetry.data && finalRetry.data.id;
+}
+
+async function persistLensRemoteCompat(payload, editingId) {
+  if (!sb) return null;
+  const row = { ...payload };
+  const localSeedOnly = editingId != null && !/^\d+$/.test(String(editingId));
+
+  if (editingId != null && !localSeedOnly) {
+    const { data, error } = await sb.from('lenses').update(row).eq('id', editingId).select('id').single();
+    if (!error) return data && data.id;
+    if (!lensSchemaCacheMissing(error)) throw error;
+    showSyncStatus('⚠ Lente guardado localmente; falta aplicar migración', true);
+    return null;
+  }
+
+  const insertRow = { owner_user_id: currentUserId(), ...row };
+  const { data, error } = await sb.from('lenses')
+    .upsert(insertRow, { onConflict: 'owner_user_id,maker,model,mount' })
+    .select('id').single();
+  if (!error) return data && data.id;
+  if (!lensSchemaCacheMissing(error)) throw error;
+  showSyncStatus('⚠ Lente guardado localmente; falta aplicar migración', true);
+  return null;
 }
 
 async function upsertLabRemote(name) {
@@ -5077,7 +5319,7 @@ async function upsertRollRemote(flat) {
 
   const [stock_id, camera_id, dev_lab_id, scan_lab_id] = await Promise.all([
     upsertStockRemote(flat['MANUFACTURER'], flat['FILM STOCK'], toInt(flat['ISO']), flat['FILM TYPE']),
-    upsertCameraRemote(flat['MAKER'], flat['MODEL NAME'], flat['C. FORMAT'], flat['C. TYPE']),
+    upsertCameraRemote(flat['MAKER'], flat['MODEL NAME'], flat['C. FORMAT'], flat['C. TYPE'], flat['C. MOUNT'], flat['_CAMERA_INTERCHANGEABLE']),
     upsertLabRemote(flat['DEV']),
     upsertLabRemote(flat['SCAN']),
   ]);
@@ -5093,6 +5335,7 @@ async function upsertRollRemote(flat) {
     fresh,
     push_pull: flat['PUSH/PULL'] || null,
     camera_id,
+    lens_id: flat['_LENS_ID'] || null,
     lens: flat['LENS'] || null,
     locations: toArr(flat['LOCATIONS']),
     photo_types: toArr(flat['PHOTO TYPE']),
@@ -7907,6 +8150,7 @@ async function bootstrapApprovedSession(sessionUser, sessionOverride = null) {
   renderKPIs();
   renderDashPanels();
   setTimeout(drawChart, 60);
+  loadLensesCatalog();
   loadCamerasCatalog();
   if (isAdmin()) renderAdminPage();
   migratePushPullOnce().catch(err => console.warn('push/pull migration deferred:', err));
@@ -8251,16 +8495,27 @@ function renderStatusSections() {
 
 // Cameras already known from roll history (to seed the catalog on first run)
 const SEED_CAMERAS = [
-  { maker: 'PENTAX', model: 'Super Program',  format: '35mm',   type: 'SLR',         show_in_quick_mode: true },
-  { maker: 'PENTAX', model: 'PC-330',         format: '35mm',   type: 'P&S',         show_in_quick_mode: true },
-  { maker: 'PENTAX', model: 'IQ Zoom 115M',   format: '35mm',   type: 'P&S',         show_in_quick_mode: true },
-  { maker: 'MAMIYA', model: 'M645J',          format: '6x4.5',  type: 'SLR',         show_in_quick_mode: true },
-  { maker: 'CANON',  model: 'Canon 7',        format: '35mm',   type: 'Rangefinder', show_in_quick_mode: true },
-  { maker: 'CANON',  model: 'Canon 514XL',    format: 'Super 8',type: 'Otro',        show_in_quick_mode: true },
+  { maker: 'PENTAX', model: 'Super Program',  format: '35mm',   type: 'SLR',         mount: 'Pentax K', supports_interchangeable_lenses: true,  show_in_quick_mode: true },
+  { maker: 'PENTAX', model: 'PC-330',         format: '35mm',   type: 'P&S',         supports_interchangeable_lenses: false, show_in_quick_mode: true },
+  { maker: 'PENTAX', model: 'IQ Zoom 115M',   format: '35mm',   type: 'P&S',         supports_interchangeable_lenses: false, show_in_quick_mode: true },
+  { maker: 'MAMIYA', model: 'M645J',          format: '6x4.5',  type: 'SLR',         mount: 'Mamiya 645', supports_interchangeable_lenses: true, show_in_quick_mode: true },
+  { maker: 'CANON',  model: 'Canon 7',        format: '35mm',   type: 'Rangefinder', mount: 'LTM', supports_interchangeable_lenses: true, show_in_quick_mode: true },
+  { maker: 'CANON',  model: 'Canon 514XL',    format: 'Super 8',type: 'Otro',        supports_interchangeable_lenses: false, show_in_quick_mode: true },
+];
+
+const SEED_LENSES = [
+  { maker: 'Pentax', model: 'Pentax-A 50mm f2.0', mount: 'Pentax K', show_in_quick_mode: true },
+  { maker: 'Pentax', model: 'Pentax-A 70-210mm f4', mount: 'Pentax K', show_in_quick_mode: true },
+  { maker: 'Mamiya', model: 'Mamiya 55mm f2.8', mount: 'Mamiya 645', show_in_quick_mode: true },
+  { maker: 'Industar', model: 'Industar-61 53mm f2.8', mount: 'LTM', show_in_quick_mode: true },
 ];
 
 function cameraQuickModeVisible(camera) {
   return !camera || camera.show_in_quick_mode !== false;
+}
+
+function cameraSupportsInterchangeableLenses(camera) {
+  return !camera || camera.supports_interchangeable_lenses !== false;
 }
 
 function cameraCatalogFormatKey(camera) {
@@ -8283,6 +8538,25 @@ function quickModeCamerasForRoll(rollFormat) {
     .filter(c => formatCompatibleForQuickMode(c, rollFormat));
 }
 
+function lensQuickModeVisible(lens) {
+  return !lens || lens.show_in_quick_mode !== false;
+}
+
+function cameraMountForLensFilter(camera) {
+  return String(camera && camera.mount || '').trim();
+}
+
+function lensDisplayName(lens) {
+  return [lens && lens.maker, lens && lens.model].filter(Boolean).join(' ').trim();
+}
+
+function lensesForCamera(camera) {
+  const mount = cameraMountForLensFilter(camera).toLowerCase();
+  return LENSES_CATALOG
+    .filter(lensQuickModeVisible)
+    .filter(l => !mount || String(l.mount || '').trim().toLowerCase() === mount);
+}
+
 async function loadCamerasCatalog() {
   if (sb) {
     try {
@@ -8290,6 +8564,7 @@ async function loadCamerasCatalog() {
       if (!error && data) {
         CAMERAS_CATALOG = data.map(c => ({
           ...c,
+          supports_interchangeable_lenses: c.supports_interchangeable_lenses !== false,
           show_in_quick_mode: c.show_in_quick_mode !== false
         }));
         // If DB is empty, push seed cameras
@@ -8304,6 +8579,23 @@ async function loadCamerasCatalog() {
     }
   }
   renderCamerasPage();
+}
+
+async function loadLensesCatalog() {
+  if (sb) {
+    try {
+      const { data, error } = await sb.from('lenses').select('*').order('maker').order('model');
+      if (!error && data) {
+        LENSES_CATALOG = data.map(l => ({
+          ...l,
+          show_in_quick_mode: l.show_in_quick_mode !== false
+        }));
+      }
+    } catch(e) { console.warn('loadLensesCatalog:', e); }
+  }
+  if (LENSES_CATALOG.length === 0) {
+    LENSES_CATALOG = SEED_LENSES.map((l, i) => ({ id: 'seed-lens-' + (i + 1), ...l }));
+  }
 }
 
 // Silently fix known typos in the DB camera names
@@ -8324,7 +8616,7 @@ async function fixCameraTypos() {
 async function seedCamerasToDb() {
   for (const c of SEED_CAMERAS) {
     try {
-      const id = await upsertCameraRemote(c.maker, c.model, c.format, c.type);
+      const id = await upsertCameraRemote(c.maker, c.model, c.format, c.type, c.mount, c.supports_interchangeable_lenses);
       if (id && !CAMERAS_CATALOG.some(cam => cam.id === id)) {
         CAMERAS_CATALOG.push({ id, ...c, owner_user_id: currentUserId() });
       }
@@ -8339,6 +8631,8 @@ function openAddCameraModal() {
   document.getElementById('camInputModel').value  = '';
   document.getElementById('camInputFormat').value = '';
   document.getElementById('camInputType').value   = '';
+  document.getElementById('camInputMount').value  = '';
+  document.getElementById('camInputInterchangeable').checked = true;
   document.getElementById('camInputQuickMode').checked = true;
   document.getElementById('camModalOverlay').classList.add('open');
   setTimeout(() => document.getElementById('camInputMaker').focus(), 80);
@@ -8353,6 +8647,8 @@ function openEditCameraModal(id) {
   document.getElementById('camInputModel').value = cam.model || '';
   document.getElementById('camInputFormat').value = cam.format || '';
   document.getElementById('camInputType').value = cam.type || '';
+  document.getElementById('camInputMount').value = cam.mount || '';
+  document.getElementById('camInputInterchangeable').checked = cameraSupportsInterchangeableLenses(cam);
   document.getElementById('camInputQuickMode').checked = cameraQuickModeVisible(cam);
   document.getElementById('camModalOverlay').classList.add('open');
   setTimeout(() => document.getElementById('camInputMaker').focus(), 80);
@@ -8368,6 +8664,8 @@ async function saveCameraForm() {
   const model  = document.getElementById('camInputModel').value.trim();
   const format = document.getElementById('camInputFormat').value;
   const type   = document.getElementById('camInputType').value;
+  const mount  = document.getElementById('camInputMount').value.trim();
+  const supportsInterchangeable = document.getElementById('camInputInterchangeable').checked;
   const showInQuickMode = document.getElementById('camInputQuickMode').checked;
   if (!maker || !model) {
     document.getElementById(maker ? 'camInputModel' : 'camInputMaker').focus();
@@ -8388,26 +8686,15 @@ async function saveCameraForm() {
 
   try {
     const wasEditing = editingCameraId != null;
-    const payload = { maker, model, format, type: type || null, show_in_quick_mode: showInQuickMode };
+    const payload = { maker, model, format, type: type || null, mount: mount || null, supports_interchangeable_lenses: supportsInterchangeable, show_in_quick_mode: showInQuickMode };
     if (wasEditing) {
-      if (sb) {
-        const { error } = await sb.from('cameras')
-          .update({ maker, model, format, type, show_in_quick_mode: showInQuickMode })
-          .eq('id', editingCameraId);
-        if (error) throw error;
-      }
+      await persistCameraRemoteCompat(payload, editingCameraId);
       const idx = CAMERAS_CATALOG.findIndex(c => c.id == editingCameraId);
       if (idx >= 0) CAMERAS_CATALOG[idx] = { ...CAMERAS_CATALOG[idx], ...payload };
     } else {
       let newId = Date.now();
-      if (sb) {
-        const { data, error } = await sb.from('cameras')
-          .upsert({ owner_user_id: currentUserId(), maker, model, format, type, show_in_quick_mode: showInQuickMode },
-                   { onConflict: 'owner_user_id,maker,model' })
-          .select('id').single();
-        if (error) throw error;
-        newId = data.id;
-      }
+      const remoteId = await persistCameraRemoteCompat(payload, null);
+      if (remoteId) newId = remoteId;
       CAMERAS_CATALOG.push({
         id: newId,
         ...payload,
@@ -8417,7 +8704,89 @@ async function saveCameraForm() {
     CAMERAS_CATALOG.sort((a,b) => a.maker.localeCompare(b.maker) || a.model.localeCompare(b.model));
     closeCameraModal();
     renderCamerasPage();
+    if (window._mobApp && typeof window._mobApp.refresh === 'function') window._mobApp.refresh();
     showSyncStatus(wasEditing ? '✓ Cámara actualizada' : '✓ Cámara agregada al catálogo');
+  } catch(e) {
+    showSyncStatus('✗ Error: ' + e.message);
+  }
+}
+
+function openAddLensModal() {
+  editingLensId = null;
+  document.querySelector('#lensModalOverlay .cam-modal-title').textContent = 'Nuevo lente';
+  document.getElementById('lensInputMaker').value = '';
+  document.getElementById('lensInputModel').value = '';
+  document.getElementById('lensInputMount').value = '';
+  document.getElementById('lensInputQuickMode').checked = true;
+  document.getElementById('lensModalOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('lensInputMaker').focus(), 80);
+}
+
+function openEditLensModal(id) {
+  const lens = LENSES_CATALOG.find(l => String(l.id) === String(id));
+  if (!lens) return;
+  editingLensId = lens.id;
+  document.querySelector('#lensModalOverlay .cam-modal-title').textContent = 'Editar lente';
+  document.getElementById('lensInputMaker').value = lens.maker || '';
+  document.getElementById('lensInputModel').value = lens.model || '';
+  document.getElementById('lensInputMount').value = lens.mount || '';
+  document.getElementById('lensInputQuickMode').checked = lensQuickModeVisible(lens);
+  document.getElementById('lensModalOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('lensInputMaker').focus(), 80);
+}
+
+function closeLensModal() {
+  document.getElementById('lensModalOverlay').classList.remove('open');
+  editingLensId = null;
+}
+
+async function saveLensForm() {
+  const maker = document.getElementById('lensInputMaker').value.trim();
+  const model = document.getElementById('lensInputModel').value.trim();
+  const mount = document.getElementById('lensInputMount').value.trim();
+  const showInQuickMode = document.getElementById('lensInputQuickMode').checked;
+  if (!maker || !model) {
+    document.getElementById(maker ? 'lensInputModel' : 'lensInputMaker').focus();
+    showSyncStatus('⚠ Fabricante y modelo del lente son obligatorios');
+    return;
+  }
+  if (!mount) {
+    document.getElementById('lensInputMount').focus();
+    showSyncStatus('⚠ La montura del lente es obligatoria');
+    return;
+  }
+  const dup = LENSES_CATALOG.find(l =>
+    String(l.id) !== String(editingLensId) &&
+    String(l.maker || '').toLowerCase() === maker.toLowerCase() &&
+    String(l.model || '').toLowerCase() === model.toLowerCase() &&
+    String(l.mount || '').toLowerCase() === mount.toLowerCase()
+  );
+  if (dup) { showSyncStatus('⚠ Ese lente ya está en el catálogo'); return; }
+
+  try {
+    const wasEditing = editingLensId != null;
+    const payload = { maker, model, mount, show_in_quick_mode: showInQuickMode };
+    if (wasEditing) {
+      const remoteId = await persistLensRemoteCompat(payload, editingLensId);
+      const idx = LENSES_CATALOG.findIndex(l => String(l.id) === String(editingLensId));
+      if (idx >= 0) {
+        LENSES_CATALOG[idx] = { ...LENSES_CATALOG[idx], ...payload };
+        if (remoteId) LENSES_CATALOG[idx].id = remoteId;
+      }
+    } else {
+      let newId = Date.now();
+      const remoteId = await persistLensRemoteCompat(payload, null);
+      if (remoteId) newId = remoteId;
+      LENSES_CATALOG.push({
+        id: newId,
+        ...payload,
+        owner_user_id: currentUserId() || null,
+      });
+    }
+    LENSES_CATALOG.sort((a,b) => String(a.maker || '').localeCompare(String(b.maker || '')) || String(a.model || '').localeCompare(String(b.model || '')));
+    closeLensModal();
+    if (window._mobApp && typeof window._mobApp.refresh === 'function') window._mobApp.refresh();
+    showSyncStatus(wasEditing ? '✓ Lente actualizado' : '✓ Lente agregado al catálogo');
   } catch(e) {
     showSyncStatus('✗ Error: ' + e.message);
   }
@@ -8479,12 +8848,14 @@ function renderCamerasPage() {
         ? `<span class="cam-badge fmt">${c.format}</span>`
         : `<span class="cam-badge muted">Formato pendiente</span>`;
       const typBadge = c.type   ? `<span class="cam-badge">${c.type}</span>` : '';
+      const mountBadge = c.mount ? `<span class="cam-badge">${c.mount}</span>` : `<span class="cam-badge muted">Montura pendiente</span>`;
+      const lensBadge = cameraSupportsInterchangeableLenses(c) ? `<span class="cam-badge">Lente intercambiable</span>` : `<span class="cam-badge muted">Lente integrado</span>`;
       const quickBadge = cameraQuickModeVisible(c) ? '' : `<span class="cam-badge muted">Oculta modo rápido</span>`;
       return `
         <div class="cam-card">
           <div class="cam-card-maker">${c.maker || ''}</div>
           <div class="cam-card-model">${c.model || '—'}</div>
-          <div class="cam-card-badges">${fmtBadge}${typBadge}${quickBadge}</div>
+          <div class="cam-card-badges">${fmtBadge}${typBadge}${mountBadge}${lensBadge}${quickBadge}</div>
           <div class="cam-card-footer">
             <div>
               <div class="cam-card-rolls"><b>${rolls}</b> rollo${rolls !== 1 ? 's' : ''} disparado${rolls !== 1 ? 's' : ''}</div>
@@ -9278,7 +9649,7 @@ function updateLocationCheckbox(id) {
   }
 
   // ── State ───────────────────────────────────────────────────────────
-  var qaState = null; // { step, format, stock, manufacturer, iso, type, camera }
+  var qaState = null; // { step, format, stock, manufacturer, iso, type, camera, lens, addingCamera, addingLens }
   var qaSearchValue = '';
 
   // ── Recent stocks: top 5 by frequency from current DATA ─────────────
@@ -9321,12 +9692,74 @@ function updateLocationCheckbox(id) {
     return out;
   }
 
+  function qaUsageKey(parts) {
+    return parts.map(function (p) { return String(p || '').trim().toLowerCase(); }).join('|');
+  }
+
+  function qaCameraUsageCounts() {
+    var counts = {};
+    if (typeof DATA === 'undefined' || !Array.isArray(DATA)) return counts;
+    DATA.forEach(function (r) {
+      var model = r['MODEL NAME'];
+      if (!model) return;
+      var key = qaUsageKey([r['MAKER'], model]);
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return counts;
+  }
+
+  function qaSortCamerasByUsage(cameras) {
+    var counts = qaCameraUsageCounts();
+    return cameras.slice().sort(function (a, b) {
+      var aCount = counts[qaUsageKey([a.maker, a.model])] || 0;
+      var bCount = counts[qaUsageKey([b.maker, b.model])] || 0;
+      if (aCount !== bCount) return bCount - aCount;
+      return String(a.maker || '').localeCompare(String(b.maker || '')) ||
+        String(a.model || '').localeCompare(String(b.model || ''));
+    });
+  }
+
+  function qaLensUsageCounts() {
+    var counts = {};
+    if (typeof DATA === 'undefined' || !Array.isArray(DATA)) return counts;
+    DATA.forEach(function (r) {
+      if (r['_LENS_ID'] != null) {
+        var idKey = 'id|' + String(r['_LENS_ID']);
+        counts[idKey] = (counts[idKey] || 0) + 1;
+      }
+      if (r['LENS']) {
+        var nameKey = 'name|' + String(r['LENS']).trim().toLowerCase();
+        counts[nameKey] = (counts[nameKey] || 0) + 1;
+      }
+    });
+    return counts;
+  }
+
+  function qaLensUsageCount(lens, counts) {
+    var idCount = lens && lens.id != null ? (counts['id|' + String(lens.id)] || 0) : 0;
+    var display = (typeof lensDisplayName === 'function' ? lensDisplayName(lens) : '') || (lens && lens.model) || '';
+    var displayCount = counts['name|' + String(display).trim().toLowerCase()] || 0;
+    var modelCount = counts['name|' + String(lens && lens.model || '').trim().toLowerCase()] || 0;
+    return Math.max(idCount, displayCount, modelCount);
+  }
+
+  function qaSortLensesByUsage(lenses) {
+    var counts = qaLensUsageCounts();
+    return lenses.slice().sort(function (a, b) {
+      var aCount = qaLensUsageCount(a, counts);
+      var bCount = qaLensUsageCount(b, counts);
+      if (aCount !== bCount) return bCount - aCount;
+      return String(a.mount || '').localeCompare(String(b.mount || '')) ||
+        String((typeof lensDisplayName === 'function' ? lensDisplayName(a) : '') || a.model || '').localeCompare(String((typeof lensDisplayName === 'function' ? lensDisplayName(b) : '') || b.model || ''));
+    });
+  }
+
   // ── Cameras list ────────────────────────────────────────────────────
   function qaCameras() {
     var selectedFormat = qaState && qaState.format;
     if (typeof CAMERAS_CATALOG !== 'undefined' && Array.isArray(CAMERAS_CATALOG) && CAMERAS_CATALOG.length) {
-      if (typeof quickModeCamerasForRoll === 'function') return quickModeCamerasForRoll(selectedFormat);
-      return CAMERAS_CATALOG.slice();
+      if (typeof quickModeCamerasForRoll === 'function') return qaSortCamerasByUsage(quickModeCamerasForRoll(selectedFormat));
+      return qaSortCamerasByUsage(CAMERAS_CATALOG);
     }
     // Fallback: pull unique maker+model pairs from DATA
     var seen = {};
@@ -9340,7 +9773,111 @@ function updateLocationCheckbox(id) {
         out.push({ maker: r['MAKER'] || '', model: r['MODEL NAME'] || '', format: r['C. FORMAT'] || '', type: r['C. TYPE'] || '' });
       });
     }
-    return out;
+    return qaSortCamerasByUsage(out);
+  }
+
+  function qaLensesForCamera(camera) {
+    if (typeof lensesForCamera === 'function') return qaSortLensesByUsage(lensesForCamera(camera));
+    var lenses = (typeof LENSES_CATALOG !== 'undefined' && Array.isArray(LENSES_CATALOG)) ? LENSES_CATALOG.slice() : [];
+    return qaSortLensesByUsage(lenses);
+  }
+
+  function qaCameraForSelectedIndex() {
+    var cams = qaCameras();
+    return qaState.camera != null ? cams[qaState.camera] : null;
+  }
+
+  function qaSelectedLens() {
+    var camera = qaCameraForSelectedIndex();
+    var lenses = qaLensesForCamera(camera);
+    return qaState.lens != null ? lenses[qaState.lens] : null;
+  }
+
+  function qaNumericId(id) {
+    if (id == null || String(id).indexOf('seed-') === 0) return null;
+    var n = Number(id);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function qaCameraFormatForCatalog(formatKeyValue) {
+    var meta = (typeof formatMeta === 'function' && formatMeta(formatKeyValue)) || null;
+    if (meta && meta.label) return meta.label;
+    return (QA_FORMAT_META[formatKeyValue] && QA_FORMAT_META[formatKeyValue].name) || formatKeyValue || '';
+  }
+
+  function qaFindCameraIndex(camera) {
+    var cams = qaCameras();
+    var id = camera && camera.id;
+    var byId = cams.findIndex(function (c) { return id != null && String(c.id) === String(id); });
+    if (byId >= 0) return byId;
+    return cams.findIndex(function (c) {
+      return String(c.maker || '').toLowerCase() === String(camera.maker || '').toLowerCase() &&
+        String(c.model || '').toLowerCase() === String(camera.model || '').toLowerCase();
+    });
+  }
+
+  function qaFindLensIndex(lens, camera) {
+    var lenses = qaLensesForCamera(camera);
+    var id = lens && lens.id;
+    var byId = lenses.findIndex(function (l) { return id != null && String(l.id) === String(id); });
+    if (byId >= 0) return byId;
+    return lenses.findIndex(function (l) {
+      return String(l.maker || '').toLowerCase() === String(lens.maker || '').toLowerCase() &&
+        String(l.model || '').toLowerCase() === String(lens.model || '').toLowerCase() &&
+        String(l.mount || '').toLowerCase() === String(lens.mount || '').toLowerCase();
+    });
+  }
+
+  function qaAddCameraFormHTML() {
+    var fmt = qaCameraFormatForCatalog(qaState.format);
+    return '<div class="qa-inline-form">' +
+      '<div class="qa-h" style="margin:0">Nueva cámara · ' + qaEsc(fmt) + '</div>' +
+      '<div class="qa-inline-grid">' +
+        '<div class="qa-field"><label>Marca</label><input class="qa-mini-input" id="qaNewCameraMaker" type="text" placeholder="Pentax"></div>' +
+        '<div class="qa-field"><label>Modelo</label><input class="qa-mini-input" id="qaNewCameraModel" type="text" placeholder="Super Program"></div>' +
+        '<div class="qa-field full"><label>Montura</label><input class="qa-mini-input" id="qaNewCameraMount" type="text" placeholder="Pentax K, Canon FD, LTM"></div>' +
+      '</div>' +
+      '<label class="cam-modal-check" style="margin:0"><input id="qaNewCameraInterchangeable" type="checkbox" checked><span>Lente intercambiable</span></label>' +
+      '<div class="qa-inline-actions">' +
+        '<button type="button" class="qa-secondary-btn" onclick="window._qaCancelInlineAdd()">Cancelar</button>' +
+        '<button type="button" class="qa-primary-btn" onclick="window._qaSaveNewCamera()">Guardar cámara</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function qaNextStepFromCamera() {
+    var camera = qaCameraForSelectedIndex();
+    if (!camera || !cameraSupportsInterchangeableLenses(camera)) return 5;
+    return 4;
+  }
+
+  function qaAddLensFormHTML(camera) {
+    var mount = cameraMountForLensFilter(camera);
+    return '<div class="qa-inline-form">' +
+      '<div class="qa-h" style="margin:0">Nuevo lente · ' + qaEsc(mount || 'montura pendiente') + '</div>' +
+      '<div class="qa-inline-grid">' +
+        '<div class="qa-field"><label>Marca</label><input class="qa-mini-input" id="qaNewLensMaker" type="text" placeholder="Pentax"></div>' +
+        '<div class="qa-field"><label>Modelo</label><input class="qa-mini-input" id="qaNewLensModel" type="text" placeholder="Pentax-A 50mm f2.0"></div>' +
+        '<div class="qa-field full"><label>Montura</label><input class="qa-mini-input" id="qaNewLensMount" type="text" value="' + qaEsc(mount) + '" placeholder="Pentax K"></div>' +
+      '</div>' +
+      '<div class="qa-inline-actions">' +
+        '<button type="button" class="qa-secondary-btn" onclick="window._qaCancelInlineAdd()">Cancelar</button>' +
+        '<button type="button" class="qa-primary-btn" onclick="window._qaSaveNewLens()">Guardar lente</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  function qaSummaryHTML() {
+    var fmtMeta = QA_FORMAT_META[qaState.format] || {};
+    var stockSwatch = qaSwatchForStock(qaState.stock, qaState.manufacturer);
+    var camera = qaCameraForSelectedIndex();
+    var lens = qaSelectedLens();
+    return '<div class="qa-summary">' +
+      '<div class="qa-summary-row"><span class="qa-summary-l">Formato</span><span class="qa-summary-v"><span class="qa-swc" style="background:' + (fmtMeta.swatch || '#9c9284') + '"></span>' + qaEsc(fmtMeta.name || qaState.format) + '</span></div>' +
+      '<div class="qa-summary-row"><span class="qa-summary-l">Stock</span><span class="qa-summary-v"><span class="qa-swc" style="background:' + stockSwatch + '"></span>' + qaEsc(qaState.stock) + '<span style="font-family:DM Mono,monospace;font-size:10px;color:rgba(232,223,209,0.4);letter-spacing:.14em;text-transform:uppercase;margin-left:auto">ISO ' + qaEsc(qaState.iso || '?') + '</span></span></div>' +
+      '<div class="qa-summary-row"><span class="qa-summary-l">Cámara</span><span class="qa-summary-v ' + (!camera ? 'empty' : '') + '">' + (!camera ? 'Sin asignar' : qaEsc((camera.maker || '') + ' ' + (camera.model || ''))) + '</span></div>' +
+      '<div class="qa-summary-row"><span class="qa-summary-l">Lente</span><span class="qa-summary-v ' + (!lens && cameraSupportsInterchangeableLenses(camera) ? 'empty' : '') + '">' + (!cameraSupportsInterchangeableLenses(camera) ? 'Lente integrado' : (!lens ? 'Sin asignar' : qaEsc((typeof lensDisplayName === 'function' ? lensDisplayName(lens) : '') || lens.model || ''))) + '</span></div>' +
+    '</div>';
   }
 
   // ── Render the current step into the overlay ───────────────────────
@@ -9353,7 +9890,7 @@ function updateLocationCheckbox(id) {
       var on = qaState.step >= n;
       return '<div class="qa-steps-stp ' + (on ? 'on' : '') + '">' +
         '<div class="qa-steps-bar"></div>' +
-        '<div class="qa-steps-ix">0' + n + ' · ' + label + '</div>' +
+        '<div class="qa-steps-ix">' + n + ' ' + label + '</div>' +
       '</div>';
     };
 
@@ -9422,32 +9959,68 @@ function updateLocationCheckbox(id) {
             return '<button type="button" class="qa-list-it ' + (sel ? 'sel' : '') + '" onclick="window._qaSelCamera(' + i + ')">' +
               '<span class="qa-swc" style="background:' + (meta.color || meta.swatch || '#9c9284') + '"></span>' +
               '<span class="qa-list-it-nm">' + qaEsc((c.maker || '') + ' ' + (c.model || '')) + '</span>' +
-              '<span class="qa-list-it-meta">' + qaEsc(c.format || '—') + '</span>' +
+              '<span class="qa-list-it-meta">' + qaEsc(c.mount || c.format || '—') + '</span>' +
             '</button>';
           }).join('')
-        : '<div class="qa-help" style="padding:14px;border:1px dashed rgba(244,237,226,0.10)"><b>›</b> No hay cámaras visibles para este formato. Se guardará el rollo sin cámara — puedes asignarla después desde el detalle.</div>';
+        : '<div class="qa-help" style="padding:14px;border:1px dashed rgba(244,237,226,0.10)"><b>›</b> No hay cámaras visibles para este formato. Puedes agregar una sin salir del modo rápido.</div>';
 
-      var fmtMeta = QA_FORMAT_META[qaState.format] || {};
-      var stockSwatch = qaSwatchForStock(qaState.stock, qaState.manufacturer);
+      var addCameraHTML = qaState.addingCamera
+        ? qaAddCameraFormHTML()
+        : '<button type="button" class="qa-list-it qa-add-row" onclick="window._qaShowAddCamera()">' +
+            '<span class="qa-swc" style="background:#c8a048"></span>' +
+            '<span class="qa-list-it-nm">Agregar cámara</span>' +
+            '<span class="qa-list-it-meta">' + qaEsc(qaCameraFormatForCatalog(qaState.format)) + '</span>' +
+          '</button>';
+
       stepHTML = '<div class="qa-q">¿Qué <em>cámara</em>?</div>' +
-        '<div class="qa-h">Puedes cambiarla después desde el detalle</div>' +
-        (cams.length ? '<div class="qa-list">' + camsHTML + '</div>' : camsHTML) +
-        '<div style="height:1px;background:rgba(244,237,226,0.07);margin:6px 0"></div>' +
-        '<div class="qa-h">Resumen</div>' +
-        '<div class="qa-summary">' +
-          '<div class="qa-summary-row"><span class="qa-summary-l">Formato</span><span class="qa-summary-v"><span class="qa-swc" style="background:' + (fmtMeta.swatch || '#9c9284') + '"></span>' + qaEsc(fmtMeta.name || qaState.format) + '</span></div>' +
-          '<div class="qa-summary-row"><span class="qa-summary-l">Stock</span><span class="qa-summary-v"><span class="qa-swc" style="background:' + stockSwatch + '"></span>' + qaEsc(qaState.stock) + '<span style="font-family:DM Mono,monospace;font-size:10px;color:rgba(232,223,209,0.4);letter-spacing:.14em;text-transform:uppercase;margin-left:auto">ISO ' + qaEsc(qaState.iso || '?') + '</span></span></div>' +
-          '<div class="qa-summary-row"><span class="qa-summary-l">Cámara</span><span class="qa-summary-v ' + (qaState.camera == null ? 'empty' : '') + '">' + (qaState.camera == null ? 'Sin asignar' : qaEsc((cams[qaState.camera].maker || '') + ' ' + (cams[qaState.camera].model || ''))) + '</span></div>' +
-        '</div>' +
-        '<div class="qa-help"><b>›</b> Status inicial: <b>EN CÁMARA</b> · Push: 0 · Fecha inicio: hoy. Editable luego desde el detalle.</div>';
+        '<div class="qa-h">Solo aparecen cámaras compatibles con el formato</div>' +
+        (cams.length ? '<div class="qa-list">' + camsHTML + (!qaState.addingCamera ? addCameraHTML : '') + '</div>' : camsHTML + (!qaState.addingCamera ? addCameraHTML : '')) +
+        (qaState.addingCamera ? addCameraHTML : '');
       canNext = true; // camera optional — empty state still allows save
+    } else if (qaState.step === 4) {
+      // Lens
+      var camera = qaCameraForSelectedIndex();
+      var lenses = qaLensesForCamera(camera);
+      var lensesHTML = lenses.length
+        ? lenses.map(function (l, i) {
+            var sel = qaState.lens === i;
+            return '<button type="button" class="qa-list-it ' + (sel ? 'sel' : '') + '" onclick="window._qaSelLens(' + i + ')">' +
+              '<span class="qa-swc" style="background:#9c9284"></span>' +
+              '<span class="qa-list-it-nm">' + qaEsc(lensDisplayName(l) || l.model || '') + '</span>' +
+              '<span class="qa-list-it-meta">' + qaEsc(l.mount || '—') + '</span>' +
+            '</button>';
+          }).join('')
+        : '<div class="qa-help" style="padding:14px;border:1px dashed rgba(244,237,226,0.10)"><b>›</b> No hay lentes visibles para esta montura. Puedes continuar sin lente o agregar uno ahora.</div>';
+
+      var addLensHTML = camera
+        ? (qaState.addingLens
+          ? qaAddLensFormHTML(camera)
+          : '<button type="button" class="qa-list-it qa-add-row" onclick="window._qaShowAddLens()">' +
+              '<span class="qa-swc" style="background:#c8a048"></span>' +
+              '<span class="qa-list-it-nm">Agregar lente</span>' +
+              '<span class="qa-list-it-meta">' + qaEsc(cameraMountForLensFilter(camera) || 'montura') + '</span>' +
+            '</button>')
+        : '<div class="qa-help" style="padding:14px;border:1px dashed rgba(244,237,226,0.10)"><b>›</b> Selecciona una cámara para filtrar lentes por montura. También puedes continuar sin lente.</div>';
+
+      stepHTML = '<div class="qa-q">¿Qué <em>lente</em>?</div>' +
+        '<div class="qa-h">' + (camera ? 'Filtrado por montura ' + qaEsc(cameraMountForLensFilter(camera) || 'pendiente') : 'Paso opcional') + '</div>' +
+        (camera
+          ? (lenses.length ? '<div class="qa-list">' + lensesHTML + (!qaState.addingLens ? addLensHTML : '') + '</div>' : lensesHTML + (!qaState.addingLens ? addLensHTML : '')) + (qaState.addingLens ? addLensHTML : '')
+          : addLensHTML);
+      canNext = true;
+    } else if (qaState.step === 5) {
+      stepHTML = '<div class="qa-q">Resumen del <em>rollo</em></div>' +
+        '<div class="qa-h">Revisa lo seleccionado antes de crear el rollo</div>' +
+        qaSummaryHTML() +
+        '<div class="qa-help"><b>›</b> Status inicial: <b>EN CÁMARA</b> · Push: 0 · Fecha inicio: hoy. Editable luego desde el detalle.</div>';
+      canNext = true;
     }
 
-    var ctaLabel = qaState.step === 3 ? 'Guardar rollo' : 'Continuar';
+    var ctaLabel = qaState.step === 5 ? 'Crear rollo' : 'Continuar';
 
     ov.innerHTML =
       '<div class="qa-head">' +
-        '<div class="qa-head-tag"><span>Modo</span><b>RÁPIDO</b><span>· paso 0' + qaState.step + ' / 03</span></div>' +
+        '<div class="qa-head-tag"><span>Modo</span><b>RÁPIDO</b><span>· paso 0' + qaState.step + ' / 05</span></div>' +
         '<button type="button" class="qa-close" onclick="closeQuickAdd()">✕</button>' +
       '</div>' +
       '<div class="qa-body">' +
@@ -9455,7 +10028,7 @@ function updateLocationCheckbox(id) {
           '<span class="qa-rid-lbl">Nuevo rollo</span>' +
           '<span class="qa-rid-id">' + qaEsc(nextRid) + ' <sup>● BORRADOR</sup></span>' +
         '</div>' +
-        '<div class="qa-steps">' + stepBar(1, 'Formato') + stepBar(2, 'Stock') + stepBar(3, 'Cámara') + '</div>' +
+        '<div class="qa-steps">' + stepBar(1, 'Formato') + stepBar(2, 'Stock') + stepBar(3, 'Cámara') + stepBar(4, 'Lente') + stepBar(5, 'Resumen') + '</div>' +
         '<div>' + stepHTML + '</div>' +
       '</div>' +
       '<div class="qa-cta">' +
@@ -9475,7 +10048,14 @@ function updateLocationCheckbox(id) {
   }
 
   // ── Selectors ───────────────────────────────────────────────────────
-  window._qaSelFormat = function (k) { qaState.format = k; qaState.camera = null; qaRender(); };
+  window._qaSelFormat = function (k) {
+    qaState.format = k;
+    qaState.camera = null;
+    qaState.lens = null;
+    qaState.addingCamera = false;
+    qaState.addingLens = false;
+    qaRender();
+  };
   window._qaSelStock = function (name) {
     var all = qaAllStocks();
     var hit = all.find(function (s) { return s.name === name; });
@@ -9489,14 +10069,127 @@ function updateLocationCheckbox(id) {
     qaState.type = hit.type;
     qaRender();
   };
-  window._qaSelCamera = function (i) { qaState.camera = i; qaRender(); };
+  window._qaSelCamera = function (i) {
+    qaState.camera = i;
+    qaState.lens = null;
+    qaState.addingCamera = false;
+    qaState.addingLens = false;
+    qaRender();
+  };
+  window._qaSelLens = function (i) {
+    qaState.lens = i;
+    qaState.addingLens = false;
+    qaRender();
+  };
   window._qaSearch = function (v) { qaSearchValue = v; qaRender(); };
+  window._qaShowAddCamera = function () {
+    qaState.addingCamera = true;
+    qaState.addingLens = false;
+    qaRender();
+    setTimeout(function () {
+      var makerInput = document.getElementById('qaNewCameraMaker');
+      if (makerInput) makerInput.focus();
+    }, 0);
+  };
+  window._qaShowAddLens = function () {
+    qaState.addingLens = true;
+    qaState.addingCamera = false;
+    qaRender();
+    setTimeout(function () {
+      var modelInput = document.getElementById('qaNewLensModel');
+      if (modelInput) modelInput.focus();
+    }, 0);
+  };
+  window._qaCancelInlineAdd = function () {
+    qaState.addingCamera = false;
+    qaState.addingLens = false;
+    qaRender();
+  };
+  window._qaSaveNewCamera = async function () {
+    var maker = (document.getElementById('qaNewCameraMaker') || {}).value || '';
+    var model = (document.getElementById('qaNewCameraModel') || {}).value || '';
+    var mount = (document.getElementById('qaNewCameraMount') || {}).value || '';
+    var supportsInterchangeable = !!((document.getElementById('qaNewCameraInterchangeable') || {}).checked);
+    maker = maker.trim();
+    model = model.trim();
+    mount = mount.trim();
+    if (!maker || !model) {
+      alert('Marca y modelo son obligatorios para agregar una cámara.');
+      return;
+    }
+    var camera = {
+      id: Date.now(),
+      maker: maker.toUpperCase(),
+      model: model,
+      format: qaCameraFormatForCatalog(qaState.format),
+      type: '',
+      mount: mount,
+      supports_interchangeable_lenses: supportsInterchangeable,
+      show_in_quick_mode: true
+    };
+    try {
+      if (typeof sb !== 'undefined' && sb && typeof upsertCameraRemote === 'function') {
+        camera.id = await upsertCameraRemote(camera.maker, camera.model, camera.format, camera.type, camera.mount, camera.supports_interchangeable_lenses);
+      }
+    } catch (err) {
+      console.warn('Quick add camera remote save skipped:', err);
+      if (typeof showSyncStatus === 'function') showSyncStatus('⚠ Cámara guardada localmente', true);
+    }
+    if (typeof CAMERAS_CATALOG !== 'undefined' && Array.isArray(CAMERAS_CATALOG)) CAMERAS_CATALOG.push(camera);
+    qaState.camera = qaFindCameraIndex(camera);
+    qaState.lens = null;
+    qaState.addingCamera = false;
+    qaRender();
+  };
+  window._qaSaveNewLens = async function () {
+    var camera = qaCameraForSelectedIndex();
+    if (!camera) {
+      alert('Primero selecciona una cámara para definir la montura.');
+      return;
+    }
+    var maker = (document.getElementById('qaNewLensMaker') || {}).value || '';
+    var model = (document.getElementById('qaNewLensModel') || {}).value || '';
+    var mount = (document.getElementById('qaNewLensMount') || {}).value || '';
+    maker = maker.trim();
+    model = model.trim();
+    mount = mount.trim() || cameraMountForLensFilter(camera);
+    if (!maker || !model || !mount) {
+      alert('Marca, modelo y montura son obligatorios para agregar un lente.');
+      return;
+    }
+    var lens = {
+      id: Date.now(),
+      maker: maker,
+      model: model,
+      mount: mount,
+      show_in_quick_mode: true
+    };
+    try {
+      if (typeof sb !== 'undefined' && sb && typeof upsertLensRemote === 'function') {
+        lens.id = await upsertLensRemote(lens.maker, lens.model, lens.mount);
+      }
+    } catch (err) {
+      console.warn('Quick add lens remote save skipped:', err);
+      if (typeof showSyncStatus === 'function') showSyncStatus('⚠ Lente guardado localmente', true);
+    }
+    if (typeof LENSES_CATALOG !== 'undefined' && Array.isArray(LENSES_CATALOG)) LENSES_CATALOG.push(lens);
+    qaState.lens = qaFindLensIndex(lens, camera);
+    qaState.addingLens = false;
+    qaRender();
+  };
   window._qaBack = function () {
     if (qaState.step > 1) { qaState.step--; qaRender(); }
     else closeQuickAdd();
   };
   window._qaNext = function () {
-    if (qaState.step < 3) { qaState.step++; qaSearchValue = ''; qaRender(); return; }
+    if (qaState.step < 5) {
+      qaState.step = qaState.step === 3 ? qaNextStepFromCamera() : qaState.step + 1;
+      qaSearchValue = '';
+      qaState.addingCamera = false;
+      qaState.addingLens = false;
+      qaRender();
+      return;
+    }
     qaSave();
   };
 
@@ -9519,13 +10212,24 @@ function updateLocationCheckbox(id) {
     rec['ISO @'] = qaState.iso != null ? Number(qaState.iso) : null;
     rec['FILM TYPE'] = qaState.type || 'COLOR';
 
-    var cams = qaCameras();
-    if (qaState.camera != null && cams[qaState.camera]) {
-      var c = cams[qaState.camera];
+    var c = qaCameraForSelectedIndex();
+    if (c) {
       rec['MAKER'] = c.maker || '';
       rec['MODEL NAME'] = c.model || '';
       rec['C. FORMAT'] = c.format || '';
       rec['C. TYPE'] = c.type || '';
+      rec['C. MOUNT'] = c.mount || '';
+      rec['_CAMERA_INTERCHANGEABLE'] = cameraSupportsInterchangeableLenses(c);
+      var cameraId = qaNumericId(c.id);
+      if (cameraId != null) rec['_CAMERA_ID'] = cameraId;
+    }
+
+    var lens = qaSelectedLens();
+    if (lens) {
+      rec['LENS'] = (typeof lensDisplayName === 'function' ? lensDisplayName(lens) : '') || lens.model || '';
+      rec['LENS MOUNT'] = lens.mount || '';
+      var lensId = qaNumericId(lens.id);
+      if (lensId != null) rec['_LENS_ID'] = lensId;
     }
 
     rec['STARTED'] = new Date().toISOString().slice(0, 10);
@@ -9536,8 +10240,9 @@ function updateLocationCheckbox(id) {
     persistData(rec);
     if (typeof refreshAll === 'function') refreshAll();
 
+    var savedStock = qaState.stock;
     closeQuickAdd(true);
-    qaToast(rec['#'], qaState.stock);
+    qaToast(rec['#'], savedStock);
   }
 
   function qaToast(rid, stock) {
@@ -9558,7 +10263,7 @@ function updateLocationCheckbox(id) {
     if (window.matchMedia && window.matchMedia('(min-width: 641px)').matches) {
       if (typeof openRollEditor === 'function') return openRollEditor(null);
     }
-    qaState = { step: 1, format: null, stock: null, manufacturer: '', iso: null, type: '', camera: null };
+    qaState = { step: 1, format: null, stock: null, manufacturer: '', iso: null, type: '', camera: null, lens: null, addingCamera: false, addingLens: false };
     qaSearchValue = '';
     var ov = document.getElementById('quickAddOverlay');
     if (ov) ov.classList.add('open');
@@ -9585,7 +10290,7 @@ function updateLocationCheckbox(id) {
      roll details. Only active below 640px; desktop is untouched. -->
 <script>
 (function () {
-  var STATE = { view: 'dashboard', filter: 'In Camera', returnView: 'dashboard' };
+  var STATE = { view: 'dashboard', filter: 'In Camera', returnView: 'dashboard', equipmentTab: 'cameras' };
 
   // ── helpers ────────────────────────────────────────────────────────
   function esc(v) {
@@ -9937,17 +10642,18 @@ function updateLocationCheckbox(id) {
   function renderAccount() {
     var amAdmin = (typeof isAdmin === 'function') ? !!isAdmin() : false;
     var statusLabel = amAdmin ? 'Founder · Approved' : 'Approved';
+    var camCount = (typeof CAMERAS_CATALOG !== 'undefined' && Array.isArray(CAMERAS_CATALOG)) ? CAMERAS_CATALOG.length : 0;
+    var lensCount = (typeof LENSES_CATALOG !== 'undefined' && Array.isArray(LENSES_CATALOG)) ? LENSES_CATALOG.length : 0;
+    var equipmentSection = '<div class="mob-subhead"><span class="n">II.</span><span class="t">Equipo</span></div>' +
+      '<div>' +
+        '<div class="mob-acrow" onclick="_mobApp.openEquipment()">' +
+          '<div class="col"><span class="lb">Cámaras y lentes</span><span class="vl">' + camCount + ' cámaras · ' + lensCount + ' lentes</span></div>' +
+          '<span class="ar">›</span>' +
+        '</div>' +
+      '</div>';
     var adminSection = amAdmin
-      ? '<div class="mob-subhead"><span class="n">II.</span><span class="t">Administración</span></div>' +
+      ? '<div class="mob-subhead"><span class="n">III.</span><span class="t">Administración</span></div>' +
         '<div>' +
-          '<div class="mob-acpending" onclick="_mobApp.openAdmin()">' +
-            '<div class="ct">›</div>' +
-            '<div class="col">' +
-              '<span class="lb">Panel de admin</span>' +
-              '<span class="nm">Pendientes · roles · votaciones abiertas</span>' +
-            '</div>' +
-            '<span class="ar">›</span>' +
-          '</div>' +
           '<div class="mob-acrow" onclick="_mobApp.openAdmin()">' +
             '<div class="col"><span class="lb">Acciones admin</span><span class="vl warn">Aprobar usuarios y votar cambios</span></div>' +
             '<span class="ar">›</span>' +
@@ -9974,12 +10680,86 @@ function updateLocationCheckbox(id) {
           '<div class="mob-acrow"><div class="col"><span class="lb">Correo</span><span class="vl">' + esc(userEmail()) + '</span></div><span class="ar">·</span></div>' +
           (amAdmin ? '<div class="mob-acrow"><div class="col"><span class="lb">Rol</span><span class="vl warn">Admin · Founder</span></div><span class="ar">·</span></div>' : '') +
         '</div>' +
+        equipmentSection +
         adminSection +
-        '<div class="mob-subhead"><span class="n">' + (amAdmin ? 'III.' : 'II.') + '</span><span class="t">Sesión</span></div>' +
+        '<div class="mob-subhead"><span class="n">' + (amAdmin ? 'IV.' : 'III.') + '</span><span class="t">Sesión</span></div>' +
         '<div>' +
           '<div class="mob-acrow"><div class="col"><span class="lb">App</span><span class="vl">Analog Archive · v1.0 beta</span></div><span class="ar">·</span></div>' +
           '<div class="mob-acrow danger" onclick="_mobApp.signOut()"><div class="col"><span class="lb">Sesión</span><span class="vl">↳ Cerrar sesión</span></div><span class="ar">›</span></div>' +
         '</div>' +
+      '</div>';
+  }
+
+  function renderEquipmentMobile() {
+    var tab = STATE.equipmentTab || 'cameras';
+    var cameras = (typeof CAMERAS_CATALOG !== 'undefined' && Array.isArray(CAMERAS_CATALOG)) ? CAMERAS_CATALOG.slice() : [];
+    var lenses = (typeof LENSES_CATALOG !== 'undefined' && Array.isArray(LENSES_CATALOG)) ? LENSES_CATALOG.slice() : [];
+    if (typeof qaSortCamerasByUsage === 'function') cameras = qaSortCamerasByUsage(cameras);
+    if (typeof qaSortLensesByUsage === 'function') lenses = qaSortLensesByUsage(lenses);
+
+    var top = '<div class="mob-shell-top">' +
+      '<button type="button" class="mob-back" onclick="window._mobApp.render(\'account\')">' +
+        '<span class="ar">‹</span><span>Cuenta</span>' +
+      '</button>' +
+      '<span></span>' +
+    '</div>';
+
+    var tabs = '<div class="mob-pills-wrap"><div class="mob-pills">' +
+      '<button class="' + (tab === 'cameras' ? 'on' : '') + '" onclick="_mobApp.setEquipmentTab(\'cameras\')">Cámaras</button>' +
+      '<button class="' + (tab === 'lenses' ? 'on' : '') + '" onclick="_mobApp.setEquipmentTab(\'lenses\')">Lentes</button>' +
+    '</div></div>';
+
+    var cameraCards = cameras.length ? cameras.map(function (c) {
+      var rolls = 0;
+      if (typeof DATA !== 'undefined' && Array.isArray(DATA) && typeof cameraUsageKey === 'function') {
+        var key = cameraUsageKey(c.maker, c.model);
+        rolls = DATA.filter(function (r) { return cameraUsageKey(r['MAKER'], r['MODEL NAME']) === key; }).length;
+      }
+      var badges = [
+        c.format || 'Formato pendiente',
+        c.mount || 'Montura pendiente',
+        cameraSupportsInterchangeableLenses(c) ? 'Lente intercambiable' : 'Lente integrado',
+        cameraQuickModeVisible(c) ? 'Modo rápido' : 'Oculta'
+      ];
+      return '<div class="mob-roll">' +
+        '<div class="row1"><span class="rid">' + esc(c.maker || '—') + '</span><span class="stk">' + esc(c.model || '—') + '</span><span class="badge">' + rolls + ' usos</span></div>' +
+        '<div class="row2">' + badges.map(function (b, i) {
+          return i === 0
+            ? '<span class="mob-eq-chip"><span class="mob-swc" style="background:' + fmtSwatch(c.format) + '"></span><span>' + esc(b) + '</span></span>'
+            : '<span>' + esc(b) + '</span>';
+        }).join('<span>·</span>') + '</div>' +
+        '<div class="row3"><span class="lens">' + esc(c.type || 'Tipo pendiente') + '</span><button type="button" class="mob-edit-link mob-equipment-edit" onclick="event.stopPropagation();openEditCameraModal(' + esc(c.id) + ')">Editar</button></div>' +
+      '</div>';
+    }).join('') : '<div class="mob-empty">Aún no hay cámaras en el catálogo.</div>';
+
+    var lensCards = lenses.length ? lenses.map(function (l) {
+      var usage = 0;
+      if (typeof qaLensUsageCounts === 'function' && typeof qaLensUsageCount === 'function') {
+        usage = qaLensUsageCount(l, qaLensUsageCounts());
+      }
+      var lensEditId = String(l.id == null ? '' : l.id).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      return '<div class="mob-roll">' +
+        '<div class="row1"><span class="rid">' + esc(l.maker || '—') + '</span><span class="stk">' + esc(l.model || '—') + '</span><span class="badge">' + usage + ' usos</span></div>' +
+        '<div class="row2"><span class="mob-eq-chip"><span class="mob-swc" style="background:#9c9284"></span><span>' + esc(l.mount || 'Montura pendiente') + '</span></span><span>·</span><span>' + (lensQuickModeVisible(l) ? 'Modo rápido' : 'Oculto') + '</span></div>' +
+        '<div class="row3"><span class="lens">' + esc(l.mount || 'Montura pendiente') + '</span><button type="button" class="mob-edit-link mob-equipment-edit" onclick="event.stopPropagation();openEditLensModal(\'' + lensEditId + '\')">Editar</button></div>' +
+      '</div>';
+    }).join('') : '<div class="mob-empty">Aún no hay lentes en el catálogo.</div>';
+
+    var addRow = tab === 'cameras'
+      ? '<button type="button" class="mob-equipment-add-row" onclick="openAddCameraModal()"><span><span class="nm">+ Agregar cámara</span><br><span class="meta">Formato · montura · modo rápido</span></span><span class="ar">→</span></button>'
+      : '<button type="button" class="mob-equipment-add-row" onclick="openAddLensModal()"><span><span class="nm">+ Agregar lente</span><br><span class="meta">Marca · modelo · montura</span></span><span class="ar">→</span></button>';
+
+    return top +
+      '<div class="mob-view" id="mobView">' +
+        '<div class="mob-edhead">' +
+          '<div class="knum">Equipo</div>' +
+          '<div class="ktitle">Cámaras y <em>lentes</em>.</div>' +
+          '<div class="ksub">Catálogo del equipo</div>' +
+        '</div>' +
+        tabs +
+        addRow +
+        '<div class="mob-subhead"><span class="n">I.</span><span class="t">' + (tab === 'cameras' ? 'Cámaras' : 'Lentes') + '</span><span class="a">' + (tab === 'cameras' ? cameras.length : lenses.length) + ' total</span></div>' +
+        '<div class="mob-rolls">' + (tab === 'cameras' ? cameraCards : lensCards) + '</div>' +
       '</div>';
   }
 
@@ -10472,6 +11252,7 @@ function updateLocationCheckbox(id) {
       case 'database':  html = renderTbl();        break;
       case 'stats':     html = renderStatsView();  break;
       case 'admin':     html = renderAdminMobile();break;
+      case 'equipment':  html = renderEquipmentMobile(); break;
       case 'detail':    html = renderDetail();     break;
       case 'exposureSettings': html = renderExposureSettingsMobile(); break;
       case '__account':
@@ -10485,7 +11266,7 @@ function updateLocationCheckbox(id) {
     // Keep the bottom nav active state in sync regardless of caller
     if (typeof window._mobBnavSync === 'function') {
       // The admin sub-view stays under the Cuenta tab visually
-      var navKey = (STATE.view === 'account' || STATE.view === 'admin') ? '__account' : STATE.view;
+      var navKey = (STATE.view === 'account' || STATE.view === 'admin' || STATE.view === 'equipment') ? '__account' : STATE.view;
       window._mobBnavSync(navKey);
     }
 
@@ -10624,6 +11405,16 @@ function updateLocationCheckbox(id) {
     openAdmin: function () {
       STATE.view = 'admin';
       render('admin');
+    },
+    openEquipment: function (tab) {
+      STATE.equipmentTab = tab || STATE.equipmentTab || 'cameras';
+      STATE.view = 'equipment';
+      render('equipment');
+    },
+    setEquipmentTab: function (tab) {
+      STATE.equipmentTab = tab || 'cameras';
+      STATE.view = 'equipment';
+      render('equipment');
     },
     adminApprove: function (uid) {
       if (typeof approveUser !== 'function') return;
