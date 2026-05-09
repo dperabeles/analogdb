@@ -684,6 +684,7 @@ Completed:
 - Added `/forgot-password` and `/reset-password` routes for the Next app.
 - Added Supabase SSR middleware so auth cookies stay fresh for server-rendered routes.
 - Marked `/dashboard` as runtime-rendered because it depends on session cookies.
+- Set `vercel.json` framework override to `nextjs` so Vercel no longer uses the earlier static-site `Other` preset.
 - Updated Supabase Auth redirect allow-list with clean Next routes:
   - `http://localhost:3000/reset-password`
   - `https://analogdb-repo.vercel.app/forgot-password`
@@ -717,6 +718,7 @@ Errors / lessons:
 
 - `display_name` can be null for real profiles, so auth UI types must allow a nullable display name and render a fallback.
 - The first `next build` failed when `/dashboard` tried to prerender without local Supabase env vars. Session-dependent routes should be explicitly dynamic.
+- The first Git-triggered Vercel preview for this task failed after a successful Next build because the project still used the static baseline `Other` framework preset and expected an output directory named `public`. Fix with `"framework": "nextjs"` in `vercel.json`.
 - Build/typecheck should stay sequential. Running them concurrently can produce noisy generated-type races.
 - Keep GitHub Pages `.html` redirects and clean Next redirects side by side until the beta fully cuts over to Vercel.
 
