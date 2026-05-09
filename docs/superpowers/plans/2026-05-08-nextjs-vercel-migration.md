@@ -10,6 +10,19 @@
 
 ---
 
+## Current Migration Status
+
+- Branch: `feature/nextjs-vercel-migration`
+- Remote branch: `origin/feature/nextjs-vercel-migration`
+- Vercel project: `analogdb-repo`
+- Live Vercel URL: `https://analogdb-repo.vercel.app`
+- Deployment id: `dpl_5BZJnFo66sadYJ63q5bF1F52wEat`
+- Deployment status: Ready
+- Validated routes: `/`, `/analog-db-dashboard.html`, `/forgot-password.html`, `/reset-password.html`
+- Still pending before tester use: add Vercel URLs to Supabase Auth redirect allow-list.
+
+---
+
 ## File Structure
 
 - `.vercelignore`: Prevents private docs, local graph output, local Supabase state, and tests from being uploaded to Vercel.
@@ -35,7 +48,7 @@
 - Verify: `forgot-password.html`
 - Verify: `reset-password.html`
 
-- [ ] **Step 1: Confirm private/local files are ignored by Vercel**
+- [x] **Step 1: Confirm private/local files are ignored by Vercel**
 
 Run:
 
@@ -46,7 +59,7 @@ grep -E '^(HANDOFF|DESIGN-SYSTEM|ROADMAP|graphify-out/|supabase/\\.temp/|supabas
 
 Expected: private docs and local build/runtime artifacts are excluded by `.gitignore` locally and by `.vercelignore` during Vercel upload.
 
-- [ ] **Step 2: Deploy the static branch to Vercel**
+- [x] **Step 2: Deploy the static branch to Vercel**
 
 Run through the Vercel integration or CLI from the repo root:
 
@@ -56,7 +69,7 @@ vercel deploy
 
 Expected: Vercel creates a preview URL for `feature/nextjs-vercel-migration`.
 
-- [ ] **Step 3: Validate the Vercel preview manually**
+- [x] **Step 3: Validate the Vercel preview manually**
 
 Open these routes on the Vercel URL:
 
@@ -86,7 +99,7 @@ https://<vercel-preview-host>/analog-db-dashboard.html
 
 Expected: password recovery links can return to the Vercel preview without being blocked by Supabase redirect allow-list rules.
 
-- [ ] **Step 5: Commit static Vercel baseline**
+- [x] **Step 5: Commit static Vercel baseline**
 
 Run:
 
