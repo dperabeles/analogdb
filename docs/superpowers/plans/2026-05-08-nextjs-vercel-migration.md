@@ -16,6 +16,7 @@
 - Remote branch: `origin/feature/nextjs-vercel-migration`
 - Vercel project: `analogdb-repo`
 - Live Vercel URL: `https://analogdb-repo.vercel.app`
+- Custom domains: `https://analog-archive.com`, `https://www.analog-archive.com`
 - Deployment id: `dpl_5BZJnFo66sadYJ63q5bF1F52wEat`
 - Deployment status: Ready
 - Validated routes: `/`, `/analog-db-dashboard.html`, `/forgot-password.html`, `/reset-password.html`
@@ -98,6 +99,17 @@ https://<vercel-preview-host>/analog-db-dashboard.html
 ```
 
 Expected: password recovery links can return to the Vercel preview without being blocked by Supabase redirect allow-list rules.
+
+Also add the custom production domains:
+
+```text
+https://analog-archive.com/analog-db-dashboard.html
+https://analog-archive.com/forgot-password.html
+https://analog-archive.com/reset-password.html
+https://www.analog-archive.com/analog-db-dashboard.html
+https://www.analog-archive.com/forgot-password.html
+https://www.analog-archive.com/reset-password.html
+```
 
 - [x] **Step 5: Commit static Vercel baseline**
 
@@ -328,18 +340,18 @@ Invite 1-2 trusted testers to the Vercel preview first, then expand.
 
 Expected: real Supabase data works in both frontends during overlap.
 
-- [ ] **Step 3: Assign product domains**
+- [x] **Step 3: Assign product domains**
 
-Recommended final mapping:
+Current mapping:
 
 ```text
-analog-archive.com -> public landing
-www.analog-archive.com -> root alias
+analog-archive.com -> Vercel static migration baseline
+www.analog-archive.com -> Vercel static migration baseline
 app.analog-archive.com -> Vercel app
 beta-next.analog-archive.com -> temporary migration preview
 ```
 
-Expected: DNS and Supabase redirects are aligned before full cutover.
+Expected: DNS is aligned now. Supabase redirects are still tracked under Task 1 Step 4 before tester use.
 
 - [ ] **Step 4: Retire GitHub Pages only after verified parity**
 
@@ -354,3 +366,60 @@ Expected: no beta tester needs to export/import catalog data.
 - Spec coverage: deploy-in-parallel, shared Supabase data, Next.js migration, later React Native readiness, and no GitHub Pages interruption are all covered.
 - Placeholder scan: no `TBD` or open-ended task placeholders remain.
 - Type consistency: future TypeScript paths and environment variable names are consistent across tasks.
+
+---
+
+## Progress Log
+
+### 2026-05-09: Static Vercel Baseline And Custom Domain
+
+Completed:
+
+- Created branch `feature/nextjs-vercel-migration` without using a temporary worktree.
+- Added `.vercelignore` so Vercel does not upload local/private docs or local tool artifacts.
+- Added `vercel.json` with static hosting defaults and baseline security headers.
+- Created Vercel project `analogdb-repo`.
+- Deployed current static app to `https://analogdb-repo.vercel.app`.
+- Pushed branch `feature/nextjs-vercel-migration` to `origin`.
+- Added custom domains to Vercel:
+  - `analog-archive.com`
+  - `www.analog-archive.com`
+- Configured Cloudflare DNS through the user:
+  - `A @ 76.76.21.21`
+  - `A www 76.76.21.21`
+- Assigned aliases explicitly:
+  - `analog-archive.com -> analogdb-repo-e5874zgsu-arqdiegoperabeles-2865s-projects.vercel.app`
+  - `www.analog-archive.com -> analogdb-repo-e5874zgsu-arqdiegoperabeles-2865s-projects.vercel.app`
+- Validated HTTPS `200` responses for:
+  - `https://analog-archive.com/`
+  - `https://www.analog-archive.com/`
+  - `https://analog-archive.com/analog-db-dashboard.html`
+  - `https://www.analog-archive.com/analog-db-dashboard.html`
+- Confirmed the deployed dashboard still points to the existing Supabase project `dqjjxxqruxxfsfoejdzl`.
+
+Validation commands used:
+
+```bash
+node --check auth-recovery.js
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js
+python3 -m unittest tests/test_exposure_settings.py tests/test_film_catalog.py tests/test_rejected_admin_ui.py
+curl -sS -I https://analog-archive.com/analog-db-dashboard.html
+curl -sS -I https://www.analog-archive.com/analog-db-dashboard.html
+curl -sS https://analog-archive.com/analog-db-dashboard.html | rg -n "Analog Archive|SUPABASE_URL|gateForgotPasswordLink"
+```
+
+Errors / lessons:
+
+- `git switch -c feature/nextjs-vercel-migration` failed inside the sandbox with `Operation not permitted` when creating the ref lock. Use approved/escalated git commands for branch creation in this workspace when the sandbox blocks `.git` writes.
+- Vercel MCP could not deploy directly and instructed using `vercel deploy`; use `npx --yes vercel ...` from the linked repo when the MCP only returns CLI guidance.
+- First Vercel CLI run required device-code login. Do not assume Vercel CLI auth is already present even if the Vercel MCP is available.
+- Vercel CLI linked the project and added `.vercel` to `.gitignore`; keep `.vercel/` local-only.
+- `vercel domains add analog-archive.com analogdb-repo` failed because the repo was already linked; the correct command was `vercel domains add analog-archive.com`.
+- Adding domains in Vercel was not enough. Cloudflare DNS still needed `A` records to `76.76.21.21`.
+- DNS propagation showed `www` before the apex in one local `dig` attempt; verify with `dig @1.1.1.1` before assuming the apex is broken.
+- HTTPS briefly failed with `SSL_ERROR_SYSCALL` right after DNS started resolving. This cleared after explicitly assigning aliases and waiting for Vercel/TLS to settle.
+- `vercel inspect analog-archive.com` showed the deployment but did not list the custom aliases in the alias section even after alias assignment; use direct `curl -I` checks as the source of truth for live serving.
+
+Open follow-up:
+
+- Add Vercel/custom-domain URLs to Supabase Auth redirect allow-list before asking testers to use password recovery or auth flows on the Vercel domain.
