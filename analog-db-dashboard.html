@@ -8493,7 +8493,7 @@ function renderStatusSections() {
 //  CAMERAS CATALOG — CRUD & RENDER
 // ═══════════════════════════════════════════
 
-// Cameras already known from roll history (to seed the catalog on first run)
+// Demo equipment used only when Supabase is unavailable.
 const SEED_CAMERAS = [
   { maker: 'PENTAX', model: 'Super Program',  format: '35mm',   type: 'SLR',         mount: 'Pentax K', supports_interchangeable_lenses: true,  show_in_quick_mode: true },
   { maker: 'PENTAX', model: 'PC-330',         format: '35mm',   type: 'P&S',         supports_interchangeable_lenses: false, show_in_quick_mode: true },
@@ -8567,9 +8567,7 @@ async function loadCamerasCatalog() {
           supports_interchangeable_lenses: c.supports_interchangeable_lenses !== false,
           show_in_quick_mode: c.show_in_quick_mode !== false
         }));
-        // If DB is empty, push seed cameras
-        if (CAMERAS_CATALOG.length === 0) await seedCamerasToDb();
-        else await fixCameraTypos();
+        if (CAMERAS_CATALOG.length > 0) await fixCameraTypos();
       }
     } catch(e) { console.warn('loadCamerasCatalog:', e); }
   } else {
@@ -8593,7 +8591,7 @@ async function loadLensesCatalog() {
       }
     } catch(e) { console.warn('loadLensesCatalog:', e); }
   }
-  if (LENSES_CATALOG.length === 0) {
+  if (!sb && LENSES_CATALOG.length === 0) {
     LENSES_CATALOG = SEED_LENSES.map((l, i) => ({ id: 'seed-lens-' + (i + 1), ...l }));
   }
 }
@@ -8610,17 +8608,6 @@ async function fixCameraTypos() {
       await sb.from('cameras').update({ model: t.fix }).eq('id', cam.id);
       cam.model = t.fix;
     } catch(e) { console.warn('fixCameraTypos:', e); }
-  }
-}
-
-async function seedCamerasToDb() {
-  for (const c of SEED_CAMERAS) {
-    try {
-      const id = await upsertCameraRemote(c.maker, c.model, c.format, c.type, c.mount, c.supports_interchangeable_lenses);
-      if (id && !CAMERAS_CATALOG.some(cam => cam.id === id)) {
-        CAMERAS_CATALOG.push({ id, ...c, owner_user_id: currentUserId() });
-      }
-    } catch(e) { console.warn('seed camera error:', e); }
   }
 }
 

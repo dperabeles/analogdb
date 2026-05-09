@@ -55,5 +55,6 @@ expectIncludes(html, 'qaSortCamerasByUsage', 'quick add should sort cameras by h
 expectIncludes(html, 'qaSortLensesByUsage', 'quick add should sort lenses by historical usage');
 expectIncludes(html, 'Agregar cámara', 'quick add should show add camera CTA');
 expectIncludes(html, 'Agregar lente', 'quick add should show add lens CTA');
+assert.ok(!html.includes("if (LENSES_CATALOG.length === 0) {\n    LENSES_CATALOG = SEED_LENSES"), 'authenticated users should not see seed lenses when their remote catalog is empty');
 
 console.log('camera lens quick-add static checks passed');

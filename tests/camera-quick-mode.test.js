@@ -12,7 +12,10 @@ function expectNotIncludes(needle, message) {
   assert.ok(!html.includes(needle), message || `Expected HTML not to include ${needle}`);
 }
 
-expectIncludes("show_in_quick_mode: true", 'seed cameras should default to quick-mode visibility');
+expectIncludes("show_in_quick_mode: true", 'seed cameras should default to quick-mode visibility in local fallback only');
+expectNotIncludes("if (CAMERAS_CATALOG.length === 0) await seedCamerasToDb();", 'authenticated users should not receive seed cameras when their remote catalog is empty');
+expectNotIncludes("async function seedCamerasToDb()", 'frontend should not persist private seed cameras to Supabase');
+expectIncludes("} else {\n    // No Supabase: use seed cameras in memory", 'seed cameras should stay scoped to no-Supabase fallback');
 expectIncludes("id=\"camInputQuickMode\"", 'camera form should expose the quick-mode visibility checkbox');
 expectIncludes("formatCompatibleForQuickMode", 'quick-mode camera filtering should compare camera and roll formats');
 expectIncludes("quickModeCamerasForRoll", 'quick-mode camera filtering helper should exist');
