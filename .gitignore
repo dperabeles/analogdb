@@ -27,3 +27,4 @@ supabase/config.toml
 *.swp
 *.swo
 .vscode/settings.json
+.vercel

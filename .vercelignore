@@ -1,0 +1,36 @@
+# Local-only/private project context
+HANDOFF.md
+DESIGN-SYSTEM.md
+ROADMAP.md
+
+# Local graph artifacts and automation
+graphify-out/
+.graphifyignore
+scripts/graphify-update.sh
+
+# Local backups and workspace noise
+backups/
+*.backup-*.html
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local tool state
+.claude/
+.superpowers/
+.agents/
+skills-lock.json
+
+# Supabase local state and non-deployable backend sources
+supabase/.temp/
+supabase/config.toml
+supabase/functions/
+supabase/migrations/
+supabase/schema.sql
+supabase/migrate.py
+supabase/templates/
+supabase/*.sql
+
+# Tests are kept in git, but are not needed for static hosting.
+tests/
+*.test.js
