@@ -506,3 +506,36 @@ Open follow-up:
 
 - Implement a beta hotfix on the stable line, then bring it into `feature/nextjs-vercel-migration`.
 - Add a regression test that confirms empty remote camera/lens catalogs stay empty for authenticated users.
+
+### 2026-05-09: Equipment Autoseed Hotfix
+
+Completed:
+
+- Updated `analog-db-dashboard.html` so demo equipment seeds are only used when Supabase is unavailable.
+- Removed the remote `seedCamerasToDb()` path that inserted private camera rows for every approved user with an empty catalog.
+- Updated `loadLensesCatalog()` so `SEED_LENSES` are not shown when Supabase is active and the authenticated user's lens catalog is empty.
+- Added regression checks in:
+  - `tests/camera-quick-mode.test.js`
+  - `tests/camera-lens-quick-add.test.js`
+
+Validation commands used:
+
+```bash
+node --test tests/camera-quick-mode.test.js tests/camera-lens-quick-add.test.js
+node --check auth-recovery.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Existing data cleanup evidence:
+
+- A database aggregate showed seed cameras already exist across user accounts.
+- Some seed camera rows are referenced by `rolls.camera_id`, so deleting all matching rows blindly is unsafe.
+- Unreferenced seed-camera rows can be considered cleanup candidates, but cleanup should be explicit and reviewed separately because users may have intentionally kept one of those camera models.
+
+Errors / lessons:
+
+- The hardcoded equipment was similar to the earlier film-stock issue only in that it lived in the HTML. The domain rule is different: film stocks are global catalog data; cameras and lenses are private user equipment and must not be globally seeded.
+
+Open follow-up:
+
+- Decide whether to run a guarded cleanup for unreferenced seed camera rows already inserted into beta user accounts.
