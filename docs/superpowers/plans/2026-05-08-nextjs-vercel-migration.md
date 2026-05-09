@@ -685,6 +685,9 @@ Completed:
 - Added Supabase SSR middleware so auth cookies stay fresh for server-rendered routes.
 - Marked `/dashboard` as runtime-rendered because it depends on session cookies.
 - Set `vercel.json` framework override to `nextjs` so Vercel no longer uses the earlier static-site `Other` preset.
+- Re-saved `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in Vercel with `--no-sensitive` for Production, Development, and branch Preview.
+- Redeployed the fixed branch preview:
+  - `https://analogdb-repo-6t1zc87jd-arqdiegoperabeles-2865s-projects.vercel.app`
 - Updated Supabase Auth redirect allow-list with clean Next routes:
   - `http://localhost:3000/reset-password`
   - `https://analogdb-repo.vercel.app/forgot-password`
@@ -704,6 +707,14 @@ supabase config push --project-ref dqjjxxqruxxfsfoejdzl --yes
 supabase config push --project-ref dqjjxxqruxxfsfoejdzl --yes
 node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js
 python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+npx --yes vercel env list
+npx --yes vercel env pull .env.local --environment=preview --git-branch feature/nextjs-vercel-migration --yes
+npm run dev -- --hostname 127.0.0.1 --port 3000
+curl -sS -I http://127.0.0.1:3000/dashboard
+curl -sS -I http://127.0.0.1:3000/forgot-password
+curl -sS -I http://127.0.0.1:3000/reset-password
+npx --yes vercel redeploy https://analogdb-repo-mde7xr6pk-arqdiegoperabeles-2865s-projects.vercel.app --target preview
+npx --yes vercel inspect https://analogdb-repo-6t1zc87jd-arqdiegoperabeles-2865s-projects.vercel.app --wait --timeout 90s
 ```
 
 Validation result:
@@ -713,16 +724,21 @@ Validation result:
 - `tsc --noEmit` passed.
 - Existing JS and Python regression tests passed.
 - Second Supabase config push returned `Remote Auth config is up to date.`
+- Local smoke test returned `200 OK` for `/dashboard`, `/forgot-password`, and `/reset-password` after branch Preview envs were corrected.
+- Vercel redeploy `dpl_CViUASCx6VcRh5MS9SP1yixewJY9` returned `Ready`.
 
 Errors / lessons:
 
 - `display_name` can be null for real profiles, so auth UI types must allow a nullable display name and render a fallback.
 - The first `next build` failed when `/dashboard` tried to prerender without local Supabase env vars. Session-dependent routes should be explicitly dynamic.
 - The first Git-triggered Vercel preview for this task failed after a successful Next build because the project still used the static baseline `Other` framework preset and expected an output directory named `public`. Fix with `"framework": "nextjs"` in `vercel.json`.
+- Saving `NEXT_PUBLIC_` env vars as Vercel sensitive/encrypted values made `vercel env pull` write empty values locally. For browser-public env vars, use `--no-sensitive`; they are intentionally public.
+- Pulling Vercel envs creates a local `.env.local` that can include a temporary `VERCEL_OIDC_TOKEN`. Keep `.env.local` ignored and delete it after smoke tests.
+- Direct HTTP smoke checks against protected Preview URLs return Vercel `401`; use deployment `Ready` plus local smoke, or disable/share preview protection intentionally before browser-level remote testing.
 - Build/typecheck should stay sequential. Running them concurrently can produce noisy generated-type races.
 - Keep GitHub Pages `.html` redirects and clean Next redirects side by side until the beta fully cuts over to Vercel.
 
 Open follow-up:
 
-- Smoke test `/dashboard`, `/forgot-password`, and `/reset-password` on the deployed Vercel branch after the commit is pushed.
+- Browser-level smoke test the protected Vercel preview only after a share URL is available or Preview protection is intentionally disabled for this branch.
 - Next task is Task 4 Step 2: migrate roll read flows with shared Supabase data.
