@@ -20,7 +20,7 @@
 - Deployment id: `dpl_5BZJnFo66sadYJ63q5bF1F52wEat`
 - Deployment status: Ready
 - Validated routes: `/`, `/analog-db-dashboard.html`, `/forgot-password.html`, `/reset-password.html`
-- Still pending before tester use: add Vercel URLs to Supabase Auth redirect allow-list.
+- Supabase Auth redirects: Vercel and custom-domain URLs added and pushed to remote.
 
 ---
 
@@ -88,7 +88,7 @@ Expected:
 - Reset password page renders.
 - Browser console has no fatal asset or module errors.
 
-- [ ] **Step 4: Add Supabase auth redirect URLs**
+- [x] **Step 4: Add Supabase auth redirect URLs**
 
 Add the Vercel preview URL in Supabase Auth settings:
 
@@ -420,6 +420,53 @@ Errors / lessons:
 - HTTPS briefly failed with `SSL_ERROR_SYSCALL` right after DNS started resolving. This cleared after explicitly assigning aliases and waiting for Vercel/TLS to settle.
 - `vercel inspect analog-archive.com` showed the deployment but did not list the custom aliases in the alias section even after alias assignment; use direct `curl -I` checks as the source of truth for live serving.
 
-Open follow-up:
+Follow-up resolved in the next log entry:
 
 - Add Vercel/custom-domain URLs to Supabase Auth redirect allow-list before asking testers to use password recovery or auth flows on the Vercel domain.
+
+### 2026-05-09: Supabase Auth Redirects For Vercel Domains
+
+Completed:
+
+- Updated `supabase/config.toml` to include Vercel and custom-domain auth redirect URLs.
+- Kept `site_url` on GitHub Pages so the current beta line does not move yet.
+- Preserved existing remote redirects that were missing locally:
+  - `https://dperabeles.github.io/analogdb/analog-db-dashboard-review.html`
+  - `http://127.0.0.1:8000/reset-password.html`
+- Pushed Supabase config to project `dqjjxxqruxxfsfoejdzl`.
+- Verified idempotency with a second `supabase config push`, which returned:
+  - `Remote API config is up to date.`
+  - `Remote DB config is up to date.`
+  - `Remote Auth config is up to date.`
+  - `Remote Storage config is up to date.`
+
+Auth redirect URLs added:
+
+```text
+https://analogdb-repo.vercel.app/analog-db-dashboard.html
+https://analogdb-repo.vercel.app/forgot-password.html
+https://analogdb-repo.vercel.app/reset-password.html
+https://analog-archive.com/analog-db-dashboard.html
+https://analog-archive.com/forgot-password.html
+https://analog-archive.com/reset-password.html
+https://www.analog-archive.com/analog-db-dashboard.html
+https://www.analog-archive.com/forgot-password.html
+https://www.analog-archive.com/reset-password.html
+```
+
+Validation commands used:
+
+```bash
+supabase config push --project-ref dqjjxxqruxxfsfoejdzl --yes
+supabase config push --project-ref dqjjxxqruxxfsfoejdzl --yes
+```
+
+Errors / lessons:
+
+- `supabase config push --linked --yes` failed because this Supabase CLI version does not support `--linked` on `config push`. Use `supabase config push --project-ref dqjjxxqruxxfsfoejdzl --yes`.
+- The first config push revealed that remote Auth had redirects not present in local `supabase/config.toml`. Before treating local config as source of truth, compare the CLI diff and preserve remote-only allow-list entries unless intentionally removing them.
+- Even with `--yes`, `supabase config push` printed the Auth diff and prompt text. In this CLI, the `y` confirmation was still handled automatically, but future agents should still read the diff before assuming the push is safe.
+
+Open follow-up:
+
+- Run a real password recovery smoke test on `https://analog-archive.com/forgot-password.html` with a controlled account before inviting testers to use the new domain for account recovery.

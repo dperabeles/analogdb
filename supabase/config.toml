@@ -5,7 +5,18 @@ site_url = "https://dperabeles.github.io/analogdb/analog-db-dashboard.html"
 additional_redirect_urls = [
   "https://dperabeles.github.io/analogdb/",
   "https://dperabeles.github.io/analogdb/analog-db-dashboard.html",
+  "https://dperabeles.github.io/analogdb/analog-db-dashboard-review.html",
   "https://dperabeles.github.io/analogdb/reset-password.html",
+  "http://127.0.0.1:8000/reset-password.html",
+  "https://analogdb-repo.vercel.app/analog-db-dashboard.html",
+  "https://analogdb-repo.vercel.app/forgot-password.html",
+  "https://analogdb-repo.vercel.app/reset-password.html",
+  "https://analog-archive.com/analog-db-dashboard.html",
+  "https://analog-archive.com/forgot-password.html",
+  "https://analog-archive.com/reset-password.html",
+  "https://www.analog-archive.com/analog-db-dashboard.html",
+  "https://www.analog-archive.com/forgot-password.html",
+  "https://www.analog-archive.com/reset-password.html",
 ]
 enable_signup = true
 
