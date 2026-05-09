@@ -539,3 +539,43 @@ Errors / lessons:
 Open follow-up:
 
 - Decide whether to run a guarded cleanup for unreferenced seed camera rows already inserted into beta user accounts.
+
+### 2026-05-09: Existing Test Account Still Shows Seed Cameras
+
+Observed:
+
+- After the autoseed hotfix was deployed, the password-recovery test account no longer showed seed lenses, but still showed seed cameras.
+- Database check for recent profiles showed the newest approved account created at `2026-05-09 04:26:42+00` has:
+  - `6` cameras
+  - `0` lenses
+  - `0` rolls
+
+Conclusion:
+
+- This is expected for an account that opened the app before the hotfix was live. The old code inserted camera seeds into `public.cameras`; once inserted, the new frontend correctly reads them as real rows.
+- Lenses disappeared because they were not persisted through the same path; they were only an in-memory fallback when the remote lens catalog was empty.
+- The hotfix prevents future autoseeding, but does not delete already inserted camera rows.
+
+Validation query used:
+
+```sql
+select
+  p.user_id,
+  p.status,
+  p.created_at,
+  count(distinct c.id) as cameras,
+  count(distinct l.id) as lenses,
+  count(distinct r.id) as rolls
+from public.profiles p
+left join public.cameras c on c.owner_user_id = p.user_id
+left join public.lenses l on l.owner_user_id = p.user_id
+left join public.rolls r on r.owner_user_id = p.user_id
+group by p.user_id, p.status, p.created_at
+order by p.created_at desc
+limit 8;
+```
+
+Open follow-up:
+
+- Run a guarded cleanup for accounts with seed cameras and no roll references.
+- For the test account specifically, all 6 seed camera rows are safe cleanup candidates because it has `0` rolls.
