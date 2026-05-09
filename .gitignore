@@ -35,3 +35,8 @@ node_modules/
 out/
 tsconfig.tsbuildinfo
 npm-debug.log*
+
+# Local environment files
+.env
+.env.local
+.env*.local

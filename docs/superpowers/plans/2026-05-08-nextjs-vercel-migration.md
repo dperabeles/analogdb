@@ -219,7 +219,7 @@ Expected: commit introduces only the framework shell, not product behavior.
 - Create: `src/lib/env.ts`
 - Create: `src/types/database.ts`
 
-- [ ] **Step 1: Move public Supabase config to env variables**
+- [x] **Step 1: Move public Supabase config to env variables**
 
 Create `src/lib/env.ts`:
 
@@ -238,7 +238,7 @@ export function assertPublicEnv() {
 
 Expected: Next.js no longer hardcodes Supabase config inside page code.
 
-- [ ] **Step 2: Add Vercel environment variables**
+- [x] **Step 2: Add Vercel environment variables**
 
 Set these in Vercel for preview and production:
 
@@ -249,7 +249,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=<current publishable anon key>
 
 Expected: preview and production deployments use the same Supabase project as GitHub Pages.
 
-- [ ] **Step 3: Commit Supabase foundation**
+- [x] **Step 3: Commit Supabase foundation**
 
 Run:
 
@@ -625,3 +625,49 @@ Open follow-up:
 
 - Run the Next dev server locally when continuing UI work and verify `/` and `/dashboard`.
 - Next task is Task 3: move Supabase public config into environment variables and add shared Supabase client foundations.
+
+### 2026-05-09: Supabase Client Foundation For Next.js
+
+Completed:
+
+- Added public env helpers:
+  - `src/lib/env.ts`
+  - `.env.example`
+- Added Supabase client factories:
+  - `src/lib/supabase/client.ts`
+  - `src/lib/supabase/server.ts`
+- Added initial typed database contract:
+  - `src/types/database.ts`
+- Added TypeScript path alias `@/* -> src/*`.
+- Scoped `tsconfig.json` to the Next app source and excluded `supabase/functions` so Deno Edge Functions are not typechecked by the Next app.
+- Added Vercel environment variables:
+  - `NEXT_PUBLIC_SUPABASE_URL`
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- Vercel environments configured:
+  - `Production`
+  - `Development`
+  - `Preview (feature/nextjs-vercel-migration)`
+
+Validation commands used:
+
+```bash
+npm run typecheck
+npm run build
+npx --yes vercel env list
+```
+
+Validation result:
+
+- `tsc --noEmit` passed.
+- `next build` passed.
+- `vercel env list` showed both Supabase variables in all intended Vercel environments.
+
+Errors / lessons:
+
+- TypeScript 6 reports `baseUrl` deprecation warnings, but path aliases still require it with this setup. Added `ignoreDeprecations: "6.0"` as a temporary compatibility setting.
+- `vercel env add <name> preview --value ... --yes` still required a branch in agent/non-interactive mode. Use `vercel env add <name> preview feature/nextjs-vercel-migration --value ... --yes` for this migration branch.
+- `NEXT_PUBLIC_` values are intentionally browser-visible. Do not put privileged backend keys in this pattern.
+
+Open follow-up:
+
+- Later replace the hand-written `src/types/database.ts` with generated Supabase types once the Next app begins using more tables and RPCs.
