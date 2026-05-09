@@ -276,7 +276,7 @@ Implement login, signup pending state, rejected state, logout, and password reco
 
 Expected: a beta tester can authenticate in Next.js and reach an empty dashboard shell.
 
-- [ ] **Step 2: Migrate roll read flows**
+- [x] **Step 2: Migrate roll read flows**
 
 Implement roll list, filters, sort, and detail view using backward-compatible queries against existing Supabase tables.
 
@@ -741,4 +741,59 @@ Errors / lessons:
 Open follow-up:
 
 - Browser-level smoke test the protected Vercel preview only after a share URL is available or Preview protection is intentionally disabled for this branch.
-- Next task is Task 4 Step 2: migrate roll read flows with shared Supabase data.
+- Resolved in the next log entry: Task 4 Step 2 migrated roll read flows with shared Supabase data.
+
+### 2026-05-09: Next.js Roll Read Flows
+
+Completed:
+
+- Migrated the first read-only roll archive slice into Next.js.
+- Added `rolls_flat` to the typed Supabase database contract, preserving legacy column names such as `#`, `FILM STOCK`, `STATUS`, and `FRAME SETTINGS`.
+- Added server-side queries against `public.rolls_flat` so Next.js reads the same compatibility view as GitHub Pages.
+- Added row mapping and legacy-compatible normalization for:
+  - `PUSH/PULL`
+  - `FORMAT`
+- Added dashboard roll list with:
+  - total/active/stock KPIs
+  - status counts
+  - status filter
+  - text search
+  - sort modes for newest, started, finished, and rating
+- Added read-only roll detail route:
+  - `/rolls/[code]`
+- Kept this step read-only. Create/edit remains Task 4 Step 3.
+
+Validation commands used:
+
+```bash
+node --test tests/next-roll-read-flows.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-roll-read-flows.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+npx --yes vercel env pull .env.local --environment=preview --git-branch feature/nextjs-vercel-migration --yes
+npm run dev -- --hostname 127.0.0.1 --port 3000
+curl -sS -I http://127.0.0.1:3000/dashboard
+curl -sS -I http://127.0.0.1:3000/rolls/AA-TEST
+```
+
+Validation result:
+
+- New roll read-flow static test passed.
+- `tsc --noEmit` passed.
+- `next build` passed and reported `/dashboard` and `/rolls/[code]` as dynamic.
+- Existing JS and Python regression tests passed.
+- Local smoke with Vercel Preview envs returned `200 OK` for `/dashboard`.
+- Local smoke for `/rolls/AA-TEST` returned `200 OK` to the public access gate when unauthenticated, confirming the protected route renders instead of crashing.
+
+Errors / lessons:
+
+- The first roll-read test was too tightly coupled to where normalization lived. Normalization belongs in the row mapping/type layer, not the query module.
+- `next dev` rewrites `next-env.d.ts` to reference `.next/dev/types/routes.d.ts`; restore it to `.next/types/routes.d.ts` before committing.
+- Curling the local Next server from inside the sandbox can fail even when the server is listening. Running the local curl with approved network permissions worked.
+- Pulling Vercel envs creates `.env.local`; delete it after smoke tests because it can include a temporary `VERCEL_OIDC_TOKEN`.
+
+Open follow-up:
+
+- After this branch deploys, browser-smoke the protected Preview with an approved tester session or a Vercel share URL.
+- Next task is Task 4 Step 3: migrate roll create/edit flows while keeping GitHub Pages compatibility.

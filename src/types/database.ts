@@ -134,7 +134,44 @@ export type Database = {
         Relationships: [];
       };
     };
-    Views: Record<string, never>;
+    Views: {
+      rolls_flat: {
+        Row: {
+          id: number;
+          "#": string | null;
+          "FILM TYPE": string | null;
+          FORMAT: string | null;
+          "EXP/FRESH": string | null;
+          "FILM STOCK": string | null;
+          MANUFACTURER: string | null;
+          ISO: number | null;
+          EXP: number | null;
+          MAKER: string | null;
+          "MODEL NAME": string | null;
+          "C. FORMAT": string | null;
+          "C. TYPE": string | null;
+          "C. MOUNT": string | null;
+          LENS: string | null;
+          "LENS MOUNT": string | null;
+          LOCATIONS: string | null;
+          "PHOTO TYPE": string | null;
+          TAGS: string | null;
+          "ISO @": number | null;
+          STARTED: string | null;
+          FINISHED: string | null;
+          "# EXP": number | null;
+          "PUSH/PULL": string | null;
+          DEV: string | null;
+          SCAN: string | null;
+          STATUS: string | null;
+          RATING: number | null;
+          NOTES: string | null;
+          updated_at: string | null;
+          "FRAME SETTINGS": number | null;
+        };
+        Relationships: [];
+      };
+    };
     Functions: Record<string, never>;
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
