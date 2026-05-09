@@ -270,7 +270,7 @@ Expected: commit only adds shared backend access infrastructure.
 - Create: `src/features/admin/`
 - Modify: `src/app/dashboard/page.tsx`
 
-- [ ] **Step 1: Migrate auth gates**
+- [x] **Step 1: Migrate auth gates**
 
 Implement login, signup pending state, rejected state, logout, and password recovery routes before moving roll data screens.
 
@@ -671,3 +671,56 @@ Errors / lessons:
 Open follow-up:
 
 - Later replace the hand-written `src/types/database.ts` with generated Supabase types once the Next app begins using more tables and RPCs.
+
+### 2026-05-09: Next.js Auth Gates
+
+Completed:
+
+- Migrated the first auth gate slice into the Next.js App Router.
+- Added server-side access resolution against Supabase Auth and `public.profiles`.
+- Added login/signup UI for the public state.
+- Added pending, rejected, and invalid profile states.
+- Added logout for authenticated states.
+- Added `/forgot-password` and `/reset-password` routes for the Next app.
+- Added Supabase SSR middleware so auth cookies stay fresh for server-rendered routes.
+- Marked `/dashboard` as runtime-rendered because it depends on session cookies.
+- Updated Supabase Auth redirect allow-list with clean Next routes:
+  - `http://localhost:3000/reset-password`
+  - `https://analogdb-repo.vercel.app/forgot-password`
+  - `https://analogdb-repo.vercel.app/reset-password`
+  - `https://analog-archive.com/forgot-password`
+  - `https://analog-archive.com/reset-password`
+  - `https://www.analog-archive.com/forgot-password`
+  - `https://www.analog-archive.com/reset-password`
+
+Validation commands used:
+
+```bash
+node --test tests/next-auth-gates.test.js
+npm run build
+npm run typecheck
+supabase config push --project-ref dqjjxxqruxxfsfoejdzl --yes
+supabase config push --project-ref dqjjxxqruxxfsfoejdzl --yes
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Validation result:
+
+- `tests/next-auth-gates.test.js` passed.
+- `next build` passed and reported `/dashboard` as dynamic.
+- `tsc --noEmit` passed.
+- Existing JS and Python regression tests passed.
+- Second Supabase config push returned `Remote Auth config is up to date.`
+
+Errors / lessons:
+
+- `display_name` can be null for real profiles, so auth UI types must allow a nullable display name and render a fallback.
+- The first `next build` failed when `/dashboard` tried to prerender without local Supabase env vars. Session-dependent routes should be explicitly dynamic.
+- Build/typecheck should stay sequential. Running them concurrently can produce noisy generated-type races.
+- Keep GitHub Pages `.html` redirects and clean Next redirects side by side until the beta fully cuts over to Vercel.
+
+Open follow-up:
+
+- Smoke test `/dashboard`, `/forgot-password`, and `/reset-password` on the deployed Vercel branch after the commit is pushed.
+- Next task is Task 4 Step 2: migrate roll read flows with shared Supabase data.
