@@ -470,3 +470,39 @@ Errors / lessons:
 Open follow-up:
 
 - Run a real password recovery smoke test on `https://analog-archive.com/forgot-password.html` with a controlled account before inviting testers to use the new domain for account recovery.
+
+### 2026-05-09: New-User Equipment Autoseed Bug Investigation
+
+Observed:
+
+- A new account successfully passed the password-recovery/auth smoke test on the custom domain.
+- During that test, the new account showed preloaded equipment that should not exist for a fresh user:
+  - Cameras: `Canon 7`, `Mamiya M645J`, `Pentax Super Program`, `Pentax IQ Zoom 115M`, `Pentax PC-330`, plus `Canon 514XL`.
+  - Lenses expected by the UI seed list: `Pentax-A 50mm f2.0`, `Pentax-A 70-210mm f4`, `Mamiya 55mm f2.8`, `Industar-61 53mm f2.8`.
+
+Root cause evidence:
+
+- `analog-db-dashboard.html` defines `SEED_CAMERAS` and `SEED_LENSES` near the camera catalog code.
+- `loadCamerasCatalog()` queries `public.cameras`; when the result for the logged-in user is empty, it calls `seedCamerasToDb()`.
+- `seedCamerasToDb()` uses `upsertCameraRemote(...)`, which writes each seed row with `owner_user_id: currentUserId()`.
+- Live database aggregate confirmed the six seed cameras exist once per owner: each seed camera appeared with `18` copies across `18` owners.
+- Camera/lens RLS is not the apparent leak source: policies constrain equipment by `owner_user_id = auth.uid()`.
+- Lenses behave differently: `loadLensesCatalog()` falls back to `SEED_LENSES` in memory when the logged-in user's lenses table is empty. It does not call an equivalent `seedLensesToDb()` in the inspected code path.
+
+Recommendation:
+
+- Fix before deeper Next.js migration. This is current beta behavior and will continue to contaminate new accounts if left as-is.
+- Remove remote autoseeding for authenticated Supabase users. New accounts should render `0` cameras and `0` lenses until the user adds equipment.
+- Keep seed equipment only for no-Supabase/local-demo mode if still needed.
+- Add a cleanup migration/query for beta users who received only the default seed cameras and have not actually used them in rolls.
+
+Errors / lessons:
+
+- Do not assume default equipment is only local demo data. In this code path, camera seed data is persisted remotely per user.
+- Do not treat lenses and cameras as identical: cameras are inserted into Supabase; lenses are currently an in-memory fallback when no lens records exist.
+- Before cleanup, check roll references. Deleting seeded cameras blindly could break `rolls.camera_id` references for users who already selected one of those seeded cameras.
+
+Open follow-up:
+
+- Implement a beta hotfix on the stable line, then bring it into `feature/nextjs-vercel-migration`.
+- Add a regression test that confirms empty remote camera/lens catalogs stay empty for authenticated users.
