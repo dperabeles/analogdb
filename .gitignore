@@ -28,3 +28,10 @@ supabase/config.toml
 *.swo
 .vscode/settings.json
 .vercel
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+tsconfig.tsbuildinfo
+npm-debug.log*

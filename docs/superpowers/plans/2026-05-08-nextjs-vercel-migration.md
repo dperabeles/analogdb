@@ -135,7 +135,7 @@ Expected: commit contains only Vercel config and this migration plan.
 - Create: `src/app/globals.css`
 - Create: `src/app/dashboard/page.tsx`
 
-- [ ] **Step 1: Add the Next.js project skeleton**
+- [x] **Step 1: Add the Next.js project skeleton**
 
 Create `package.json`:
 
@@ -168,7 +168,7 @@ Create `package.json`:
 
 Expected: dependencies match a standard Next.js App Router web app.
 
-- [ ] **Step 2: Add a minimal App Router shell**
+- [x] **Step 2: Add a minimal App Router shell**
 
 Create `src/app/page.tsx`:
 
@@ -187,7 +187,7 @@ export default function HomePage() {
 
 Expected: Vercel can build a minimal Next.js version before feature migration begins.
 
-- [ ] **Step 3: Validate build**
+- [x] **Step 3: Validate build**
 
 Run:
 
@@ -198,7 +198,7 @@ npm run build
 
 Expected: `next build` completes without TypeScript or route errors.
 
-- [ ] **Step 4: Commit shell**
+- [x] **Step 4: Commit shell**
 
 Run:
 
@@ -579,3 +579,49 @@ Open follow-up:
 
 - Run a guarded cleanup for accounts with seed cameras and no roll references.
 - For the test account specifically, all 6 seed camera rows are safe cleanup candidates because it has `0` rolls.
+
+### 2026-05-09: Initial Next.js Shell
+
+Completed:
+
+- Created the initial Next.js App Router shell under `src/app`.
+- Added:
+  - `package.json`
+  - `package-lock.json`
+  - `next.config.js`
+  - `tsconfig.json`
+  - `next-env.d.ts`
+  - `src/app/layout.tsx`
+  - `src/app/page.tsx`
+  - `src/app/dashboard/page.tsx`
+  - `src/app/globals.css`
+- Updated `.gitignore` for Node/Next artifacts.
+- Kept GitHub Pages as the active beta line; this shell is only for the migration branch.
+
+Validation commands used:
+
+```bash
+npm install
+npm run build
+npm run typecheck
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+npm audit --omit=dev
+```
+
+Validation result:
+
+- `next build` passed with Next.js `16.2.6`.
+- `tsc --noEmit` passed.
+- Existing JS and Python regression tests passed.
+
+Errors / lessons:
+
+- The first `next build` failed because the initial `tsconfig.json` included all `**/*.ts` files, so TypeScript tried to check Supabase Edge Functions written for Deno. The fix was to scope Next TypeScript to `src/**/*.ts` and `src/**/*.tsx`, and exclude `supabase/functions`.
+- A concurrent `npm run build` and `npm run typecheck` produced a transient `.next/types` missing-file error. Run `next build` first, then `typecheck`, or avoid running those two in parallel.
+- `npm audit --omit=dev` reported 2 moderate vulnerabilities through `next -> postcss`, and suggested `npm audit fix --force`, which would install `next@9.3.3` as a breaking downgrade. Do not run that forced fix. Revisit after Next publishes a safe dependency update.
+
+Open follow-up:
+
+- Run the Next dev server locally when continuing UI work and verify `/` and `/dashboard`.
+- Next task is Task 3: move Supabase public config into environment variables and add shared Supabase client foundations.
