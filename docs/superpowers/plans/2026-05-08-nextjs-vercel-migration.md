@@ -1182,8 +1182,10 @@ Validation result:
   - `/stats`
   - `/timeline`
   - `/dashboard`
-- Vercel preview `dpl_J3uN2GWkupUEWbAdr374zaMpZKsc` returned `Ready`:
+- Vercel preview `dpl_J3uN2GWkupUEWbAdr374zaMpZKsc` returned `Ready` for the stats/timeline code deployment:
   - `https://analogdb-repo-el7zsoks5-arqdiegoperabeles-2865s-projects.vercel.app`
+- Stable branch alias for the latest `feature/nextjs-vercel-migration` preview:
+  - `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
 
 Errors / lessons:
 
