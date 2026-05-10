@@ -3,21 +3,11 @@ import { AccessGate } from "@/features/auth/access-gate";
 import { AccessStatus } from "@/features/auth/access-status";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
 import { SignOutButton } from "@/features/auth/sign-out-button";
-import { getRolls } from "@/features/rolls/queries";
-import { RollList } from "@/features/rolls/roll-list";
-import { normalizeRollSort, type RollFilters } from "@/features/rolls/roll-types";
-
-type DashboardPageProps = {
-  searchParams?: Promise<{
-    status?: string;
-    q?: string;
-    sort?: string;
-  }>;
-};
+import { RollForm } from "@/features/rolls/roll-form";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+export default async function NewRollPage() {
   const { state, profile } = await getCurrentAccessProfile();
 
   if (state === "public") {
@@ -58,40 +48,26 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     );
   }
 
-  const params = searchParams ? await searchParams : {};
-  const filters: RollFilters = {
-    status: params.status,
-    q: params.q,
-    sort: normalizeRollSort(params.sort)
-  };
-  const { rolls, error } = await getRolls();
-
   return (
     <main className="app-shell">
       <header className="topbar">
         <div className="brand">
           <span className="brand-name">Analog Archive</span>
-          <span className="brand-stage">Dashboard</span>
+          <span className="brand-stage">New roll</span>
         </div>
         <div className="actions">
-          <Link className="primary-action" href="/rolls/new">
-            Agregar rollo
+          <Link className="nav-link" href="/dashboard">
+            Dashboard
           </Link>
           <SignOutButton />
         </div>
       </header>
-
       <section className="workspace">
-        <div className="hero">
-          <div className="eyebrow">Migration preview</div>
-          <h1>Dashboard</h1>
-          <p className="lead">
-            {profile?.displayName || "Approved beta tester"}, this reads your existing GitHub Pages beta rolls from the
-            shared Supabase project.
-          </p>
+        <div className="hero compact-hero">
+          <div className="eyebrow">Write preview</div>
+          <h1>Nuevo rollo</h1>
         </div>
-
-        <RollList rolls={rolls} filters={filters} error={error} />
+        <RollForm />
       </section>
     </main>
   );

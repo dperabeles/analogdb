@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { deleteRollAction } from "@/features/rolls/actions";
 import { STATUS_LABELS, type RollListItem } from "@/features/rolls/roll-types";
 
 type RollDetailProps = {
@@ -21,7 +23,18 @@ export function RollDetail({ roll }: RollDetailProps) {
           <div className="eyebrow">Roll detail</div>
           <h1>{roll.code}</h1>
         </div>
-        <span className="roll-status">{STATUS_LABELS[roll.status] || roll.status}</span>
+        <div className="detail-actions">
+          <span className="roll-status">{STATUS_LABELS[roll.status] || roll.status}</span>
+          <Link className="secondary-action" href={`/rolls/${encodeURIComponent(roll.code)}/edit`}>
+            Editar
+          </Link>
+          <form action={deleteRollAction}>
+            <input name="code" type="hidden" value={roll.code} />
+            <button className="danger-action" type="submit">
+              Eliminar
+            </button>
+          </form>
+        </div>
       </header>
 
       <section className="detail-section">

@@ -282,7 +282,7 @@ Implement roll list, filters, sort, and detail view using backward-compatible qu
 
 Expected: data created from GitHub Pages appears in the Next.js preview.
 
-- [ ] **Step 3: Migrate roll write flows**
+- [x] **Step 3: Migrate roll write flows**
 
 Implement create/edit roll with the same fields currently supported by `analog-db-dashboard.html`.
 
@@ -798,4 +798,64 @@ Errors / lessons:
 Open follow-up:
 
 - After this branch deploys, browser-smoke the protected Preview with an approved tester session or a Vercel share URL.
-- Next task is Task 4 Step 3: migrate roll create/edit flows while keeping GitHub Pages compatibility.
+- Resolved in the next log entry: Task 4 Step 3 migrated initial roll create/edit flows while keeping GitHub Pages compatibility.
+
+### 2026-05-10: Next.js Roll Write Flows
+
+Completed:
+
+- Added read/write Server Actions for rolls:
+  - `saveRollAction`
+  - `deleteRollAction`
+- Added create route:
+  - `/rolls/new`
+- Added edit route:
+  - `/rolls/[code]/edit`
+- Added a shared `RollForm` for create/edit.
+- Added dashboard entry point to create a roll.
+- Added detail-page actions to edit or delete the current roll.
+- Expanded typed Supabase contracts for normalized write tables:
+  - `film_stocks`
+  - `labs`
+  - `rolls`
+- Preserved the GitHub Pages write contract:
+  - upsert `film_stocks` by `manufacturer,name`
+  - upsert `cameras` by `owner_user_id,maker,model`
+  - upsert `labs` by `name`
+  - upsert new `rolls` by `owner_user_id,code`
+  - update existing rolls by `owner_user_id + originalCode`
+- Kept exposure/frame settings out of this step. They remain readable through `FRAME SETTINGS`; editing them should be handled separately.
+
+Validation commands used:
+
+```bash
+node --test tests/next-roll-write-flows.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+npx --yes vercel env pull .env.local --environment=preview --git-branch feature/nextjs-vercel-migration --yes
+npm run dev -- --hostname 127.0.0.1 --port 3000
+curl -sS -I http://127.0.0.1:3000/rolls/new
+curl -sS -I http://127.0.0.1:3000/rolls/AA-TEST/edit
+```
+
+Validation result:
+
+- New roll write-flow static test passed.
+- `tsc --noEmit` passed.
+- `next build` passed and reported `/rolls/new` and `/rolls/[code]/edit` as dynamic.
+- Existing JS and Python regression tests passed.
+- Local smoke with Vercel Preview envs returned `200 OK` for `/rolls/new` and `/rolls/AA-TEST/edit`.
+
+Errors / lessons:
+
+- The first `update()` attempt reused the insert payload, but Supabase's generated types correctly reject insert-only fields such as `owner_user_id`, `id`, and `created_at` on updates. Split insert/update payloads before calling `.update(...)`.
+- The initial smoke test only validated unauthenticated rendering through the access gate. A real create/edit submit still needs an approved-session browser smoke test before treating this as tester-ready.
+- `next dev` again rewrote `next-env.d.ts`; restore it before committing.
+- Pulling Vercel envs creates `.env.local`; delete it after smoke tests because it can include a temporary `VERCEL_OIDC_TOKEN`.
+
+Open follow-up:
+
+- Browser-smoke create/edit/delete with an approved tester session on the protected Vercel Preview.
+- Next task is Task 4 Step 4: migrate admin flows after regular roll flows are verified.

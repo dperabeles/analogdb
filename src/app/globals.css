@@ -144,6 +144,17 @@ h1 {
   color: var(--muted);
 }
 
+.danger-action {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(255, 156, 130, 0.34);
+  background: transparent;
+  color: #ff9c82;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
 .status-grid {
   margin-top: 52px;
   display: grid;
@@ -455,6 +466,14 @@ h1 {
   gap: 20px;
 }
 
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 .detail-section {
   display: grid;
   gap: 14px;
@@ -502,6 +521,65 @@ h1 {
   line-height: 1.45;
 }
 
+.compact-hero {
+  margin-bottom: 32px;
+}
+
+.roll-form {
+  display: grid;
+  gap: 24px;
+}
+
+.form-section {
+  display: grid;
+  gap: 14px;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+
+.form-section h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.form-grid label,
+.textarea-field {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.form-grid input,
+.form-grid select,
+.textarea-field textarea {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  background: #221a15;
+  color: var(--text);
+  padding: 0 11px;
+}
+
+.textarea-field textarea {
+  min-height: 118px;
+  padding: 12px;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 @media (max-width: 720px) {
   .topbar {
     align-items: flex-start;
@@ -531,6 +609,7 @@ h1 {
   .roll-filters,
   .roll-card-grid,
   .detail-grid,
+  .form-grid,
   .status-strip {
     grid-template-columns: 1fr;
   }

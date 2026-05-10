@@ -1,24 +1,24 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { AccessGate } from "@/features/auth/access-gate";
 import { AccessStatus } from "@/features/auth/access-status";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
 import { SignOutButton } from "@/features/auth/sign-out-button";
-import { getRolls } from "@/features/rolls/queries";
-import { RollList } from "@/features/rolls/roll-list";
-import { normalizeRollSort, type RollFilters } from "@/features/rolls/roll-types";
+import { getRollByCode } from "@/features/rolls/queries";
+import { RollForm } from "@/features/rolls/roll-form";
 
-type DashboardPageProps = {
-  searchParams?: Promise<{
-    status?: string;
-    q?: string;
-    sort?: string;
+type EditRollPageProps = {
+  params: Promise<{
+    code: string;
   }>;
 };
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+export default async function EditRollPage({ params }: EditRollPageProps) {
   const { state, profile } = await getCurrentAccessProfile();
+  const { code } = await params;
+  const decodedCode = decodeURIComponent(code);
 
   if (state === "public") {
     return (
@@ -58,40 +58,26 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     );
   }
 
-  const params = searchParams ? await searchParams : {};
-  const filters: RollFilters = {
-    status: params.status,
-    q: params.q,
-    sort: normalizeRollSort(params.sort)
-  };
-  const { rolls, error } = await getRolls();
+  const { roll, error } = await getRollByCode(decodedCode);
+  if (!roll && !error) notFound();
 
   return (
     <main className="app-shell">
       <header className="topbar">
         <div className="brand">
           <span className="brand-name">Analog Archive</span>
-          <span className="brand-stage">Dashboard</span>
+          <span className="brand-stage">Edit roll</span>
         </div>
         <div className="actions">
-          <Link className="primary-action" href="/rolls/new">
-            Agregar rollo
+          <Link className="nav-link" href={`/rolls/${encodeURIComponent(decodedCode)}`}>
+            Detail
           </Link>
           <SignOutButton />
         </div>
       </header>
-
       <section className="workspace">
-        <div className="hero">
-          <div className="eyebrow">Migration preview</div>
-          <h1>Dashboard</h1>
-          <p className="lead">
-            {profile?.displayName || "Approved beta tester"}, this reads your existing GitHub Pages beta rolls from the
-            shared Supabase project.
-          </p>
-        </div>
-
-        <RollList rolls={rolls} filters={filters} error={error} />
+        {error ? <p className="auth-message auth-message-error">No se pudo cargar el roll: {error}</p> : null}
+        {roll ? <RollForm roll={roll} /> : null}
       </section>
     </main>
   );

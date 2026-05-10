@@ -9,6 +9,46 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      film_stocks: {
+        Row: {
+          id: number;
+          manufacturer: string;
+          name: string;
+          iso: number | null;
+          type: "COLOR" | "B/W" | "SLIDE" | null;
+          in_catalog: boolean | null;
+        };
+        Insert: {
+          id?: number;
+          manufacturer: string;
+          name: string;
+          iso?: number | null;
+          type?: "COLOR" | "B/W" | "SLIDE" | null;
+          in_catalog?: boolean | null;
+        };
+        Update: {
+          manufacturer?: string;
+          name?: string;
+          iso?: number | null;
+          type?: "COLOR" | "B/W" | "SLIDE" | null;
+          in_catalog?: boolean | null;
+        };
+        Relationships: [];
+      };
+      labs: {
+        Row: {
+          id: number;
+          name: string;
+        };
+        Insert: {
+          id?: number;
+          name: string;
+        };
+        Update: {
+          name?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           user_id: string;
@@ -107,9 +147,26 @@ export type Database = {
         Row: {
           id: number;
           code: string;
+          film_stock_id: number | null;
+          iso_pushed: number | null;
+          format: number | null;
+          exp_count: number | null;
+          exp_taken: number | null;
+          fresh: boolean | null;
+          push_pull: string | null;
           camera_id: number | null;
           lens_id: number | null;
           lens: string | null;
+          locations: string[] | null;
+          photo_types: string[] | null;
+          tags: string[] | null;
+          started: string | null;
+          finished: string | null;
+          status: string | null;
+          dev_lab_id: number | null;
+          scan_lab_id: number | null;
+          rating: number | null;
+          notes: string | null;
           owner_user_id: string;
           created_at: string | null;
           updated_at: string | null;
@@ -117,18 +174,52 @@ export type Database = {
         Insert: {
           id?: number;
           code: string;
+          film_stock_id?: number | null;
+          iso_pushed?: number | null;
+          format?: number | null;
+          exp_count?: number | null;
+          exp_taken?: number | null;
+          fresh?: boolean | null;
+          push_pull?: string | null;
           camera_id?: number | null;
           lens_id?: number | null;
           lens?: string | null;
+          locations?: string[] | null;
+          photo_types?: string[] | null;
+          tags?: string[] | null;
+          started?: string | null;
+          finished?: string | null;
+          status?: string | null;
+          dev_lab_id?: number | null;
+          scan_lab_id?: number | null;
+          rating?: number | null;
+          notes?: string | null;
           owner_user_id: string;
           created_at?: string | null;
           updated_at?: string | null;
         };
         Update: {
           code?: string;
+          film_stock_id?: number | null;
+          iso_pushed?: number | null;
+          format?: number | null;
+          exp_count?: number | null;
+          exp_taken?: number | null;
+          fresh?: boolean | null;
+          push_pull?: string | null;
           camera_id?: number | null;
           lens_id?: number | null;
           lens?: string | null;
+          locations?: string[] | null;
+          photo_types?: string[] | null;
+          tags?: string[] | null;
+          started?: string | null;
+          finished?: string | null;
+          status?: string | null;
+          dev_lab_id?: number | null;
+          scan_lab_id?: number | null;
+          rating?: number | null;
+          notes?: string | null;
           updated_at?: string | null;
         };
         Relationships: [];
