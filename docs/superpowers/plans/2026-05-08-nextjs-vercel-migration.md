@@ -930,6 +930,7 @@ npx --yes vercel env pull .env.local --environment=preview --git-branch feature/
 npm run dev -- --hostname 127.0.0.1 --port 3000
 curl -sS -I http://127.0.0.1:3000/admin
 curl -sS http://127.0.0.1:3000/admin
+npx --yes vercel inspect https://analogdb-repo-6o2hndcp5-arqdiegoperabeles-2865s-projects.vercel.app --wait --timeout 120s
 ```
 
 Validation result:
@@ -940,6 +941,9 @@ Validation result:
 - Existing JS and Python regression tests passed.
 - Local smoke with Vercel Preview envs returned `200 OK` for `/admin`.
 - Unauthenticated `/admin` smoke rendered the access gate instead of crashing.
+- Vercel preview `dpl_8CZ2vrPW3EJuwPkCiyReDFLuZmwG` returned `Ready`:
+  - `https://analogdb-repo-6o2hndcp5-arqdiegoperabeles-2865s-projects.vercel.app`
+- Vercel build output included dynamic route assets for `admin` and `admin.rsc`.
 
 Errors / lessons:
 
