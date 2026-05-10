@@ -1077,6 +1077,7 @@ npx --yes vercel env pull .env.local --environment=preview --git-branch feature/
 npm run dev -- --hostname 127.0.0.1 --port 3000
 curl -sS -I http://127.0.0.1:3000/equipment
 curl -sS -I http://127.0.0.1:3000/dashboard
+npx --yes vercel inspect https://analogdb-repo-gpkzc5bpn-arqdiegoperabeles-2865s-projects.vercel.app --wait --timeout 120s
 ```
 
 Validation result:
@@ -1086,6 +1087,8 @@ Validation result:
 - `next build` passed and reported `/equipment` as dynamic.
 - Existing JS and Python regression tests passed.
 - Local smoke with Vercel Preview envs returned `200 OK` for `/equipment` and `/dashboard`.
+- Vercel preview `dpl_48irz7f6wKj4y1heAJpboaRwLpV8` returned `Ready`:
+  - `https://analogdb-repo-gpkzc5bpn-arqdiegoperabeles-2865s-projects.vercel.app`
 
 Errors / lessons:
 
