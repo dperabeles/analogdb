@@ -859,5 +859,31 @@ Errors / lessons:
 
 Open follow-up:
 
-- Browser-smoke create/edit/delete with an approved tester session on the protected Vercel Preview.
+- Resolved in the next log entry: browser-smoke create/edit flows with an approved tester session on Vercel Preview and GitHub Pages.
 - Next task is Task 4 Step 4: migrate admin flows after regular roll flows are verified.
+
+### 2026-05-10: Real Account Roll Write Smoke
+
+Completed:
+
+- User validated roll write flows with a real approved account.
+- Confirmed changes made through the GitHub Pages beta are reflected in the Vercel/Next.js deployment.
+- Confirmed changes made through the Vercel/Next.js deployment are reflected in the GitHub Pages beta.
+- Tested with multiple rolls, not just a single smoke record.
+- Confirmed the shared Supabase backend is behaving as intended during the parallel migration period.
+
+Validation result:
+
+- Roll create/edit data now has real cross-frontend confirmation.
+- Task 4 Step 3 can be treated as validated with an approved-session browser smoke.
+
+Errors / lessons:
+
+- Local unauthenticated smoke checks were useful for route stability, but they were not enough to prove write compatibility.
+- For shared-backend migration tasks, always validate both directions:
+  - GitHub Pages writes visible in Vercel/Next.js.
+  - Vercel/Next.js writes visible in GitHub Pages.
+
+Open follow-up:
+
+- Continue with Task 4 Step 4: migrate admin flows into Next.js.
