@@ -957,3 +957,78 @@ Open follow-up:
 
 - After Vercel deploys this commit, smoke `/admin` with a real founder/admin session before using the Next admin panel for live approvals.
 - Next migration task is Task 5: cutover readiness and parity checklist. Camera flows, stats/timeline views, mobile layout, and real admin-session validation remain outside the completed admin slice.
+
+### 2026-05-10: Cutover Readiness Parity Audit
+
+Completed:
+
+- Started Task 5 Step 1 parity checklist.
+- Audited current Next.js routes and feature modules against the cutover checklist.
+- Confirmed the current Next.js route surface includes:
+  - `/`
+  - `/dashboard`
+  - `/forgot-password`
+  - `/reset-password`
+  - `/rolls/new`
+  - `/rolls/[code]`
+  - `/rolls/[code]/edit`
+  - `/admin`
+- Confirmed GitHub Pages remains the stable beta line while this parity audit is incomplete.
+
+Parity checklist status:
+
+```text
+login/logout: covered by Next auth gate and SignOutButton; needs real browser smoke on latest preview.
+signup pending state: covered by Next signup and pending access status; needs real browser smoke on latest preview.
+password recovery: covered by clean Next routes; earlier custom-domain smoke passed, but latest preview should be rechecked before tester expansion.
+roll list: covered and previously validated with shared Supabase data.
+roll create/edit: covered and validated by user with multiple real rolls across GitHub Pages and Vercel/Next.js.
+camera flows: not at parity yet. Next can upsert a camera during roll save, but there is no dedicated camera/equipment management UI.
+stats/timeline views: not migrated yet.
+admin approval/rejection/reactivation: implemented in Next, but still needs real founder/admin-session browser smoke before live admin use.
+mobile layout: responsive CSS exists for current Next pages, but the legacy mobile-specific equipment/detail/admin UX is not fully migrated or browser-verified.
+```
+
+Validation commands used:
+
+```bash
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+npx --yes vercel env pull .env.local --environment=preview --git-branch feature/nextjs-vercel-migration --yes
+npm run dev -- --hostname 127.0.0.1 --port 3000
+curl -sS -I http://127.0.0.1:3000/
+curl -sS -I http://127.0.0.1:3000/dashboard
+curl -sS -I http://127.0.0.1:3000/forgot-password
+curl -sS -I http://127.0.0.1:3000/reset-password
+curl -sS -I http://127.0.0.1:3000/rolls/new
+curl -sS -I http://127.0.0.1:3000/admin
+```
+
+Validation result:
+
+- `tsc --noEmit` passed.
+- `next build` passed.
+- Existing JS regression tests passed.
+- Existing Python regression tests passed.
+- Local smoke with Vercel Preview envs returned `200 OK` for:
+  - `/`
+  - `/dashboard`
+  - `/forgot-password`
+  - `/reset-password`
+  - `/rolls/new`
+  - `/admin`
+- `Task 5 Step 1` remains unchecked because the checklist is not fully at parity yet.
+
+Errors / lessons:
+
+- Do not mark cutover readiness complete just because core auth/roll/admin routes build. Camera/equipment management, stats/timeline, mobile parity, and real admin-session smoke are still blockers.
+- During local smoke, one direct `curl` GET to `/dashboard` failed immediately after successful HEAD checks, while the Next dev server continued running and logged successful route responses. Treat the HEAD checks and server logs as the useful local smoke evidence here; use browser-level smoke for final parity decisions.
+- `next dev` again rewrote `next-env.d.ts`; restore it before committing.
+- Pulling Vercel envs created `.env.local`; it was deleted after smoke because it can include a temporary `VERCEL_OIDC_TOKEN`.
+
+Open follow-up:
+
+- Next implementation slice should be dedicated camera/equipment management in Next.js before the cutover checklist can move materially closer to completion.
+- After camera/equipment, migrate stats/timeline views and run browser-level mobile verification.
