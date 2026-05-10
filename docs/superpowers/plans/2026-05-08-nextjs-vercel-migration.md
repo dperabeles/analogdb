@@ -1131,3 +1131,70 @@ Open follow-up:
   - create/edit lens in Next and confirm GitHub Pages sees it
   - hide/remove equipment in Next and confirm roll history remains intact
 - Next implementation slice after equipment smoke should be stats/timeline views.
+
+### 2026-05-10: Next.js Stats And Timeline Views
+
+Completed:
+
+- Added protected `/stats` route in Next.js.
+- Added protected `/timeline` route in Next.js.
+- Added shared analytics query layer that reuses the existing `getRolls()` read flow.
+- Added stats sections for:
+  - total roll counters
+  - film type
+  - format
+  - film stock leaders
+  - lab leaders
+  - camera leaders
+  - locations
+  - photo categories
+  - tags
+- Added timeline grouping by effective roll date:
+  - `finished` date first
+  - `started` date fallback
+  - `Sin fecha` group for undated rolls
+- Added dashboard navigation links to `/stats` and `/timeline`.
+- Added responsive CSS for analytics lists and timeline rows.
+- Added regression coverage in `tests/next-stats-timeline-flows.test.js`.
+
+Validation commands used:
+
+```bash
+node --test tests/next-stats-timeline-flows.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+npx --yes vercel env pull .env.local --environment=preview --git-branch feature/nextjs-vercel-migration --yes
+npm run dev -- --hostname 127.0.0.1 --port 3000
+curl -sS -I http://127.0.0.1:3000/stats
+curl -sS -I http://127.0.0.1:3000/timeline
+curl -sS -I http://127.0.0.1:3000/dashboard
+```
+
+Validation result:
+
+- New stats/timeline static test passed.
+- `tsc --noEmit` passed.
+- `next build` passed and reported `/stats` and `/timeline` as dynamic routes.
+- Existing JS and Python regression tests passed.
+- Local smoke with Vercel Preview envs returned `200 OK` for:
+  - `/stats`
+  - `/timeline`
+  - `/dashboard`
+
+Errors / lessons:
+
+- The first stats/timeline RED test correctly failed because `/stats` and `/timeline` did not exist yet.
+- This slice is read-only analytics over the shared Supabase backend through `rolls_flat`; it should not affect beta data writes.
+- Browser-level and mobile visual QA are still required before treating stats/timeline as cutover-ready.
+- `next dev` again rewrote `next-env.d.ts`; restore it before committing.
+- Pulling Vercel envs created `.env.local`; it was deleted after smoke because it can include a temporary `VERCEL_OIDC_TOKEN`.
+
+Open follow-up:
+
+- Push branch and wait for the Vercel preview deployment.
+- Run real approved-account browser smoke for `/stats` and `/timeline`.
+- Continue pending equipment smoke:
+  - create/edit lens in Next and confirm GitHub Pages sees it
+  - hide/remove equipment in Next and confirm roll history remains intact
