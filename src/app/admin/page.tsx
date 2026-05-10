@@ -1,23 +1,14 @@
 import Link from "next/link";
+import { AdminPanel } from "@/features/admin/admin-panel";
+import { getAdminOverview } from "@/features/admin/queries";
 import { AccessGate } from "@/features/auth/access-gate";
 import { AccessStatus } from "@/features/auth/access-status";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
 import { SignOutButton } from "@/features/auth/sign-out-button";
-import { getRolls } from "@/features/rolls/queries";
-import { RollList } from "@/features/rolls/roll-list";
-import { normalizeRollSort, type RollFilters } from "@/features/rolls/roll-types";
-
-type DashboardPageProps = {
-  searchParams?: Promise<{
-    status?: string;
-    q?: string;
-    sort?: string;
-  }>;
-};
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+export default async function AdminPage() {
   const { state, profile } = await getCurrentAccessProfile();
 
   if (state === "public") {
@@ -58,45 +49,56 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     );
   }
 
-  const params = searchParams ? await searchParams : {};
-  const filters: RollFilters = {
-    status: params.status,
-    q: params.q,
-    sort: normalizeRollSort(params.sort)
-  };
-  const { rolls, error } = await getRolls();
+  if (profile?.role !== "admin") {
+    return (
+      <main className="app-shell">
+        <header className="topbar">
+          <div className="brand">
+            <span className="brand-name">Analog Archive</span>
+            <span className="brand-stage">Admin</span>
+          </div>
+          <div className="actions">
+            <Link className="nav-link" href="/dashboard">
+              Dashboard
+            </Link>
+            <SignOutButton />
+          </div>
+        </header>
+        <section className="workspace auth-workspace">
+          <div className="auth-status">
+            <div className="eyebrow">Admin required</div>
+            <h1>Sin acceso admin</h1>
+            <p className="lead">Tu cuenta esta aprobada, pero no tiene permisos de administracion.</p>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  const overview = await getAdminOverview();
 
   return (
     <main className="app-shell">
       <header className="topbar">
         <div className="brand">
           <span className="brand-name">Analog Archive</span>
-          <span className="brand-stage">Dashboard</span>
+          <span className="brand-stage">Admin</span>
         </div>
         <div className="actions">
-          {profile?.role === "admin" ? (
-            <Link className="nav-link" href="/admin">
-              Admin
-            </Link>
-          ) : null}
-          <Link className="primary-action" href="/rolls/new">
-            Agregar rollo
+          <Link className="nav-link" href="/dashboard">
+            Dashboard
           </Link>
           <SignOutButton />
         </div>
       </header>
 
       <section className="workspace">
-        <div className="hero">
-          <div className="eyebrow">Migration preview</div>
-          <h1>Dashboard</h1>
-          <p className="lead">
-            {profile?.displayName || "Approved beta tester"}, this reads your existing GitHub Pages beta rolls from the
-            shared Supabase project.
-          </p>
+        <div className="hero compact-hero">
+          <div className="eyebrow">Founder workflow</div>
+          <h1>Admin</h1>
+          <p className="lead">Aprobacion de usuarios, reactivacion de rechazados y votacion de cambios de rol.</p>
         </div>
-
-        <RollList rolls={rolls} filters={filters} error={error} />
+        <AdminPanel overview={overview} />
       </section>
     </main>
   );

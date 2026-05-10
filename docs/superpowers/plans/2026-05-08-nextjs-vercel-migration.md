@@ -288,13 +288,13 @@ Implement create/edit roll with the same fields currently supported by `analog-d
 
 Expected: records created in Next.js remain visible and editable in GitHub Pages.
 
-- [ ] **Step 4: Migrate admin flows**
+- [x] **Step 4: Migrate admin flows**
 
 Implement pending/rejected/approved profile management after regular user flows are stable.
 
 Expected: founder/admin workflows remain available before GitHub Pages is retired.
 
-- [ ] **Step 5: Commit each migrated feature separately**
+- [x] **Step 5: Commit each migrated feature separately**
 
 Use commit messages like:
 
@@ -887,3 +887,69 @@ Errors / lessons:
 Open follow-up:
 
 - Continue with Task 4 Step 4: migrate admin flows into Next.js.
+
+### 2026-05-10: Next.js Admin Flows
+
+Completed:
+
+- Migrated the admin panel into Next.js under `/admin`.
+- Added admin overview queries for:
+  - pending profiles
+  - approved profiles
+  - rejected profiles
+  - admin roster
+  - admin actions
+- Added Server Actions that reuse the existing legacy Supabase RPC contract:
+  - `admin_set_profile_status`
+  - `request_admin_action`
+  - `cast_admin_action_vote`
+- Added UI controls for:
+  - approve pending user
+  - reject pending user
+  - reactivate rejected user back to pending
+  - request admin promotion
+  - request admin downgrade for non-founder admins
+  - vote approve/reject on pending admin actions
+- Added an Admin link in the Next dashboard only when the current approved profile has `role = admin`.
+- Expanded typed Supabase contracts for:
+  - `user_roles`
+  - `admin_actions`
+  - `admin_action_approvals`
+  - admin RPCs
+- Added regression coverage in `tests/next-admin-flows.test.js`.
+
+Validation commands used:
+
+```bash
+node --test tests/next-admin-flows.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+npx --yes vercel env pull .env.local --environment=preview --git-branch feature/nextjs-vercel-migration --yes
+npm run dev -- --hostname 127.0.0.1 --port 3000
+curl -sS -I http://127.0.0.1:3000/admin
+curl -sS http://127.0.0.1:3000/admin
+```
+
+Validation result:
+
+- New admin-flow static test passed.
+- `tsc --noEmit` passed.
+- `next build` passed and reported `/admin` as dynamic.
+- Existing JS and Python regression tests passed.
+- Local smoke with Vercel Preview envs returned `200 OK` for `/admin`.
+- Unauthenticated `/admin` smoke rendered the access gate instead of crashing.
+
+Errors / lessons:
+
+- The first admin-flow RED test correctly failed because `/admin` did not exist yet.
+- The first implementation hid explicit profile status queries behind a helper, which made the static contract less auditable. Keep admin status queries explicit while this migration is still being reviewed.
+- One early static assertion expected literal hidden-input values, but the implementation correctly passed status values through a reusable component prop. The assertion was adjusted to test the actual source contract.
+- `next dev` again rewrote `next-env.d.ts`; restore it to `.next/types/routes.d.ts` before committing.
+- Pulling Vercel envs created `.env.local`; it was deleted after smoke because it can include a temporary `VERCEL_OIDC_TOKEN`.
+
+Open follow-up:
+
+- After Vercel deploys this commit, smoke `/admin` with a real founder/admin session before using the Next admin panel for live approvals.
+- Next migration task is Task 5: cutover readiness and parity checklist. Camera flows, stats/timeline views, mobile layout, and real admin-session validation remain outside the completed admin slice.

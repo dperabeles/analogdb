@@ -7,6 +7,8 @@ export type AccessProfile = {
   email: string;
   displayName: string | null;
   status: AccessState;
+  role: "user" | "admin" | null;
+  isFounder: boolean;
 };
 
 export async function getCurrentAccessProfile() {
@@ -35,13 +37,21 @@ export async function getCurrentAccessProfile() {
     return { state: "invalid" as const, profile: null };
   }
 
+  const { data: role } = await supabase
+    .from("user_roles")
+    .select("role,is_founder")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
   return {
     state,
     profile: {
       userId: profile.user_id,
       email: profile.email,
       displayName: profile.display_name,
-      status: state
+      status: state,
+      role: role?.role ?? null,
+      isFounder: role?.is_founder ?? false
     } satisfies AccessProfile
   };
 }
