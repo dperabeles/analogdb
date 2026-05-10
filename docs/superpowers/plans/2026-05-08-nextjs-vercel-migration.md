@@ -1182,6 +1182,8 @@ Validation result:
   - `/stats`
   - `/timeline`
   - `/dashboard`
+- Vercel preview `dpl_J3uN2GWkupUEWbAdr374zaMpZKsc` returned `Ready`:
+  - `https://analogdb-repo-el7zsoks5-arqdiegoperabeles-2865s-projects.vercel.app`
 
 Errors / lessons:
 
@@ -1193,7 +1195,6 @@ Errors / lessons:
 
 Open follow-up:
 
-- Push branch and wait for the Vercel preview deployment.
 - Run real approved-account browser smoke for `/stats` and `/timeline`.
 - Continue pending equipment smoke:
   - create/edit lens in Next and confirm GitHub Pages sees it
