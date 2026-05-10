@@ -1100,8 +1100,34 @@ Errors / lessons:
 
 Open follow-up:
 
-- After Vercel deploys this commit, smoke `/equipment` with a real approved account:
-  - create/edit camera in Next and confirm GitHub Pages sees it
+- Resolved in the next log entry: real approved-account smoke for camera create/edit across Vercel/Next.js and GitHub Pages.
+- Still pending: lens create/edit smoke and hide/remove equipment smoke.
+- Next implementation slice after equipment smoke should be stats/timeline views.
+
+### 2026-05-10: Real Account Equipment Camera Smoke
+
+Completed:
+
+- User validated camera equipment writes with a real approved account.
+- Confirmed cameras added through Vercel/Next.js are reflected in GitHub Pages.
+- Confirmed cameras added through GitHub Pages are reflected in Vercel/Next.js.
+- Confirmed the shared Supabase backend is behaving correctly for camera equipment during the parallel migration period.
+
+Validation result:
+
+- Camera create/sync path now has real cross-frontend confirmation.
+- Equipment management is closer to cutover parity, but the full equipment checklist is not complete until lenses and hide/remove behavior are smoke-tested too.
+
+Errors / lessons:
+
+- Equipment parity needs per-entity validation. Camera sync passing does not automatically prove lens sync or safe hide/remove behavior.
+- For migration slices that write shared data, keep validating both directions:
+  - GitHub Pages writes visible in Vercel/Next.js.
+  - Vercel/Next.js writes visible in GitHub Pages.
+
+Open follow-up:
+
+- Run real approved-account smoke for:
   - create/edit lens in Next and confirm GitHub Pages sees it
   - hide/remove equipment in Next and confirm roll history remains intact
 - Next implementation slice after equipment smoke should be stats/timeline views.
