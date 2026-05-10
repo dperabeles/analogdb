@@ -785,6 +785,8 @@ Validation result:
 - Existing JS and Python regression tests passed.
 - Local smoke with Vercel Preview envs returned `200 OK` for `/dashboard`.
 - Local smoke for `/rolls/AA-TEST` returned `200 OK` to the public access gate when unauthenticated, confirming the protected route renders instead of crashing.
+- Vercel preview `dpl_4rUNHPcQP9xVnC6erWYXJaQ2ZhpK` returned `Ready`:
+  - `https://analogdb-repo-4ozqr1xbu-arqdiegoperabeles-2865s-projects.vercel.app`
 
 Errors / lessons:
 
