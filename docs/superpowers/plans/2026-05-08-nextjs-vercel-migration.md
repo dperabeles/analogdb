@@ -847,6 +847,8 @@ Validation result:
 - `next build` passed and reported `/rolls/new` and `/rolls/[code]/edit` as dynamic.
 - Existing JS and Python regression tests passed.
 - Local smoke with Vercel Preview envs returned `200 OK` for `/rolls/new` and `/rolls/AA-TEST/edit`.
+- Vercel preview `dpl_thxHZkndz97PpADGMLTDt4kWu3Tj` returned `Ready`:
+  - `https://analogdb-repo-96cbj7e2r-arqdiegoperabeles-2865s-projects.vercel.app`
 
 Errors / lessons:
 
