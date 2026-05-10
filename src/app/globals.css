@@ -697,6 +697,98 @@ h1 {
   color: var(--accent-strong);
 }
 
+.equipment-panel {
+  display: grid;
+  gap: 34px;
+}
+
+.equipment-section {
+  display: grid;
+  gap: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.equipment-card {
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+  border: 1px solid var(--line);
+  background: rgba(32, 25, 20, 0.52);
+  padding: 18px;
+}
+
+.equipment-card-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.equipment-card h3 {
+  margin: 6px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.equipment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.equipment-meta span {
+  border: 1px solid var(--line);
+  color: var(--muted);
+  padding: 5px 8px;
+  font-size: 11px;
+}
+
+.equipment-form {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.equipment-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.equipment-form input,
+.equipment-form select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  background: #221a15;
+  color: var(--text);
+  padding: 0 11px;
+}
+
+.checkbox-field {
+  min-height: 42px;
+  display: flex !important;
+  align-items: center;
+  gap: 9px !important;
+  border: 1px solid var(--line);
+  padding: 0 11px;
+}
+
+.checkbox-field input {
+  width: auto;
+  min-height: 0;
+}
+
 @media (max-width: 720px) {
   .topbar {
     align-items: flex-start;
@@ -728,6 +820,8 @@ h1 {
   .detail-grid,
   .form-grid,
   .admin-panel,
+  .equipment-grid,
+  .equipment-form,
   .status-strip {
     grid-template-columns: 1fr;
   }

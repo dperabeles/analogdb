@@ -1,0 +1,67 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+
+const root = path.join(__dirname, '..');
+
+function read(filePath) {
+  return fs.readFileSync(path.join(root, filePath), 'utf8');
+}
+
+function assertFile(filePath) {
+  assert.ok(fs.existsSync(path.join(root, filePath)), `${filePath} should exist`);
+}
+
+function assertIncludes(source, needle, message) {
+  assert.ok(source.includes(needle), message || `Expected to find ${needle}`);
+}
+
+[
+  'src/app/equipment/page.tsx',
+  'src/features/equipment/actions.ts',
+  'src/features/equipment/queries.ts',
+  'src/features/equipment/equipment-panel.tsx'
+].forEach(assertFile);
+
+const queries = read('src/features/equipment/queries.ts');
+assertIncludes(queries, 'getEquipmentOverview', 'equipment queries should expose getEquipmentOverview');
+assertIncludes(queries, 'from("cameras")', 'equipment overview should load user cameras');
+assertIncludes(queries, 'from("lenses")', 'equipment overview should load user lenses');
+assertIncludes(queries, 'from("rolls")', 'equipment overview should load roll references for safe delete/usage');
+assertIncludes(queries, 'owner_user_id', 'equipment reads should stay scoped to the current owner');
+
+const actions = read('src/features/equipment/actions.ts');
+assertIncludes(actions, '"use server"', 'equipment mutations should run as Server Actions');
+assertIncludes(actions, 'saveCameraAction', 'equipment flow should expose camera save mutation');
+assertIncludes(actions, 'saveLensAction', 'equipment flow should expose lens save mutation');
+assertIncludes(actions, 'removeCameraAction', 'equipment flow should expose camera remove mutation');
+assertIncludes(actions, 'removeLensAction', 'equipment flow should expose lens remove mutation');
+assertIncludes(actions, 'from("cameras")', 'camera mutations should use the cameras table');
+assertIncludes(actions, 'from("lenses")', 'lens mutations should use the lenses table');
+assertIncludes(actions, 'from("rolls")', 'remove actions should inspect roll references first');
+assertIncludes(actions, '.delete()', 'unused equipment should be deletable');
+assertIncludes(actions, 'show_in_quick_mode: false', 'referenced equipment should be hidden instead of breaking history');
+assertIncludes(actions, 'revalidatePath("/equipment")', 'equipment mutations should invalidate equipment view');
+
+const panel = read('src/features/equipment/equipment-panel.tsx');
+assertIncludes(panel, 'Camaras', 'equipment panel should render camera section');
+assertIncludes(panel, 'Lentes', 'equipment panel should render lens section');
+assertIncludes(panel, 'name="maker"', 'equipment forms should capture maker');
+assertIncludes(panel, 'name="model"', 'equipment forms should capture model');
+assertIncludes(panel, 'name="mount"', 'equipment forms should capture mount');
+assertIncludes(panel, 'name="showInQuickMode"', 'equipment forms should control quick-mode visibility');
+assertIncludes(panel, 'name="supportsInterchangeableLenses"', 'camera forms should control integrated vs interchangeable lens bodies');
+assertIncludes(panel, 'saveCameraAction', 'camera forms should submit through saveCameraAction');
+assertIncludes(panel, 'saveLensAction', 'lens forms should submit through saveLensAction');
+assertIncludes(panel, 'removeCameraAction', 'camera cards should expose remove/hide action');
+assertIncludes(panel, 'removeLensAction', 'lens cards should expose remove/hide action');
+
+const page = read('src/app/equipment/page.tsx');
+assertIncludes(page, 'getCurrentAccessProfile', 'equipment route should use the same auth gate as protected routes');
+assertIncludes(page, 'getEquipmentOverview', 'equipment route should load equipment overview data');
+assertIncludes(page, '<EquipmentPanel', 'equipment route should render the equipment panel');
+
+const dashboard = read('src/app/dashboard/page.tsx');
+assertIncludes(dashboard, 'href="/equipment"', 'dashboard should expose equipment management');
+
+console.log('next equipment flow static checks passed');

@@ -983,7 +983,7 @@ signup pending state: covered by Next signup and pending access status; needs re
 password recovery: covered by clean Next routes; earlier custom-domain smoke passed, but latest preview should be rechecked before tester expansion.
 roll list: covered and previously validated with shared Supabase data.
 roll create/edit: covered and validated by user with multiple real rolls across GitHub Pages and Vercel/Next.js.
-camera flows: not at parity yet. Next can upsert a camera during roll save, but there is no dedicated camera/equipment management UI.
+camera flows: partially covered after the Equipment slice. Next now has dedicated camera/lens management, but still needs real approved-session browser smoke against Vercel and GitHub Pages.
 stats/timeline views: not migrated yet.
 admin approval/rejection/reactivation: implemented in Next, but still needs real founder/admin-session browser smoke before live admin use.
 mobile layout: responsive CSS exists for current Next pages, but the legacy mobile-specific equipment/detail/admin UX is not fully migrated or browser-verified.
@@ -1030,5 +1030,75 @@ Errors / lessons:
 
 Open follow-up:
 
-- Next implementation slice should be dedicated camera/equipment management in Next.js before the cutover checklist can move materially closer to completion.
-- After camera/equipment, migrate stats/timeline views and run browser-level mobile verification.
+- Resolved in the next log entry: dedicated camera/equipment management in Next.js.
+- After equipment real-session smoke, migrate stats/timeline views and run browser-level mobile verification.
+
+### 2026-05-10: Next.js Equipment Management
+
+Completed:
+
+- Added dedicated `/equipment` route in Next.js.
+- Added server-side equipment overview queries for:
+  - user cameras
+  - user lenses
+  - roll references for usage counts and safe removal behavior
+- Added Server Actions for:
+  - `saveCameraAction`
+  - `saveLensAction`
+  - `removeCameraAction`
+  - `removeLensAction`
+- Added UI for:
+  - creating cameras
+  - editing cameras
+  - creating lenses
+  - editing lenses
+  - quick-mode visibility toggles
+  - interchangeable-lens vs integrated-lens camera setting
+  - removing unused equipment
+  - hiding referenced equipment from quick mode instead of breaking roll history
+- Added dashboard link to `/equipment` for approved users.
+- Added responsive Equipment CSS for current desktop/mobile breakpoints.
+- Added regression coverage in `tests/next-equipment-flows.test.js`.
+
+Safe delete behavior:
+
+- If a camera/lens is not referenced by any roll, the Next action deletes it from the user's private equipment table.
+- If a camera/lens is referenced by existing rolls, the Next action sets `show_in_quick_mode: false` instead of deleting it. This keeps historical rolls intact while removing unwanted equipment from quick-add surfaces.
+
+Validation commands used:
+
+```bash
+node --test tests/next-equipment-flows.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+npx --yes vercel env pull .env.local --environment=preview --git-branch feature/nextjs-vercel-migration --yes
+npm run dev -- --hostname 127.0.0.1 --port 3000
+curl -sS -I http://127.0.0.1:3000/equipment
+curl -sS -I http://127.0.0.1:3000/dashboard
+```
+
+Validation result:
+
+- New equipment-flow static test passed.
+- `tsc --noEmit` passed.
+- `next build` passed and reported `/equipment` as dynamic.
+- Existing JS and Python regression tests passed.
+- Local smoke with Vercel Preview envs returned `200 OK` for `/equipment` and `/dashboard`.
+
+Errors / lessons:
+
+- The first equipment-flow RED test correctly failed because `/equipment` did not exist yet.
+- TypeScript rejected reusing `Insert` payloads for equipment updates because optional insert-only fields like `id` and `created_at` can leak into `.update(...)`. Split camera/lens update payloads explicitly.
+- Safe delete needs roll-reference awareness. Deleting referenced equipment would preserve DB integrity because `rolls.camera_id` and `rolls.lens_id` use `on delete set null`, but it would still erase useful history context from the user experience.
+- `next dev` again rewrote `next-env.d.ts`; restore it before committing.
+- Pulling Vercel envs created `.env.local`; it was deleted after smoke because it can include a temporary `VERCEL_OIDC_TOKEN`.
+
+Open follow-up:
+
+- After Vercel deploys this commit, smoke `/equipment` with a real approved account:
+  - create/edit camera in Next and confirm GitHub Pages sees it
+  - create/edit lens in Next and confirm GitHub Pages sees it
+  - hide/remove equipment in Next and confirm roll history remains intact
+- Next implementation slice after equipment smoke should be stats/timeline views.
