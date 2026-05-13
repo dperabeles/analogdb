@@ -1311,6 +1311,9 @@ Validation result:
 - `tsc --noEmit` passed.
 - `next build` passed.
 - Existing JS and Python regression tests passed.
+- Vercel preview `dpl_9GhBMvzANBxT5cyaH2wfZvfwUFnJ` returned `Ready` for the dashboard login fix:
+  - `https://analogdb-repo-b0el02fn3-arqdiegoperabeles-2865s-projects.vercel.app`
+- Recent Vercel error logs for `feature/nextjs-vercel-migration` showed no new dashboard errors immediately after deployment.
 
 Errors / lessons:
 
@@ -1319,5 +1322,4 @@ Errors / lessons:
 
 Open follow-up:
 
-- Push fix and wait for Vercel preview deployment.
 - User should retry login against the stable branch preview after Vercel reports `Ready`.
