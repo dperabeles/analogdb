@@ -1773,3 +1773,32 @@ Open follow-up:
 
 - Push the fix and verify the Vercel preview deployment.
 - User should retry login on the branch preview.
+
+### 2026-05-13: Vercel Verification After Login Redirect Fix
+
+Completed:
+
+- Pushed login redirect fix commit `a6e0f79` to `feature/nextjs-vercel-migration`.
+- Confirmed Vercel generated a new preview deployment for the fix:
+  - deployment id: `dpl_FVDXF5B1sbgSvTasYHGTHPzzaRNs`
+  - deployment URL: `https://analogdb-repo-18t8b8rrt-arqdiegoperabeles-2865s-projects.vercel.app`
+  - branch alias: `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
+  - target: `preview`
+  - status: `Ready`
+- Checked recent Vercel error logs for `feature/nextjs-vercel-migration`; no recent error logs were found.
+
+Validation commands used:
+
+```bash
+npx --yes vercel inspect https://analogdb-repo-18t8b8rrt-arqdiegoperabeles-2865s-projects.vercel.app
+npx --yes vercel logs --level error --since 10m --branch feature/nextjs-vercel-migration --limit 50 --expand
+```
+
+Validation result:
+
+- The branch preview containing the login redirect fix is live.
+- No recent runtime errors were reported by Vercel logs.
+
+Open follow-up:
+
+- User should retry login on the branch alias.
