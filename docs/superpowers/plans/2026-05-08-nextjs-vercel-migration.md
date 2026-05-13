@@ -1563,3 +1563,44 @@ Open follow-up:
   - stats/timeline
   - equipment
   - admin
+
+### 2026-05-13: Rejected Wrong Editorial Paper Shell
+
+Completed:
+
+- User rejected the previous light paper/Fraunces approved-shell direction and clarified that it is not the GitHub beta archive design.
+- Saved the rule in Codex memory: never use that light paper/Fraunces shell again for Analog Archive.
+- Reverted the wrong design commits:
+  - `aa72f14 docs: record approved shell preview`
+  - `0cc180e feat: align approved shell with beta editorial UI`
+- Removed the rejected `approved-shell` / paper / Fraunces direction from the branch.
+- Removed `tests/next-editorial-shell-parity.test.js` because it encoded the wrong target.
+
+Validation commands used:
+
+```bash
+rg -n "approved-shell|Fraunces|--paper|next-editorial-shell-parity|Approved Editorial Paper Shell" src tests docs/superpowers/plans/2026-05-08-nextjs-vercel-migration.md
+node --test tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js
+npm run typecheck
+npm run build
+```
+
+Validation result:
+
+- Search confirmed the rejected design tokens/classes/tests are no longer present after revert.
+- UI parity baseline and dashboard UI parity static tests passed.
+- `tsc --noEmit` passed.
+- `next build` passed.
+
+Errors / lessons:
+
+- Do not infer or invent an editorial direction from partial CSS snippets.
+- Do not use the light paper/Fraunces design direction again. It was explicitly rejected.
+- Before the next UI parity change, verify the real GitHub Pages beta visually and structurally, then match that exact design.
+- The target is the current GitHub Pages beta archive UI, not a new redesign.
+
+Open follow-up:
+
+- Verify the current GitHub Pages beta UI directly before making any more visual changes.
+- Capture the real design reference from `analog-db-dashboard.html` and/or live GitHub Pages.
+- Then continue with exact parity only.
