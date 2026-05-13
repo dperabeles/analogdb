@@ -62,6 +62,18 @@ export default async function AdminPage() {
             <Link className="nav-link" href="/dashboard">
               Dashboard
             </Link>
+            <Link className="nav-link" href="/rolls/new">
+              Nuevo
+            </Link>
+            <Link className="nav-link" href="/stats">
+              Stats
+            </Link>
+            <Link className="nav-link" href="/timeline">
+              Timeline
+            </Link>
+            <Link className="nav-link" href="/equipment">
+              Equipo
+            </Link>
             <SignOutButton />
           </div>
         </header>
@@ -89,6 +101,18 @@ export default async function AdminPage() {
         <div className="actions">
           <Link className="nav-link" href="/dashboard">
             Dashboard
+          </Link>
+          <Link className="nav-link" href="/rolls/new">
+            Nuevo
+          </Link>
+          <Link className="nav-link" href="/stats">
+            Stats
+          </Link>
+          <Link className="nav-link" href="/timeline">
+            Timeline
+          </Link>
+          <Link className="nav-link" href="/equipment">
+            Equipo
           </Link>
           <SignOutButton />
         </div>

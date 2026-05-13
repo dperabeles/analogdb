@@ -63,8 +63,17 @@ export default async function StatsPage() {
           <Link className="nav-link" href="/dashboard">
             Dashboard
           </Link>
+          <Link className="nav-link" href="/rolls/new">
+            Nuevo
+          </Link>
+          <Link className="nav-link" href="/stats">
+            Stats
+          </Link>
           <Link className="nav-link" href="/timeline">
             Timeline
+          </Link>
+          <Link className="nav-link" href="/equipment">
+            Equipo
           </Link>
           <SignOutButton />
         </div>

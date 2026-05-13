@@ -73,6 +73,18 @@ export default async function EditRollPage({ params }: EditRollPageProps) {
           <Link className="nav-link" href={`/rolls/${encodeURIComponent(decodedCode)}`}>
             Detail
           </Link>
+          <Link className="nav-link" href="/dashboard">
+            Dashboard
+          </Link>
+          <Link className="nav-link" href="/stats">
+            Stats
+          </Link>
+          <Link className="nav-link" href="/timeline">
+            Timeline
+          </Link>
+          <Link className="nav-link" href="/equipment">
+            Equipo
+          </Link>
           <SignOutButton />
         </div>
       </header>

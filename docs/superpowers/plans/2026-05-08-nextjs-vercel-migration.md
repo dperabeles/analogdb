@@ -1424,4 +1424,72 @@ Open follow-up:
 - Remaining equipment smoke:
   - create/edit lens in GitHub Pages and confirm Vercel sees it
   - hide/remove equipment in Next and confirm roll history remains intact
-- Start UI parity/upgrade planning before inviting any beta testers to Vercel.
+- Resolved in the next log entry: started UI parity/upgrade baseline before inviting any beta testers to Vercel.
+
+### 2026-05-13: UI Parity Baseline Shell
+
+Completed:
+
+- Started the UI parity/upgrade pass required before inviting beta testers to Vercel.
+- Used the current GitHub Pages app and local design system as the visual reference.
+- Added a desktop sidebar-style shell for approved Next.js routes using the existing `topbar` markup.
+- Added full desktop navigation links across approved routes:
+  - Dashboard
+  - Nuevo
+  - Stats
+  - Timeline
+  - Equipo
+  - Admin where available
+- Kept the mobile bottom nav from the previous slice.
+- Added subtle film-grain overlay to move the Next.js UI closer to the current darkroom/editorial feel.
+- Adjusted core Next.js tokens toward the existing darkroom palette.
+- Added `DM Mono` and `Inter` font loading for closer parity with GitHub Pages.
+- Added regression coverage in `tests/next-ui-parity-baseline.test.js`.
+
+Validation commands used:
+
+```bash
+node --test tests/next-ui-parity-baseline.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+npx --yes vercel env pull .env.local --environment=preview --git-branch feature/nextjs-vercel-migration --yes
+npm run dev -- --hostname 127.0.0.1 --port 3000
+curl -sS -I http://127.0.0.1:3000/
+curl -sS -I http://127.0.0.1:3000/dashboard
+curl -sS -I http://127.0.0.1:3000/stats
+```
+
+Validation result:
+
+- New UI parity baseline static test passed.
+- `tsc --noEmit` passed.
+- `next build` passed.
+- Existing JS and Python regression tests passed.
+- Local smoke with Vercel Preview envs returned `200 OK` for:
+  - `/`
+  - `/dashboard`
+  - `/stats`
+
+Errors / lessons:
+
+- The first local `/dashboard` smoke returned `500` because Supabase preview env vars were not loaded locally. Pulling preview envs fixed local smoke.
+- `next dev` again rewrote `next-env.d.ts`; restored it before committing.
+- Pulling Vercel envs created `.env.local`; it was deleted after smoke because it can include a temporary `VERCEL_OIDC_TOKEN`.
+- This is only the first visual baseline. It improves the shell and navigation but does not yet make every view visually equal to or better than GitHub Pages.
+
+Open follow-up:
+
+- Push branch and wait for Vercel preview deployment.
+- Run approved-session visual smoke on Vercel for:
+  - `/dashboard`
+  - `/stats`
+  - `/timeline`
+  - `/equipment`
+  - `/admin`
+- Continue UI parity slices for:
+  - dashboard cards/list density
+  - roll detail/editor visual parity
+  - stats/timeline editorial sections
+  - equipment/admin polish
