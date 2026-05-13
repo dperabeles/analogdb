@@ -1409,6 +1409,9 @@ Validation result:
 - `tsc --noEmit` passed.
 - `next build` passed.
 - Existing JS and Python regression tests passed.
+- Vercel preview `dpl_AZrZmk5AxEZKTHWvaRPDfiqqYvim` returned `Ready` for the admin reactivation fix:
+  - `https://analogdb-repo-ks3m32nhn-arqdiegoperabeles-2865s-projects.vercel.app`
+- Recent Vercel error logs for `feature/nextjs-vercel-migration` showed no new admin errors immediately after deployment.
 
 Errors / lessons:
 
@@ -1417,7 +1420,6 @@ Errors / lessons:
 
 Open follow-up:
 
-- Push fix and wait for Vercel preview deployment.
 - User should retry the admin Reactivar action after deployment.
 - Remaining equipment smoke:
   - create/edit lens in GitHub Pages and confirm Vercel sees it
