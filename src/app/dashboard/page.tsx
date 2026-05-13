@@ -66,6 +66,8 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     sort: normalizeRollSort(params.sort)
   };
   const { rolls, error } = await getRolls();
+  const activeRolls = rolls.filter((roll) => roll.status !== "Developed" && roll.status !== "Archived").length;
+  const stockCount = new Set(rolls.map((roll) => roll.filmStock).filter(Boolean)).size;
 
   return (
     <main className="app-shell">
@@ -98,13 +100,38 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       <MobileBottomNav active="dashboard" />
 
       <section className="workspace">
-        <div className="hero">
-          <div className="eyebrow">Migration preview</div>
-          <h1>Dashboard</h1>
-          <p className="lead">
-            {profile?.displayName || "Approved beta tester"}, this reads your existing GitHub Pages beta rolls from the
-            shared Supabase project.
-          </p>
+        <div className="dashboard-masthead">
+          <div className="dashboard-masthead-meta">
+            <span>Private archive</span>
+            <span>{profile?.displayName || "Approved beta tester"}</span>
+          </div>
+          <div className="dashboard-masthead-main">
+            <div>
+              <div className="eyebrow">Migration preview</div>
+              <h1>Archive Index</h1>
+            </div>
+            <Link className="primary-action dashboard-masthead-action" href="/rolls/new">
+              Agregar rollo
+            </Link>
+          </div>
+          <div className="dashboard-summary-grid" aria-label="Archive summary">
+            <div>
+              <span>Total rolls</span>
+              <strong>{rolls.length}</strong>
+            </div>
+            <div>
+              <span>Activos</span>
+              <strong>{activeRolls}</strong>
+            </div>
+            <div>
+              <span>Stocks</span>
+              <strong>{stockCount}</strong>
+            </div>
+            <div>
+              <span>Source</span>
+              <strong>Supabase</strong>
+            </div>
+          </div>
         </div>
 
         <RollList rolls={rolls} filters={filters} error={error} />

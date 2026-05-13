@@ -28,29 +28,14 @@ function countByStatus(rolls: RollListItem[], status: string) {
 export function RollList({ rolls, filters, error }: RollListProps) {
   const safeFilters = { ...filters, sort: normalizeRollSort(filters.sort) };
   const filteredRolls = sortRolls(filterRolls(rolls, safeFilters), safeFilters.sort);
-  const active = rolls.filter((roll) => roll.status !== "Developed" && roll.status !== "Archived").length;
-  const stockCount = new Set(rolls.map((roll) => roll.filmStock).filter(Boolean)).size;
 
   return (
     <section className="rolls-panel" aria-label="Roll archive">
-      <div className="rolls-header">
+      <div className="editorial-section-head rolls-header">
+        <span className="editorial-section-num">I.</span>
         <div>
-          <div className="eyebrow">Shared Supabase data</div>
           <h2>Roll archive</h2>
-        </div>
-        <div className="roll-kpis" aria-label="Roll totals">
-          <div>
-            <span>{rolls.length}</span>
-            <small>Total</small>
-          </div>
-          <div>
-            <span>{active}</span>
-            <small>Activos</small>
-          </div>
-          <div>
-            <span>{stockCount}</span>
-            <small>Stocks</small>
-          </div>
+          <p>Indice privado sincronizado con la beta actual.</p>
         </div>
       </div>
 
@@ -75,7 +60,10 @@ export function RollList({ rolls, filters, error }: RollListProps) {
                 <span className="roll-code">{roll.code}</span>
                 <span className="roll-status">{STATUS_LABELS[roll.status] || roll.status}</span>
               </div>
-              <div className="roll-stock">{roll.filmStock || "Sin stock"}</div>
+              <div className="roll-stock">
+                <span>{roll.filmStock || "Sin stock"}</span>
+                <small>{roll.manufacturer || "Manufacturer pending"}</small>
+              </div>
               <div className="roll-meta">
                 <span>{roll.format || "Formato —"}</span>
                 <span>ISO {roll.iso ?? roll.isoPushed ?? "—"}</span>

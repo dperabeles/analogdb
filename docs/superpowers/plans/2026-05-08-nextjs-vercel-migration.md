@@ -1495,3 +1495,68 @@ Open follow-up:
   - roll detail/editor visual parity
   - stats/timeline editorial sections
   - equipment/admin polish
+
+### 2026-05-13: Dashboard UI Parity Density Pass
+
+Completed:
+
+- Continued the UI parity/upgrade work with a focused dashboard slice.
+- Replaced the generic dashboard hero with an editorial `dashboard-masthead`.
+- Added compact dashboard archive metrics for:
+  - total rolls
+  - active rolls
+  - stock count
+  - source/Supabase sync state
+- Changed the roll archive header to use the roman-numeral editorial section pattern.
+- Converted the desktop roll archive from repeated large cards into a denser row-based archive list.
+- Added manufacturer context below each film stock in the roll list.
+- Kept mobile roll cards readable and card-based so the density pass does not damage small screens.
+- Added static regression coverage in `tests/next-dashboard-ui-parity.test.js`.
+
+Validation commands used:
+
+```bash
+node --test tests/next-dashboard-ui-parity.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+npx --yes vercel env pull .env.local --environment=preview --git-branch feature/nextjs-vercel-migration --yes
+npm run dev -- --hostname 127.0.0.1 --port 3000
+curl -sS -I http://127.0.0.1:3000/
+curl -sS -I http://127.0.0.1:3000/dashboard
+curl -sS -I http://127.0.0.1:3000/stats
+curl -sS -I http://127.0.0.1:3000/timeline
+curl -sS -I http://127.0.0.1:3000/equipment
+```
+
+Validation result:
+
+- New dashboard UI parity static test passed.
+- `tsc --noEmit` passed after clearing stale generated `.next` output.
+- `next build` passed.
+- Existing JS and Python regression tests passed.
+- Local smoke with Vercel Preview envs returned `200 OK` for:
+  - `/`
+  - `/dashboard`
+  - `/stats`
+  - `/timeline`
+  - `/equipment`
+- Browser smoke against local `/dashboard` showed no framework error overlay and no console errors in the unauthenticated access state.
+
+Errors / lessons:
+
+- `.next` contained duplicate generated type files such as `cache-life.d 2.ts` and `routes.d 2.ts`, which made typecheck fail with duplicate identifier errors. Deleting generated `.next` output fixed the problem.
+- Browser smoke without an approved auth session can only validate the access screen and route health. The real dashboard visual state still needs approved-user review on Vercel after deployment.
+- `next dev` again rewrote `next-env.d.ts`; restored it before committing.
+- Pulling Vercel envs created `.env.local`; it was deleted after smoke because it can include a temporary `VERCEL_OIDC_TOKEN`.
+
+Open follow-up:
+
+- Deploy this dashboard density pass to the Vercel preview branch.
+- User should review the authenticated dashboard visually on Vercel after deployment.
+- Continue visual parity slices for:
+  - roll detail/editor
+  - stats/timeline
+  - equipment
+  - admin
