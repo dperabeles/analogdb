@@ -124,6 +124,10 @@ h1 {
   gap: 12px;
 }
 
+.mobile-bottom-nav {
+  display: none;
+}
+
 .primary-action,
 .secondary-action {
   min-height: 44px;
@@ -958,10 +962,71 @@ h1 {
 }
 
 @media (max-width: 720px) {
+  body {
+    padding-bottom: 76px;
+  }
+
   .topbar {
     align-items: flex-start;
     flex-direction: column;
     padding: 18px 20px;
+  }
+
+  .actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .actions .primary-action,
+  .actions .secondary-action,
+  .actions .danger-action,
+  .actions .nav-link,
+  .actions form,
+  .actions button {
+    width: 100%;
+  }
+
+  .actions .primary-action,
+  .actions .secondary-action,
+  .actions .danger-action,
+  .actions .nav-link,
+  .actions button {
+    justify-content: center;
+  }
+
+  .mobile-bottom-nav {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+    background: rgba(20, 17, 13, 0.96);
+    backdrop-filter: blur(14px);
+  }
+
+  .mobile-bottom-nav-item {
+    min-width: 0;
+    min-height: 60px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 11px;
+    text-align: center;
+  }
+
+  .mobile-bottom-nav-item:last-child {
+    border-right: 0;
+  }
+
+  .mobile-bottom-nav-item[aria-current="page"] {
+    color: var(--text);
+    background: rgba(217, 74, 42, 0.16);
   }
 
   .workspace {

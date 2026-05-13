@@ -1201,3 +1201,61 @@ Open follow-up:
 - Continue pending equipment smoke:
   - create/edit lens in Next and confirm GitHub Pages sees it
   - hide/remove equipment in Next and confirm roll history remains intact
+
+### 2026-05-12: Next.js Mobile Navigation Baseline
+
+Completed:
+
+- Added shared `MobileBottomNav` component for approved Next.js app routes.
+- Added mobile bottom navigation links for:
+  - Data
+  - Nuevo
+  - Stats
+  - Timeline
+  - Equipo
+- Added active-route state with `aria-current="page"`.
+- Rendered the mobile bottom nav on:
+  - `/dashboard`
+  - `/rolls/new`
+  - `/rolls/[code]`
+  - `/rolls/[code]/edit`
+  - `/stats`
+  - `/timeline`
+  - `/equipment`
+  - `/admin`
+- Added responsive CSS so the bottom nav is fixed only on mobile and desktop remains unchanged.
+- Added regression coverage in `tests/next-mobile-navigation.test.js`.
+
+Validation commands used:
+
+```bash
+node --test tests/next-mobile-navigation.test.js
+npm run typecheck
+npm run build
+```
+
+Validation result:
+
+- New mobile navigation static test passed.
+- `tsc --noEmit` passed after cleaning stale generated `.next` types.
+- `next build` passed and kept all current app routes available.
+
+Errors / lessons:
+
+- The first `npm run typecheck` failed because `.next/types` contained duplicate generated files with names like `routes.d 2.ts` and `cache-life.d 2.ts`.
+- `.next` is generated output and ignored by git. Deleting `.next` cleared the duplicate generated types and `npm run typecheck` passed immediately after.
+- This change improves mobile navigation structure, but it does not replace real approved-session browser smoke on an actual phone viewport.
+
+Open follow-up:
+
+- Run approved-account mobile smoke against the Vercel preview for:
+  - `/dashboard`
+  - `/rolls/new`
+  - `/stats`
+  - `/timeline`
+  - `/equipment`
+  - `/admin` with founder account
+- Confirm no bottom-nav overlap with long roll forms, equipment forms, and admin action cards.
+- Continue pending equipment smoke:
+  - create/edit lens in Next and confirm GitHub Pages sees it
+  - hide/remove equipment in Next and confirm roll history remains intact

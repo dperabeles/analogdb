@@ -3,6 +3,7 @@ import { AccessGate } from "@/features/auth/access-gate";
 import { AccessStatus } from "@/features/auth/access-status";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
 import { SignOutButton } from "@/features/auth/sign-out-button";
+import { MobileBottomNav } from "@/features/navigation/mobile-bottom-nav";
 import { getRolls } from "@/features/rolls/queries";
 import { RollList } from "@/features/rolls/roll-list";
 import { normalizeRollSort, type RollFilters } from "@/features/rolls/roll-types";
@@ -94,6 +95,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
           <SignOutButton />
         </div>
       </header>
+      <MobileBottomNav active="dashboard" />
 
       <section className="workspace">
         <div className="hero">

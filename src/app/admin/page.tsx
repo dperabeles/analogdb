@@ -5,6 +5,7 @@ import { AccessGate } from "@/features/auth/access-gate";
 import { AccessStatus } from "@/features/auth/access-status";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
 import { SignOutButton } from "@/features/auth/sign-out-button";
+import { MobileBottomNav } from "@/features/navigation/mobile-bottom-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -64,6 +65,7 @@ export default async function AdminPage() {
             <SignOutButton />
           </div>
         </header>
+        <MobileBottomNav active="admin" />
         <section className="workspace auth-workspace">
           <div className="auth-status">
             <div className="eyebrow">Admin required</div>
@@ -91,6 +93,7 @@ export default async function AdminPage() {
           <SignOutButton />
         </div>
       </header>
+      <MobileBottomNav active="admin" />
 
       <section className="workspace">
         <div className="hero compact-hero">

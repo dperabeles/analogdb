@@ -5,6 +5,7 @@ import { getCurrentAccessProfile } from "@/features/auth/profile";
 import { SignOutButton } from "@/features/auth/sign-out-button";
 import { EquipmentPanel } from "@/features/equipment/equipment-panel";
 import { getEquipmentOverview } from "@/features/equipment/queries";
+import { MobileBottomNav } from "@/features/navigation/mobile-bottom-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -65,6 +66,7 @@ export default async function EquipmentPage() {
           <SignOutButton />
         </div>
       </header>
+      <MobileBottomNav active="equipment" />
       <section className="workspace">
         <div className="hero compact-hero">
           <div className="eyebrow">Catalogo privado</div>

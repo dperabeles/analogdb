@@ -5,6 +5,7 @@ import { AccessGate } from "@/features/auth/access-gate";
 import { AccessStatus } from "@/features/auth/access-status";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
 import { SignOutButton } from "@/features/auth/sign-out-button";
+import { MobileBottomNav } from "@/features/navigation/mobile-bottom-nav";
 
 export const dynamic = "force-dynamic";
 
@@ -68,6 +69,7 @@ export default async function StatsPage() {
           <SignOutButton />
         </div>
       </header>
+      <MobileBottomNav active="stats" />
       <section className="workspace">
         <div className="hero compact-hero">
           <div className="eyebrow">Analisis</div>

@@ -4,6 +4,7 @@ import { AccessGate } from "@/features/auth/access-gate";
 import { AccessStatus } from "@/features/auth/access-status";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
 import { SignOutButton } from "@/features/auth/sign-out-button";
+import { MobileBottomNav } from "@/features/navigation/mobile-bottom-nav";
 import { getRollByCode } from "@/features/rolls/queries";
 import { RollDetail } from "@/features/rolls/roll-detail";
 
@@ -75,6 +76,7 @@ export default async function RollDetailPage({ params }: RollDetailPageProps) {
           <SignOutButton />
         </div>
       </header>
+      <MobileBottomNav active="detail" />
 
       <section className="workspace">
         {error ? <p className="auth-message auth-message-error">No se pudo cargar el roll: {error}</p> : null}
