@@ -109,6 +109,7 @@ export function AccessGate() {
     }
 
     setMessage({ tone: "success", text: "Sesión iniciada." });
+    router.replace("/dashboard");
     router.refresh();
   }
 

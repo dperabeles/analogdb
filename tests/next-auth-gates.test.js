@@ -38,6 +38,7 @@ assertIncludes(dashboard, '<SignOutButton', 'approved shell should expose logout
 
 const gate = read('src/features/auth/access-gate.tsx');
 assertIncludes(gate, 'signInWithPassword', 'gate should support email/password login');
+assertIncludes(gate, 'router.replace("/dashboard")', 'successful login should leave the public gate and enter the dashboard');
 assertIncludes(gate, 'signUp', 'gate should support beta access request');
 assertIncludes(gate, "data: { display_name: displayName }", 'signup should preserve display_name metadata for the existing trigger');
 

@@ -1727,3 +1727,49 @@ Open follow-up:
 
 - Compare the Vercel public access screen against GitHub Pages in the browser.
 - Next migration task: authenticated dashboard parity against the real GitHub beta dashboard state.
+
+### 2026-05-13: Login Redirect Fix After Public Gate Parity
+
+Issue reported:
+
+- User could submit login from the Vercel public gate, but the page stayed loading and did not enter the app.
+
+Root cause:
+
+- The login flow called `router.refresh()` after a successful `signInWithPassword`, but did not navigate away from `/`.
+- The `/` route always renders the public access gate, so a successful login from that route could remain visually stuck on the login gate.
+- The `busy` state also stayed set to `login`, which could leave the button showing `Entrando...` while the user remained on the public page.
+
+Completed:
+
+- Updated successful login behavior to call `router.replace("/dashboard")` before `router.refresh()`.
+- Added regression coverage in `tests/next-auth-gates.test.js` so successful login must leave the public gate and enter the dashboard.
+
+Validation commands used:
+
+```bash
+node --test tests/next-auth-gates.test.js
+node --test tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js
+npm run typecheck
+npm run build
+npx --yes vercel logs --level error --since 30m --branch feature/nextjs-vercel-migration --limit 50 --expand
+```
+
+Validation result:
+
+- New failing test reproduced the missing redirect before the fix.
+- Auth gate regression test passed after the fix.
+- Public gate parity, UI parity baseline, and dashboard parity static tests passed.
+- `tsc --noEmit` passed.
+- `next build` passed.
+- No recent Vercel error logs were found for the branch during investigation.
+
+Errors / lessons:
+
+- Public gate parity must preserve real auth navigation behavior, not only visual parity.
+- `router.refresh()` is not enough when the current route is a public-only landing route.
+
+Open follow-up:
+
+- Push the fix and verify the Vercel preview deployment.
+- User should retry login on the branch preview.
