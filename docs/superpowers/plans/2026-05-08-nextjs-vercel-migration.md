@@ -1543,6 +1543,10 @@ Validation result:
   - `/timeline`
   - `/equipment`
 - Browser smoke against local `/dashboard` showed no framework error overlay and no console errors in the unauthenticated access state.
+- Vercel preview `dpl_HxVdo4S581Y9TEkZDdksgmGwm1hQ` returned `Ready` for the dashboard density pass:
+  - `https://analogdb-repo-8i5u2yauo-arqdiegoperabeles-2865s-projects.vercel.app`
+  - branch alias: `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
+- Recent Vercel error logs for `feature/nextjs-vercel-migration` showed no errors immediately after deployment.
 
 Errors / lessons:
 
@@ -1553,7 +1557,6 @@ Errors / lessons:
 
 Open follow-up:
 
-- Deploy this dashboard density pass to the Vercel preview branch.
 - User should review the authenticated dashboard visually on Vercel after deployment.
 - Continue visual parity slices for:
   - roll detail/editor
