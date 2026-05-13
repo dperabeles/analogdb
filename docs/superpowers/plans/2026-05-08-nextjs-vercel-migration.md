@@ -1629,10 +1629,6 @@ Validation result:
   - `/dashboard`
   - `/stats`
   - `/equipment`
-- Vercel preview `dpl_FmmwvR4CQF7T6D5jE6DsPBRNqeVA` returned `Ready` for the approved paper shell pass:
-  - `https://analogdb-repo-d2jtn2vvp-arqdiegoperabeles-2865s-projects.vercel.app`
-  - branch alias: `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
-- Recent Vercel error logs for `feature/nextjs-vercel-migration` showed no errors immediately after deployment.
 
 Errors / lessons:
 
@@ -1643,6 +1639,7 @@ Errors / lessons:
 
 Open follow-up:
 
+- Deploy this approved paper shell pass to the Vercel preview branch.
 - User should review authenticated `/dashboard` on Vercel against the GitHub Pages beta.
 - Continue exact parity passes:
   - dashboard index/workflow layout from `analog-db-dashboard.html`
