@@ -70,9 +70,9 @@ export function normalizePushPull(value: string | null) {
   return `${match[1] === "-" ? "-" : "+"}${clipped}`;
 }
 
-export function normalizeFormatValue(value: string | null) {
+export function normalizeFormatValue(value: string | number | null) {
   if (!value) return null;
-  const clean = value.trim();
+  const clean = String(value).trim();
   if (/^(35|35mm|135)$/i.test(clean)) return "35mm";
   if (/^(120|medium format|mf)$/i.test(clean)) return "120";
   if (/^large format$/i.test(clean)) return "Large Format";

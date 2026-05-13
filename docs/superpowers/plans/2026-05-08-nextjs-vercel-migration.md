@@ -1263,3 +1263,61 @@ Open follow-up:
 - Continue pending equipment smoke:
   - create/edit lens in Next and confirm GitHub Pages sees it
   - hide/remove equipment in Next and confirm roll history remains intact
+
+### 2026-05-12: Dashboard Login Server Error Fix
+
+Issue:
+
+- User reported a Next.js server error screen immediately after login.
+- Browser showed digest / error id `2332510782`.
+- Vercel logs for `GET /dashboard` showed:
+  - `TypeError: a.trim is not a function`
+
+Root cause:
+
+- `rolls_flat."FORMAT"` returns integer values in production, for example:
+  - `35`
+  - `120`
+  - `8`
+- `normalizeFormatValue()` assumed `FORMAT` was a string and called `value.trim()` directly.
+- Approved users hit this path after login because `/dashboard` loads roll data with `getRolls()`.
+
+Fix:
+
+- Updated `normalizeFormatValue()` to accept `string | number | null`.
+- Normalized through `String(value).trim()` before applying format aliases.
+- Added regression coverage in `tests/roll-format-normalization.test.js` for:
+  - `35 -> 35mm`
+  - `120 -> 120`
+  - `8 -> 8`
+  - `mapRollFlatRow()` with numeric `FORMAT`
+
+Validation commands used:
+
+```bash
+supabase db query --linked "select id, \"#\" as code, \"FORMAT\" as format, pg_typeof(\"FORMAT\")::text as format_type from public.rolls_flat where \"FORMAT\" is not null order by id desc limit 20;"
+node --test tests/roll-format-normalization.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Validation result:
+
+- Confirmed production `rolls_flat."FORMAT"` is `integer`.
+- Regression test failed before the fix with `TypeError: value.trim is not a function`.
+- Regression test passed after the fix.
+- `tsc --noEmit` passed.
+- `next build` passed.
+- Existing JS and Python regression tests passed.
+
+Errors / lessons:
+
+- Do not trust generated database TypeScript types blindly for legacy compatibility views. Verify runtime values from Supabase for fields coming from `rolls_flat`.
+- Any normalizer that calls string methods should coerce legacy view values defensively at the boundary.
+
+Open follow-up:
+
+- Push fix and wait for Vercel preview deployment.
+- User should retry login against the stable branch preview after Vercel reports `Ready`.
