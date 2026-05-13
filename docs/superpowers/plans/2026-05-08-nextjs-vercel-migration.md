@@ -1471,6 +1471,9 @@ Validation result:
   - `/`
   - `/dashboard`
   - `/stats`
+- Vercel preview `dpl_CzX5w6PLNK7S94nJP6YAeRgVcix6` returned `Ready` for the UI parity shell:
+  - `https://analogdb-repo-484ijmq9i-arqdiegoperabeles-2865s-projects.vercel.app`
+- Recent Vercel error logs for `feature/nextjs-vercel-migration` showed no new errors immediately after deployment.
 
 Errors / lessons:
 
@@ -1481,7 +1484,6 @@ Errors / lessons:
 
 Open follow-up:
 
-- Push branch and wait for Vercel preview deployment.
 - Run approved-session visual smoke on Vercel for:
   - `/dashboard`
   - `/stats`
