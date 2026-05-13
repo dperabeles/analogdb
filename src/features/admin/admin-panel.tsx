@@ -155,7 +155,7 @@ function RejectedUsers({ profiles }: { profiles: AdminProfile[] }) {
 
   return profiles.map((profile) => (
     <ProfileCard key={profile.user_id} profile={profile}>
-      <StatusButton profile={profile} status="pending" tone="primary">
+      <StatusButton profile={profile} status="approved" tone="primary">
         Reactivar
       </StatusButton>
     </ProfileCard>

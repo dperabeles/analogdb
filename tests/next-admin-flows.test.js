@@ -50,7 +50,11 @@ assertIncludes(panel, 'Acciones admin', 'admin panel should render admin action 
 assertIncludes(panel, 'name="status"', 'profile status forms should submit the target status');
 assertIncludes(panel, 'status="approved"', 'pending users should be approvable');
 assertIncludes(panel, 'status="rejected"', 'pending users should be rejectable');
-assertIncludes(panel, 'status="pending"', 'rejected users should be reactivatable to pending');
+assert.match(
+  panel,
+  /function RejectedUsers[\s\S]*status="approved"/,
+  'rejected users should be reactivatable to approved'
+);
 assertIncludes(panel, 'promote_to_admin', 'approved users should support admin promotion requests');
 assertIncludes(panel, 'demote_from_admin', 'admin users should support downgrade requests');
 

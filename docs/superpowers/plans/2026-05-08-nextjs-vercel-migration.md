@@ -1349,3 +1349,77 @@ Open follow-up:
   - `/equipment`
   - create/edit lens in Next and confirm GitHub Pages sees it
   - hide/remove equipment in Next and confirm roll history remains intact
+
+### 2026-05-13: Real-User Parity Smoke And Admin Reactivation Fix
+
+Completed:
+
+- User validated that these Vercel/Next.js routes show the correct real account information:
+  - `/dashboard`
+  - `/stats`
+  - `/timeline`
+  - `/equipment`
+- User confirmed visual/UI parity is not the current target yet; current target is data and functionality correctness first.
+- User confirmed a lens created from Vercel/Next.js appears in GitHub Pages.
+- Confirmed lens create path has cross-frontend parity from Vercel to GitHub Pages.
+
+Product decision:
+
+- Do not invite beta testers to the Vercel preview yet.
+- Tester expansion is blocked until the Vercel/Next.js UI is visually equal to or better than the current GitHub Pages experience.
+- Treat the future UI pass as a required upgrade, not a cosmetic nice-to-have.
+
+Issue:
+
+- User reported an error when using the admin reactivation action.
+- Vercel logs for `POST /admin` showed:
+  - `Error: {"code":"P0001","details":null,"hint":null,"message":"invalid status"}`
+  - digest `2511507339@E394`
+
+Root cause:
+
+- The Next.js rejected-user admin card sent `status="pending"` for Reactivar.
+- The real remote Supabase RPC `public.admin_set_profile_status(uuid,text)` currently accepts only:
+  - `approved`
+  - `rejected`
+- The local schema/migration files include a newer `pending`-allowed definition, but that definition is not what the linked remote database is currently running.
+
+Fix:
+
+- Changed the Next.js rejected-user Reactivar action to send `status="approved"`.
+- Tightened `tests/next-admin-flows.test.js` so it specifically checks the `RejectedUsers` block reactivates to approved, instead of matching any unrelated approved status in the admin panel.
+
+Validation commands used:
+
+```bash
+npx --yes vercel logs --level error --since 2h --branch feature/nextjs-vercel-migration --limit 50 --expand
+supabase db query --linked "select pg_get_functiondef('public.admin_set_profile_status(uuid,text)'::regprocedure) as definition;"
+node --test tests/next-admin-flows.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Validation result:
+
+- Confirmed the Vercel admin error came from invalid `pending` status.
+- Confirmed linked Supabase RPC currently rejects `pending`.
+- New admin-flow assertion failed before the fix and passed after the fix.
+- `tsc --noEmit` passed.
+- `next build` passed.
+- Existing JS and Python regression tests passed.
+
+Errors / lessons:
+
+- Local migration files can drift from the real linked Supabase function definition. For admin/security flows, verify the remote function definition before assuming local schema is current.
+- Static assertions should target the specific component block under test; broad string checks can pass because the same literal exists elsewhere in the file.
+
+Open follow-up:
+
+- Push fix and wait for Vercel preview deployment.
+- User should retry the admin Reactivar action after deployment.
+- Remaining equipment smoke:
+  - create/edit lens in GitHub Pages and confirm Vercel sees it
+  - hide/remove equipment in Next and confirm roll history remains intact
+- Start UI parity/upgrade planning before inviting any beta testers to Vercel.
