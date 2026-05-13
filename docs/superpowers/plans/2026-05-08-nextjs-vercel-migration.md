@@ -1692,3 +1692,38 @@ Open follow-up:
 - Deploy this public gate parity pass to Vercel.
 - User should compare the public login/access screen against GitHub Pages.
 - Next exact parity target should be the authenticated GitHub dashboard shell, verified from the real beta state before edits.
+
+### 2026-05-13: Vercel Preview Verification for GitHub Public Gate
+
+Completed:
+
+- Pushed the corrected public gate parity work to `feature/nextjs-vercel-migration`.
+- Confirmed the Vercel preview deployment for the branch is ready:
+  - deployment id: `dpl_3AD5CUU59ukRHs5v4hm1TgQWZYEK`
+  - deployment URL: `https://analogdb-repo-fw0j59rb7-arqdiegoperabeles-2865s-projects.vercel.app`
+  - branch alias: `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
+  - target: `preview`
+  - status: `Ready`
+- Checked recent Vercel error logs for `feature/nextjs-vercel-migration`; no recent error logs were found.
+
+Validation commands used:
+
+```bash
+npx --yes vercel inspect https://analogdb-repo-fw0j59rb7-arqdiegoperabeles-2865s-projects.vercel.app
+npx --yes vercel logs --level error --since 30m --branch feature/nextjs-vercel-migration --limit 20 --expand
+```
+
+Validation result:
+
+- Vercel preview is live and ready.
+- No runtime error logs were reported for the branch in the checked window.
+
+Errors / lessons:
+
+- The design target remains the live GitHub Pages beta and `analog-db-dashboard.html`.
+- Do not introduce any alternate visual direction while migrating. Match GitHub first, then improve only after parity is reached and approved.
+
+Open follow-up:
+
+- Compare the Vercel public access screen against GitHub Pages in the browser.
+- Next migration task: authenticated dashboard parity against the real GitHub beta dashboard state.
