@@ -1322,4 +1322,30 @@ Errors / lessons:
 
 Open follow-up:
 
-- User should retry login against the stable branch preview after Vercel reports `Ready`.
+- Resolved in the next log entry: user retried login successfully against the stable branch preview.
+
+### 2026-05-12: Dashboard Login Fix Real-User Confirmation
+
+Completed:
+
+- User retried login after the dashboard format-normalization fix.
+- Confirmed the Vercel/Next.js preview now allows the approved user to enter the app.
+- Confirmed the previous server error screen with digest `2332510782` no longer blocks login.
+
+Validation result:
+
+- Dashboard login path is now real-user confirmed on the Vercel preview.
+- The root-cause fix for numeric `rolls_flat."FORMAT"` values can be treated as validated by both automated tests and approved-account usage.
+
+Errors / lessons:
+
+- Real-user smoke was necessary here because unauthenticated `curl` checks cannot exercise the approved `/dashboard` data path behind the Vercel preview/session protections.
+
+Open follow-up:
+
+- Continue approved-account smoke for:
+  - `/stats`
+  - `/timeline`
+  - `/equipment`
+  - create/edit lens in Next and confirm GitHub Pages sees it
+  - hide/remove equipment in Next and confirm roll history remains intact
