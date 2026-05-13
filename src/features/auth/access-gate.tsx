@@ -2,12 +2,28 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 type Message = {
   tone: "neutral" | "error" | "success";
   text: string;
+};
+
+type LandingMetrics = {
+  totalRolls: number;
+  topStockLabel: string;
+  topStockCount: number;
+  supportedFormats: number;
+  uniqueLocations: number;
+};
+
+const LANDING_METRICS_FALLBACK: LandingMetrics = {
+  totalRolls: 0,
+  topStockLabel: "—",
+  topStockCount: 0,
+  supportedFormats: 6,
+  uniqueLocations: 0
 };
 
 export function AccessGate() {
@@ -17,6 +33,62 @@ export function AccessGate() {
     text: ""
   });
   const [busy, setBusy] = useState<"login" | "signup" | null>(null);
+  const [metrics, setMetrics] = useState<LandingMetrics>(LANDING_METRICS_FALLBACK);
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadLandingMetrics() {
+      const supabase = createBrowserSupabaseClient() as unknown as {
+        rpc: (fn: "landing_metrics") => Promise<{ data: unknown; error: { message: string } | null }>;
+      };
+      const { data, error } = await supabase.rpc("landing_metrics");
+      if (ignore || error || !data) return;
+
+      const payload = Array.isArray(data) ? data[0] : data;
+      const record = payload && typeof payload === "object" && "landing_metrics" in payload
+        ? (payload as { landing_metrics?: unknown }).landing_metrics
+        : payload;
+
+      if (!record || typeof record !== "object") return;
+      const values = record as Partial<Record<keyof LandingMetrics, unknown>>;
+      setMetrics({
+        totalRolls: Number(values.totalRolls || 0),
+        topStockLabel: String(values.topStockLabel || "—"),
+        topStockCount: Number(values.topStockCount || 0),
+        supportedFormats: Number(values.supportedFormats || 6),
+        uniqueLocations: Number(values.uniqueLocations || 0)
+      });
+    }
+
+    loadLandingMetrics().catch(() => undefined);
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  const metricPills = [
+    {
+      value: String(metrics.totalRolls),
+      label: "Rollos registrados",
+      sub: "entre todos los usuarios"
+    },
+    {
+      value: metrics.topStockLabel,
+      label: "Rollo más usado",
+      sub: `${metrics.topStockCount} registros globales`
+    },
+    {
+      value: String(metrics.supportedFormats),
+      label: "Formatos soportados",
+      sub: "35, 120, Super8, 110, 16mm y LF"
+    },
+    {
+      value: String(metrics.uniqueLocations),
+      label: "Lugares únicos",
+      sub: "seleccionados en el archivo"
+    }
+  ];
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -79,25 +151,52 @@ export function AccessGate() {
   }
 
   return (
-    <div className="auth-grid">
-      <section className="auth-copy">
-        <div className="eyebrow">Private beta</div>
-        <h1>Analog Archive</h1>
-        <p className="lead">
-          Sign in with an approved account, or request beta access and wait for manual approval.
+    <div className="gate-frame">
+      <section className="gate-copy">
+        <div className="gate-kicker">Private beta</div>
+        <h1>Track every roll from camera to archive.</h1>
+        <p>
+          A private archive for film photographers shooting analog. Register by email, wait for manual approval,
+          and keep your rolls, stats, cameras and workflow isolated from everyone else.
         </p>
+
+        <div className="gate-copy-footer">
+          <div className="gate-marquee" aria-label="Public archive metrics">
+            <div className="gate-marquee-track">
+              {[...metricPills, ...metricPills].map((metric, index) => (
+                <div className="gate-metric-pill" key={`${metric.label}-${index}`}>
+                  <div className="gate-metric-value">{metric.value}</div>
+                  <div className="gate-metric-copy">
+                    <span className="gate-metric-label">{metric.label}</span>
+                    <span className="gate-metric-sub">{metric.sub}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <p className="gate-founder">
+            Un proyecto de:{" "}
+            <a
+              href="https://www.instagram.com/perabeles.jpg?igsh=MXg1dXczaDgwaWJobg%3D%3D&utm_source=qr"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Diego Perabeles
+            </a>.
+          </p>
+        </div>
       </section>
 
-      <section className="auth-panels" aria-label="Access controls">
+      <section className="auth-panels gate-panels" aria-label="Access controls">
         <form className="auth-card" onSubmit={handleLogin}>
           <div className="status-label">Iniciar sesión</div>
           <label>
             Correo
-            <input name="email" type="email" autoComplete="email" required />
+            <input name="email" type="email" autoComplete="email" placeholder="Correo" required />
           </label>
           <label>
             Password
-            <input name="password" type="password" autoComplete="current-password" required />
+            <input name="password" type="password" autoComplete="current-password" placeholder="Password" required />
           </label>
           <Link className="inline-link" href="/forgot-password">
             Olvidé mi contraseña
@@ -111,16 +210,17 @@ export function AccessGate() {
           <div className="status-label">Solicitar acceso</div>
           <label>
             Display name
-            <input name="displayName" type="text" minLength={3} maxLength={20} required />
+            <input name="displayName" type="text" minLength={3} maxLength={20} placeholder="Display name" required />
           </label>
           <label>
             Correo
-            <input name="email" type="email" autoComplete="email" required />
+            <input name="email" type="email" autoComplete="email" placeholder="Correo" required />
           </label>
           <label>
             Password
-            <input name="password" type="password" autoComplete="new-password" required />
+            <input name="password" type="password" autoComplete="new-password" placeholder="Password" required />
           </label>
+          <p className="gate-help">El display name será visible dentro de tu archivo y no podrá cambiarse después.</p>
           <button className="secondary-action" type="submit" disabled={busy !== null}>
             {busy === "signup" ? "Enviando..." : "Solicitar acceso"}
           </button>

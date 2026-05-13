@@ -14,19 +14,8 @@ export default async function EquipmentPage() {
 
   if (state === "public") {
     return (
-      <main className="app-shell">
-        <header className="topbar">
-          <div className="brand">
-            <span className="brand-name">Analog Archive</span>
-            <span className="brand-stage">Access</span>
-          </div>
-          <Link className="nav-link" href="/">
-            Home
-          </Link>
-        </header>
-        <section className="workspace">
-          <AccessGate />
-        </section>
+      <main className="gate-shell">
+        <AccessGate />
       </main>
     );
   }

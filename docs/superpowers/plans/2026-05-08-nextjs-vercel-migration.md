@@ -1610,3 +1610,85 @@ Open follow-up:
 - Verify the current GitHub Pages beta UI directly before making any more visual changes.
 - Capture the real design reference from `analog-db-dashboard.html` and/or live GitHub Pages.
 - Then continue with exact parity only.
+
+### 2026-05-13: GitHub Public Gate Parity Pass
+
+Completed:
+
+- Started the corrected UI parity work using GitHub Pages as the visual source of truth.
+- Verified the live GitHub Pages public gate in browser before editing:
+  - `https://dperabeles.github.io/analogdb/analog-db-dashboard.html`
+  - title `Analog Database`
+  - dark centered beta access frame
+  - no console errors
+- Rebuilt the Next.js public gate to match the GitHub Pages public access screen:
+  - dark `#14110d` page background
+  - centered `1080px` framed gate
+  - left hero copy: `Track every roll from camera to archive.`
+  - right login/request access panels
+  - same forgot-password link text
+  - same display-name help copy
+  - same founder credit
+  - same public metrics marquee pattern
+- Added client-side `landing_metrics` RPC hydration with a safe fallback, matching the GitHub Pages public metric behavior.
+- Removed the Next.js generic topbar from public unauthenticated routes and route `/` so the public view starts directly on the GitHub-style gate.
+- Updated public unauthenticated routes for:
+  - `/`
+  - `/dashboard`
+  - `/stats`
+  - `/timeline`
+  - `/equipment`
+  - `/admin`
+  - `/rolls/new`
+  - `/rolls/[code]`
+  - `/rolls/[code]/edit`
+- Added static regression coverage in `tests/next-public-gate-github-parity.test.js`.
+
+Validation commands used:
+
+```bash
+node --test tests/next-public-gate-github-parity.test.js tests/next-auth-gates.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+npx --yes vercel env pull .env.local --environment=preview --git-branch feature/nextjs-vercel-migration --yes
+npm run dev -- --hostname 127.0.0.1 --port 3000
+```
+
+Rendered browser verification:
+
+- Opened GitHub Pages and local Next.js sequentially in the browser to avoid tab reuse confusion.
+- GitHub Pages:
+  - URL: `https://dperabeles.github.io/analogdb/analog-db-dashboard.html`
+  - title: `Analog Database`
+  - hero, forgot-password link, and founder credit present
+  - no console errors
+- Local Next.js:
+  - URL: `http://127.0.0.1:3000/`
+  - title: `Analog Archive`
+  - hero, forgot-password link, and founder credit present
+  - no console errors
+- Visual correction made from rendered evidence: the H1 was changed back to the heavy sans look seen on live GitHub Pages instead of using a serif heading from source-code inference.
+
+Validation result:
+
+- New public gate GitHub parity static test passed.
+- Existing auth gate, UI parity, and dashboard parity tests passed.
+- `tsc --noEmit` passed.
+- `next build` passed.
+- Full JS regression suite passed: 14/14 tests.
+- Python regression suite passed: 16/16 tests.
+
+Errors / lessons:
+
+- Browser tab reuse initially made the GitHub/Next comparison point both entries at local Next.js. Re-ran the check sequentially in one tab and used only the corrected result.
+- Do not trust only inline CSS/source when rendered GitHub Pages differs. The visual reference is the live rendered GitHub page.
+- `next dev` again rewrote `next-env.d.ts`; restored it before committing.
+- Pulling Vercel envs created `.env.local`; it was deleted after smoke because it can include a temporary `VERCEL_OIDC_TOKEN`.
+
+Open follow-up:
+
+- Deploy this public gate parity pass to Vercel.
+- User should compare the public login/access screen against GitHub Pages.
+- Next exact parity target should be the authenticated GitHub dashboard shell, verified from the real beta state before edits.
