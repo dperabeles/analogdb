@@ -1583,6 +1583,7 @@ rg -n "approved-shell|Fraunces|--paper|next-editorial-shell-parity|Approved Edit
 node --test tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js
 npm run typecheck
 npm run build
+gh api repos/dperabeles/analogdb/pages
 ```
 
 Validation result:
@@ -1591,6 +1592,11 @@ Validation result:
 - UI parity baseline and dashboard UI parity static tests passed.
 - `tsc --noEmit` passed.
 - `next build` passed.
+- GitHub Pages source of truth confirmed:
+  - Pages URL: `https://dperabeles.github.io/analogdb/`
+  - Runtime URL: `https://dperabeles.github.io/analogdb/analog-db-dashboard.html`
+  - Browser title: `Analog Database`
+  - Public access screen is the dark beta access design, with no console errors in browser verification.
 
 Errors / lessons:
 
