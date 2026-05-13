@@ -70,7 +70,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const stockCount = new Set(rolls.map((roll) => roll.filmStock).filter(Boolean)).size;
 
   return (
-    <main className="app-shell">
+    <main className="app-shell approved-shell">
       <header className="topbar">
         <div className="brand">
           <span className="brand-name">Analog Archive</span>

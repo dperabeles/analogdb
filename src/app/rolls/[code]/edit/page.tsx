@@ -63,7 +63,7 @@ export default async function EditRollPage({ params }: EditRollPageProps) {
   if (!roll && !error) notFound();
 
   return (
-    <main className="app-shell">
+    <main className="app-shell approved-shell">
       <header className="topbar">
         <div className="brand">
           <span className="brand-name">Analog Archive</span>

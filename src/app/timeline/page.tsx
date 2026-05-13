@@ -53,7 +53,7 @@ export default async function TimelinePage() {
   const overview = await getAnalyticsOverview();
 
   return (
-    <main className="app-shell">
+    <main className="app-shell approved-shell">
       <header className="topbar">
         <div className="brand">
           <span className="brand-name">Analog Archive</span>

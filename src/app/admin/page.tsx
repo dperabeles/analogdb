@@ -52,7 +52,7 @@ export default async function AdminPage() {
 
   if (profile?.role !== "admin") {
     return (
-      <main className="app-shell">
+      <main className="app-shell approved-shell">
         <header className="topbar">
           <div className="brand">
             <span className="brand-name">Analog Archive</span>
@@ -92,7 +92,7 @@ export default async function AdminPage() {
   const overview = await getAdminOverview();
 
   return (
-    <main className="app-shell">
+    <main className="app-shell approved-shell">
       <header className="topbar">
         <div className="brand">
           <span className="brand-name">Analog Archive</span>
