@@ -63,7 +63,7 @@ export default async function RollDetailPage({ params }: RollDetailPageProps) {
   if (!roll && !error) notFound();
 
   return (
-    <main className="app-shell approved-shell">
+    <main className="app-shell">
       <header className="topbar">
         <div className="brand">
           <span className="brand-name">Analog Archive</span>

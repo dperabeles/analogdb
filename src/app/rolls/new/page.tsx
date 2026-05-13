@@ -50,7 +50,7 @@ export default async function NewRollPage() {
   }
 
   return (
-    <main className="app-shell approved-shell">
+    <main className="app-shell">
       <header className="topbar">
         <div className="brand">
           <span className="brand-name">Analog Archive</span>
