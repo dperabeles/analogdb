@@ -1239,6 +1239,10 @@ Validation result:
 - New mobile navigation static test passed.
 - `tsc --noEmit` passed after cleaning stale generated `.next` types.
 - `next build` passed and kept all current app routes available.
+- Vercel preview `dpl_4kxPW6xgh3BCZkaWBXTcyhjLGVTJ` returned `Ready` for the mobile navigation deployment:
+  - `https://analogdb-repo-2q9egj65f-arqdiegoperabeles-2865s-projects.vercel.app`
+- Stable branch alias for the latest `feature/nextjs-vercel-migration` preview:
+  - `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
 
 Errors / lessons:
 
