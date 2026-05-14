@@ -20,10 +20,22 @@ assertIncludes(css, '@media (min-width: 721px)', 'desktop shell should have a de
 assertIncludes(css, 'position: fixed', 'desktop topbar should become a fixed sidebar');
 assertIncludes(css, 'margin: 0 0 0 var(--sidebar-width)', 'workspace should clear the fixed desktop sidebar');
 
+const appShell = read('src/features/navigation/app-shell.tsx');
+assertIncludes(appShell, 'href: "/dashboard"', 'approved shell should keep Dashboard in the desktop nav');
+assertIncludes(appShell, 'href: "/stats"', 'approved shell should keep Stats in the desktop nav');
+assertIncludes(appShell, 'href: "/timeline"', 'approved shell should keep Timeline in the desktop nav');
+assertIncludes(appShell, 'href: "/equipment"', 'approved shell should keep Equipment in the desktop nav');
+
 [
   'src/app/stats/page.tsx',
   'src/app/timeline/page.tsx',
-  'src/app/equipment/page.tsx',
+  'src/app/equipment/page.tsx'
+].forEach((filePath) => {
+  const source = read(filePath);
+  assertIncludes(source, '<AppShell', `${filePath} should use the shared approved shell`);
+});
+
+[
   'src/app/admin/page.tsx',
   'src/app/rolls/new/page.tsx',
   'src/app/rolls/[code]/page.tsx',

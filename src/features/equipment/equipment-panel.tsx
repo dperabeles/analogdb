@@ -162,7 +162,7 @@ export function EquipmentPanel({ overview }: EquipmentPanelProps) {
     <div className="equipment-panel">
       {overview.error ? <p className="auth-message auth-message-error">No se pudo cargar equipo: {overview.error}</p> : null}
 
-      <section className="equipment-section">
+      <section className="equipment-section" id="camera-form">
         <div className="rolls-header">
           <div>
             <div className="eyebrow">Camaras</div>

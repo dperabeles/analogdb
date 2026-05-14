@@ -1901,3 +1901,58 @@ Open follow-up:
 
 - User should compare the authenticated dashboard in Vercel against the current GitHub beta.
 - Continue exact GitHub parity on Stats, Timeline, and Equipment after dashboard review.
+
+### 2026-05-14: Shared GitHub Shell for Stats, Timeline, and Equipment
+
+Completed:
+
+- Continued the authenticated parity pass by moving Stats, Timeline, and Equipment onto the shared approved-session shell introduced for Dashboard.
+- Updated `/stats` to use:
+  - `AppShell active="stats"`
+  - GitHub beta page header copy: `PÁG·05 · ANÁLISIS`
+  - title: `Tu film, en cifras`
+  - subtitle: `Métricas y tendencias del archivo fotográfico`
+- Updated `/timeline` to use:
+  - `AppShell active="timeline"`
+  - GitHub beta page header copy: `PÁG·03 · CRONOLOGÍA`
+  - title: `Tu film, en el tiempo`
+  - subtitle: `Historia cronológica del archivo, agrupada por mes`
+- Updated `/equipment` to use:
+  - `AppShell active="equipment"`
+  - GitHub beta page header copy: `PÁG·04 · EQUIPO`
+  - title: `Tus cámaras, en cifras`
+  - camera count subtitle
+  - `+ Agregar cámara` anchor to the camera form
+- Added shared CSS for `ed-page-header`, `ed-page-header-kicker`, `ed-page-header-title`, `ed-page-header-sub`, and responsive equipment header behavior.
+- Kept the existing Stats, Timeline, and Equipment data panels functional while aligning the surrounding page shell and header to GitHub beta first.
+- Updated static tests so these pages assert against `AppShell` and GitHub beta header copy instead of the older generic hero/topbar structure.
+
+Validation commands used:
+
+```bash
+node --test tests/next-stats-timeline-flows.test.js tests/next-equipment-flows.test.js tests/next-ui-parity-baseline.test.js
+node --test tests/next-stats-timeline-flows.test.js tests/next-equipment-flows.test.js tests/next-ui-parity-baseline.test.js tests/next-mobile-navigation.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Validation result:
+
+- New shell/header assertions failed before implementation and passed after the route updates.
+- Focused Stats/Timeline/Equipment/UI/mobile tests passed.
+- `tsc --noEmit` passed.
+- `next build` passed.
+- Full JS regression suite passed: 14/14 tests.
+- Python regression suite passed: 16/16 tests.
+
+Errors / lessons:
+
+- Moving these routes into `AppShell` required updating mobile-nav tests to check the shared shell instead of looking for `MobileBottomNav` directly in each page file.
+- Scope was intentionally limited to the authenticated shell and page headers. The internal Stats, Timeline, and Equipment panels still need a deeper visual pass against GitHub beta.
+
+Open follow-up:
+
+- Commit and deploy this shared-shell parity pass to Vercel.
+- Next UI parity work should align the internal Stats, Timeline, and Equipment panels with the exact GitHub beta layouts.

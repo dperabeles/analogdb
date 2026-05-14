@@ -59,6 +59,10 @@ assertIncludes(panel, 'removeLensAction', 'lens cards should expose remove/hide 
 const page = read('src/app/equipment/page.tsx');
 assertIncludes(page, 'getCurrentAccessProfile', 'equipment route should use the same auth gate as protected routes');
 assertIncludes(page, 'getEquipmentOverview', 'equipment route should load equipment overview data');
+assertIncludes(page, '<AppShell active="equipment"', 'equipment route should use the shared GitHub beta approved shell');
+assertIncludes(page, 'ed-page-header-kicker', 'equipment route should use the GitHub beta page header');
+assertIncludes(page, 'PÁG·04', 'equipment route should match the GitHub beta page number');
+assertIncludes(page, 'Tus cámaras,', 'equipment route should match the GitHub beta equipment title');
 assertIncludes(page, '<EquipmentPanel', 'equipment route should render the equipment panel');
 
 const appShell = read('src/features/navigation/app-shell.tsx');

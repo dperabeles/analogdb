@@ -4,8 +4,7 @@ import { StatsPanel } from "@/features/analytics/stats-panel";
 import { AccessGate } from "@/features/auth/access-gate";
 import { AccessStatus } from "@/features/auth/access-status";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
-import { SignOutButton } from "@/features/auth/sign-out-button";
-import { MobileBottomNav } from "@/features/navigation/mobile-bottom-nav";
+import { AppShell } from "@/features/navigation/app-shell";
 
 export const dynamic = "force-dynamic";
 
@@ -42,40 +41,13 @@ export default async function StatsPage() {
   const overview = await getAnalyticsOverview();
 
   return (
-    <main className="app-shell">
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand-name">Analog Archive</span>
-          <span className="brand-stage">Stats</span>
-        </div>
-        <div className="actions">
-          <Link className="nav-link" href="/dashboard">
-            Dashboard
-          </Link>
-          <Link className="nav-link" href="/rolls/new">
-            Nuevo
-          </Link>
-          <Link className="nav-link" href="/stats">
-            Stats
-          </Link>
-          <Link className="nav-link" href="/timeline">
-            Timeline
-          </Link>
-          <Link className="nav-link" href="/equipment">
-            Equipo
-          </Link>
-          <SignOutButton />
-        </div>
-      </header>
-      <MobileBottomNav active="stats" />
-      <section className="workspace">
-        <div className="hero compact-hero">
-          <div className="eyebrow">Analisis</div>
-          <h1>Tu film, en cifras</h1>
-          <p className="lead">Metricas y tendencias del archivo fotografico.</p>
-        </div>
-        <StatsPanel overview={overview} />
-      </section>
-    </main>
+    <AppShell active="stats" profile={profile}>
+      <div className="ed-page-header">
+        <div className="ed-page-header-kicker">PÁG·05 &nbsp;·&nbsp; ANÁLISIS</div>
+        <h1 className="ed-page-header-title">Tu film, <em>en cifras</em></h1>
+        <div className="ed-page-header-sub">Métricas y tendencias del archivo fotográfico</div>
+      </div>
+      <StatsPanel overview={overview} />
+    </AppShell>
   );
 }

@@ -848,6 +848,46 @@ h1 {
   font-weight: 800;
 }
 
+.ed-page-header {
+  margin-bottom: 28px;
+}
+
+.equipment-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.ed-page-header-kicker {
+  color: rgba(232, 223, 209, 0.45);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.ed-page-header-title {
+  margin: 7px 0 0;
+  color: #e8dfd1;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(38px, 5.5vw, 58px);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 0.98;
+}
+
+.ed-page-header-title em {
+  color: #d94a2a;
+  font-style: italic;
+}
+
+.ed-page-header-sub {
+  margin-top: 8px;
+  color: rgba(232, 223, 209, 0.5);
+  font-size: 13px;
+}
+
 .dashboard-section {
   margin-top: 40px;
 }
@@ -2261,7 +2301,8 @@ h1 {
 
   .dashboard-masthead-main,
   .dashboard-masthead-meta,
-  .rolls-header {
+  .rolls-header,
+  .equipment-page-header {
     align-items: flex-start;
     flex-direction: column;
   }

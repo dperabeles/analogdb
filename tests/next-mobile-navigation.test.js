@@ -22,10 +22,17 @@ assertIncludes(mobileNav, 'href: "/equipment"', 'mobile nav should link to equip
 assertIncludes(mobileNav, 'aria-current={active === item.key ? "page" : undefined}', 'mobile nav should mark active route');
 
 [
-  ['src/app/rolls/new/page.tsx', 'active="new"'],
   ['src/app/stats/page.tsx', 'active="stats"'],
   ['src/app/timeline/page.tsx', 'active="timeline"'],
-  ['src/app/equipment/page.tsx', 'active="equipment"'],
+  ['src/app/equipment/page.tsx', 'active="equipment"']
+].forEach(([filePath, activeMarker]) => {
+  const source = read(filePath);
+  assertIncludes(source, '<AppShell', `${filePath} should use the approved shell for mobile navigation`);
+  assertIncludes(source, activeMarker, `${filePath} should pass the expected active state`);
+});
+
+[
+  ['src/app/rolls/new/page.tsx', 'active="new"'],
   ['src/app/admin/page.tsx', 'active="admin"'],
   ['src/app/rolls/[code]/page.tsx', 'active="detail"'],
   ['src/app/rolls/[code]/edit/page.tsx', 'active="edit"']

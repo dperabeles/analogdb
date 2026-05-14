@@ -2,10 +2,9 @@ import Link from "next/link";
 import { AccessGate } from "@/features/auth/access-gate";
 import { AccessStatus } from "@/features/auth/access-status";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
-import { SignOutButton } from "@/features/auth/sign-out-button";
 import { EquipmentPanel } from "@/features/equipment/equipment-panel";
 import { getEquipmentOverview } from "@/features/equipment/queries";
-import { MobileBottomNav } from "@/features/navigation/mobile-bottom-nav";
+import { AppShell } from "@/features/navigation/app-shell";
 
 export const dynamic = "force-dynamic";
 
@@ -42,40 +41,20 @@ export default async function EquipmentPage() {
   const overview = await getEquipmentOverview();
 
   return (
-    <main className="app-shell">
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand-name">Analog Archive</span>
-          <span className="brand-stage">Equipment</span>
+    <AppShell active="equipment" profile={profile}>
+      <div className="ed-page-header equipment-page-header">
+        <div>
+          <div className="ed-page-header-kicker">PÁG·04 &nbsp;·&nbsp; EQUIPO</div>
+          <h1 className="ed-page-header-title">Tus cámaras, <em>en cifras</em></h1>
+          <div className="ed-page-header-sub">
+            {overview.cameras.length} {overview.cameras.length === 1 ? "cámara" : "cámaras"} en el catálogo
+          </div>
         </div>
-        <div className="actions">
-          <Link className="nav-link" href="/dashboard">
-            Dashboard
-          </Link>
-          <Link className="nav-link" href="/rolls/new">
-            Nuevo
-          </Link>
-          <Link className="nav-link" href="/stats">
-            Stats
-          </Link>
-          <Link className="nav-link" href="/timeline">
-            Timeline
-          </Link>
-          <Link className="nav-link" href="/equipment">
-            Equipo
-          </Link>
-          <SignOutButton />
-        </div>
-      </header>
-      <MobileBottomNav active="equipment" />
-      <section className="workspace">
-        <div className="hero compact-hero">
-          <div className="eyebrow">Catalogo privado</div>
-          <h1>Equipo</h1>
-          <p className="lead">Administra camaras y lentes sin contaminar el catalogo de otros beta testers.</p>
-        </div>
-        <EquipmentPanel overview={overview} />
-      </section>
-    </main>
+        <Link className="primary-action dashboard-masthead-action" href="#camera-form">
+          + Agregar cámara
+        </Link>
+      </div>
+      <EquipmentPanel overview={overview} />
+    </AppShell>
   );
 }

@@ -4,8 +4,7 @@ import { TimelinePanel } from "@/features/analytics/timeline-panel";
 import { AccessGate } from "@/features/auth/access-gate";
 import { AccessStatus } from "@/features/auth/access-status";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
-import { SignOutButton } from "@/features/auth/sign-out-button";
-import { MobileBottomNav } from "@/features/navigation/mobile-bottom-nav";
+import { AppShell } from "@/features/navigation/app-shell";
 
 export const dynamic = "force-dynamic";
 
@@ -42,40 +41,13 @@ export default async function TimelinePage() {
   const overview = await getAnalyticsOverview();
 
   return (
-    <main className="app-shell">
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand-name">Analog Archive</span>
-          <span className="brand-stage">Timeline</span>
-        </div>
-        <div className="actions">
-          <Link className="nav-link" href="/dashboard">
-            Dashboard
-          </Link>
-          <Link className="nav-link" href="/rolls/new">
-            Nuevo
-          </Link>
-          <Link className="nav-link" href="/stats">
-            Stats
-          </Link>
-          <Link className="nav-link" href="/timeline">
-            Timeline
-          </Link>
-          <Link className="nav-link" href="/equipment">
-            Equipo
-          </Link>
-          <SignOutButton />
-        </div>
-      </header>
-      <MobileBottomNav active="timeline" />
-      <section className="workspace">
-        <div className="hero compact-hero">
-          <div className="eyebrow">Cronologia</div>
-          <h1>Tu film, en el tiempo</h1>
-          <p className="lead">Historia cronologica del archivo, agrupada por mes.</p>
-        </div>
-        <TimelinePanel overview={overview} />
-      </section>
-    </main>
+    <AppShell active="timeline" profile={profile}>
+      <div className="ed-page-header">
+        <div className="ed-page-header-kicker">PÁG·03 &nbsp;·&nbsp; CRONOLOGÍA</div>
+        <h1 className="ed-page-header-title">Tu film, <em>en el tiempo</em></h1>
+        <div className="ed-page-header-sub">Historia cronológica del archivo, agrupada por mes</div>
+      </div>
+      <TimelinePanel overview={overview} />
+    </AppShell>
   );
 }

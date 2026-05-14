@@ -53,11 +53,17 @@ assertIncludes(timelinePanel, 'href={`/rolls/${encodeURIComponent(roll.code)}`}'
 const statsPage = read('src/app/stats/page.tsx');
 assertIncludes(statsPage, 'getCurrentAccessProfile', 'stats route should use protected auth gate');
 assertIncludes(statsPage, 'getAnalyticsOverview', 'stats route should load analytics data');
+assertIncludes(statsPage, '<AppShell active="stats"', 'stats route should use the shared GitHub beta approved shell');
+assertIncludes(statsPage, 'ed-page-header-kicker', 'stats route should use the GitHub beta page header');
+assertIncludes(statsPage, 'PÁG·05', 'stats route should match the GitHub beta page number');
 assertIncludes(statsPage, '<StatsPanel', 'stats route should render stats panel');
 
 const timelinePage = read('src/app/timeline/page.tsx');
 assertIncludes(timelinePage, 'getCurrentAccessProfile', 'timeline route should use protected auth gate');
 assertIncludes(timelinePage, 'getAnalyticsOverview', 'timeline route should load analytics data');
+assertIncludes(timelinePage, '<AppShell active="timeline"', 'timeline route should use the shared GitHub beta approved shell');
+assertIncludes(timelinePage, 'ed-page-header-kicker', 'timeline route should use the GitHub beta page header');
+assertIncludes(timelinePage, 'PÁG·03', 'timeline route should match the GitHub beta page number');
 assertIncludes(timelinePage, '<TimelinePanel', 'timeline route should render timeline panel');
 
 const appShell = read('src/features/navigation/app-shell.tsx');
