@@ -34,7 +34,9 @@ assertIncludes(dashboard, 'export const dynamic = "force-dynamic"', 'dashboard s
 assertIncludes(dashboard, 'getCurrentAccessProfile', 'dashboard should resolve access state server-side');
 assertIncludes(dashboard, '<AccessGate', 'dashboard should render login/signup gate when there is no session');
 assertIncludes(dashboard, '<AccessStatus', 'dashboard should render pending/rejected/invalid states');
-assertIncludes(dashboard, '<SignOutButton', 'approved shell should expose logout');
+
+const appShell = read('src/features/navigation/app-shell.tsx');
+assertIncludes(appShell, '<SignOutButton', 'approved shell should expose logout');
 
 const gate = read('src/features/auth/access-gate.tsx');
 assertIncludes(gate, 'signInWithPassword', 'gate should support email/password login');

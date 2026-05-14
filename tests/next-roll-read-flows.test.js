@@ -46,7 +46,10 @@ assertIncludes(filters, 'name="sort"', 'filters should expose sort selection');
 
 const dashboard = read('src/app/dashboard/page.tsx');
 assertIncludes(dashboard, 'getRolls()', 'approved dashboard should read rolls from Supabase');
-assertIncludes(dashboard, '<RollList', 'approved dashboard should render roll list');
+assertIncludes(dashboard, '<DashboardOverview', 'approved dashboard should render the GitHub-style workflow roll overview');
+
+const dashboardOverview = read('src/features/rolls/dashboard-overview.tsx');
+assertIncludes(dashboardOverview, 'encodeURIComponent(roll.code)', 'dashboard workflow cards should link safely to detail routes');
 
 const detailPage = read('src/app/rolls/[code]/page.tsx');
 assertIncludes(detailPage, 'decodeURIComponent', 'detail page should decode URL roll codes');

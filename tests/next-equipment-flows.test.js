@@ -61,7 +61,7 @@ assertIncludes(page, 'getCurrentAccessProfile', 'equipment route should use the 
 assertIncludes(page, 'getEquipmentOverview', 'equipment route should load equipment overview data');
 assertIncludes(page, '<EquipmentPanel', 'equipment route should render the equipment panel');
 
-const dashboard = read('src/app/dashboard/page.tsx');
-assertIncludes(dashboard, 'href="/equipment"', 'dashboard should expose equipment management');
+const appShell = read('src/features/navigation/app-shell.tsx');
+assertIncludes(appShell, 'href: "/equipment"', 'approved shell should expose equipment management');
 
 console.log('next equipment flow static checks passed');

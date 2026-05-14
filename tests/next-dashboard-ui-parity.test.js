@@ -15,7 +15,13 @@ function assertIncludes(source, needle, message) {
 const dashboard = read('src/app/dashboard/page.tsx');
 assertIncludes(dashboard, 'dashboard-masthead', 'dashboard should use an editorial masthead instead of a generic hero');
 assertIncludes(dashboard, 'dashboard-summary-grid', 'dashboard should show compact archive summary metrics');
-assertIncludes(dashboard, 'Archive Index', 'dashboard masthead should use archive-oriented language');
+assertIncludes(dashboard, 'Cuaderno de', 'dashboard masthead should match the GitHub beta notebook heading');
+assertIncludes(dashboard, 'DashboardOverview', 'dashboard should render the GitHub-style index and workflow overview');
+
+const appShell = read('src/features/navigation/app-shell.tsx');
+assertIncludes(appShell, 'ed-sidebar', 'approved shell should use the GitHub beta editorial sidebar class');
+assertIncludes(appShell, 'ed-nav-num', 'approved shell nav should keep GitHub-style numbered nav items');
+assertIncludes(appShell, 'sidebar-account-card', 'approved shell should keep the GitHub beta account widget');
 
 const rollList = read('src/features/rolls/roll-list.tsx');
 assertIncludes(rollList, 'editorial-section-head rolls-header', 'roll archive should use the editorial section header');
@@ -23,10 +29,20 @@ assertIncludes(rollList, 'editorial-section-num', 'roll archive should include a
 assertIncludes(rollList, 'roll-stock', 'roll rows should keep stock as the primary list field');
 assertIncludes(rollList, 'manufacturer', 'roll rows should expose manufacturer context');
 
+const dashboardOverview = read('src/features/rolls/dashboard-overview.tsx');
+assertIncludes(dashboardOverview, 'ed-index-grid', 'dashboard overview should match the GitHub beta index grid');
+assertIncludes(dashboardOverview, 'ed-workflow', 'dashboard overview should match the GitHub beta workflow columns');
+assertIncludes(dashboardOverview, 'Tu film, <em>de un vistazo</em>', 'dashboard section I copy should match GitHub');
+assertIncludes(dashboardOverview, 'Tu film, <em>en curso</em>', 'dashboard section II copy should match GitHub');
+assertIncludes(dashboardOverview, 'Cargar rollo', 'workflow should keep the GitHub dashboard add-roll language');
+
 const css = read('src/app/globals.css');
 assertIncludes(css, '.dashboard-masthead', 'CSS should style dashboard masthead');
 assertIncludes(css, '.dashboard-summary-grid', 'CSS should style dashboard summary metrics');
 assertIncludes(css, '.editorial-section-head', 'CSS should include reusable editorial section headers');
+assertIncludes(css, '.ed-sidebar', 'CSS should style the GitHub beta editorial sidebar');
+assertIncludes(css, '.ed-index-grid', 'CSS should style the GitHub beta dashboard index grid');
+assertIncludes(css, '.ed-workflow', 'CSS should style the GitHub beta workflow columns');
 assertIncludes(css, 'grid-template-columns: 160px minmax(180px, 1.3fr)', 'desktop roll list should be dense and row-based');
 assertIncludes(css, '.roll-card:last-child', 'row list should avoid trailing borders');
 

@@ -22,7 +22,6 @@ assertIncludes(mobileNav, 'href: "/equipment"', 'mobile nav should link to equip
 assertIncludes(mobileNav, 'aria-current={active === item.key ? "page" : undefined}', 'mobile nav should mark active route');
 
 [
-  ['src/app/dashboard/page.tsx', 'active="dashboard"'],
   ['src/app/rolls/new/page.tsx', 'active="new"'],
   ['src/app/stats/page.tsx', 'active="stats"'],
   ['src/app/timeline/page.tsx', 'active="timeline"'],
@@ -35,6 +34,11 @@ assertIncludes(mobileNav, 'aria-current={active === item.key ? "page" : undefine
   assertIncludes(source, 'MobileBottomNav', `${filePath} should render mobile bottom navigation`);
   assertIncludes(source, activeMarker, `${filePath} should pass the expected active state`);
 });
+
+const dashboard = read('src/app/dashboard/page.tsx');
+const appShell = read('src/features/navigation/app-shell.tsx');
+assertIncludes(dashboard, '<AppShell active="dashboard"', 'dashboard should pass active state through the approved shell');
+assertIncludes(appShell, '<MobileBottomNav active={active}', 'approved shell should render shared mobile bottom navigation');
 
 const css = read('src/app/globals.css');
 assertIncludes(css, '.mobile-bottom-nav', 'global CSS should style mobile bottom navigation');

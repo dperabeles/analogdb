@@ -60,8 +60,8 @@ assertIncludes(timelinePage, 'getCurrentAccessProfile', 'timeline route should u
 assertIncludes(timelinePage, 'getAnalyticsOverview', 'timeline route should load analytics data');
 assertIncludes(timelinePage, '<TimelinePanel', 'timeline route should render timeline panel');
 
-const dashboard = read('src/app/dashboard/page.tsx');
-assertIncludes(dashboard, 'href="/stats"', 'dashboard should expose stats route');
-assertIncludes(dashboard, 'href="/timeline"', 'dashboard should expose timeline route');
+const appShell = read('src/features/navigation/app-shell.tsx');
+assertIncludes(appShell, 'href: "/stats"', 'approved shell should expose stats route');
+assertIncludes(appShell, 'href: "/timeline"', 'approved shell should expose timeline route');
 
 console.log('next stats/timeline flow static checks passed');

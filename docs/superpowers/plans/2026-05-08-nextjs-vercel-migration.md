@@ -1802,3 +1802,72 @@ Validation result:
 Open follow-up:
 
 - User should retry login on the branch alias.
+
+### 2026-05-13: Authenticated Dashboard GitHub Parity Pass
+
+Completed:
+
+- Started the authenticated UI parity pass from the real GitHub beta source in `analog-db-dashboard.html`.
+- Added a reusable approved-session shell in `src/features/navigation/app-shell.tsx`:
+  - dark editorial sidebar class `ed-sidebar`
+  - numbered nav items via `ed-nav-num`
+  - sidebar account card
+  - shared mobile bottom nav
+  - desktop archive location bar
+- Updated `/dashboard` to use the GitHub beta dashboard language and structure:
+  - masthead: `Cuaderno de laboratorio`
+  - summary: active rolls and historical archive count
+  - CTA copy: `+ Cargar rollo nuevo`
+- Added `src/features/rolls/dashboard-overview.tsx` for GitHub-style dashboard sections:
+  - Section I: `Tu film, de un vistazo`
+  - format count grid
+  - favorite stock leaderboard
+  - Section II: `Tu film, en curso`
+  - three workflow columns: En cámara, Por revelar, En revelado
+  - roll workflow cards linking to detail routes
+- Updated CSS to bring the dashboard closer to the GitHub dark editorial UI:
+  - sidebar/account widget styling
+  - masthead styling
+  - index grid styling
+  - stock rows
+  - workflow columns
+  - workflow roll cards
+  - responsive desktop/mobile behavior
+- Updated static regression tests so navigation assertions follow the new shared approved shell instead of assuming every route owns its own nav markup.
+
+Validation commands used:
+
+```bash
+node --test tests/next-dashboard-ui-parity.test.js
+node --test tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/next-mobile-navigation.test.js
+npm run typecheck
+npm run build
+npx --yes vercel env pull .env.local --environment=preview --git-branch feature/nextjs-vercel-migration --yes
+npm run dev -- --hostname 127.0.0.1 --port 3000
+curl -sS http://127.0.0.1:3000/
+curl -sS http://127.0.0.1:3000/dashboard
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Validation result:
+
+- New dashboard parity test failed before implementation and passed after the dashboard shell/overview changes.
+- Focused auth/public/UI/dashboard/mobile tests passed.
+- `tsc --noEmit` passed.
+- `next build` passed.
+- Local dev smoke for `/` and `/dashboard` returned the expected public gate for unauthenticated access.
+- Full JS regression suite passed: 14/14 tests.
+- Python regression suite passed: 16/16 tests.
+
+Errors / lessons:
+
+- Moving navigation into a shared approved shell broke several static tests that still searched only `dashboard/page.tsx`. Updated those tests to assert against the actual source of truth: `AppShell`.
+- `next dev` rewrote `next-env.d.ts`; restored it before commit.
+- Pulling Vercel envs created `.env.local`; deleted it after smoke because it can contain temporary auth material.
+
+Open follow-up:
+
+- Commit and deploy this dashboard parity pass to Vercel.
+- User should compare authenticated dashboard on Vercel against GitHub beta.
+- Next UI parity pass should cover Stats, Timeline, and Equipment with the same shared approved shell.

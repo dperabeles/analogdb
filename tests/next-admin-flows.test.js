@@ -63,8 +63,8 @@ assertIncludes(page, 'getCurrentAccessProfile', 'admin route should use the same
 assertIncludes(page, 'getAdminOverview', 'admin route should load admin overview data');
 assertIncludes(page, '<AdminPanel', 'admin route should render the admin panel');
 
-const dashboard = read('src/app/dashboard/page.tsx');
-assertIncludes(dashboard, 'href="/admin"', 'dashboard should expose the admin route to admins');
+const appShell = read('src/features/navigation/app-shell.tsx');
+assertIncludes(appShell, 'href="/admin"', 'approved shell should expose the admin route to admins');
 
 const database = read('src/types/database.ts');
 assertIncludes(database, 'user_roles', 'Database type should include admin roles');
