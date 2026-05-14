@@ -41,14 +41,22 @@ assertIncludes(statsPanel, 'Tipo de rollo', 'stats panel should render film type
 assertIncludes(statsPanel, 'Formatos', 'stats panel should render format section');
 assertIncludes(statsPanel, 'Stocks favoritos', 'stats panel should render stock leaders');
 assertIncludes(statsPanel, 'Laboratorios', 'stats panel should render lab leaders');
-assertIncludes(statsPanel, 'Camaras', 'stats panel should render camera leaders');
+assertIncludes(statsPanel, 'Cámaras', 'stats panel should render camera leaders');
 assertIncludes(statsPanel, 'Ubicaciones', 'stats panel should render location leaders');
 assertIncludes(statsPanel, 'Tags', 'stats panel should render tag leaders');
+assertIncludes(statsPanel, 'ed-section-head', 'stats panel should use GitHub beta editorial section headers');
+assertIncludes(statsPanel, 'ed-format-boxes', 'stats panel should use GitHub beta format boxes');
+assertIncludes(statsPanel, 'ed-stock-row', 'stats panel should use GitHub beta leaderboard rows');
+assertIncludes(statsPanel, 'ed-stock-swatch', 'stats panel should use GitHub beta color swatches');
 
 const timelinePanel = read('src/features/analytics/timeline-panel.tsx');
 assertIncludes(timelinePanel, 'timelineGroups', 'timeline panel should render grouped roll data');
 assertIncludes(timelinePanel, 'Sin fecha', 'timeline panel should support undated rolls');
 assertIncludes(timelinePanel, 'href={`/rolls/${encodeURIComponent(roll.code)}`}', 'timeline rows should link to roll detail');
+assertIncludes(timelinePanel, 'tl-month', 'timeline panel should use GitHub beta month layout');
+assertIncludes(timelinePanel, 'tl-month-head', 'timeline panel should use GitHub beta timeline heads');
+assertIncludes(timelinePanel, 'tl-row', 'timeline panel should use GitHub beta timeline rows');
+assertIncludes(timelinePanel, 'tl-badges', 'timeline panel should use GitHub beta badge rail');
 
 const statsPage = read('src/app/stats/page.tsx');
 assertIncludes(statsPage, 'getCurrentAccessProfile', 'stats route should use protected auth gate');

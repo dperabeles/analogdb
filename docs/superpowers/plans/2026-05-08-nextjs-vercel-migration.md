@@ -1986,3 +1986,60 @@ Open follow-up:
 
 - User should compare Stats, Timeline, and Equipment shell/header alignment in Vercel against GitHub beta.
 - Next parity work should focus on internal panel layouts for Stats, Timeline, and Equipment.
+
+### 2026-05-14: Internal Stats and Timeline GitHub Beta Parity Pass
+
+Completed:
+
+- Continued exact GitHub beta UI parity inside the authenticated archive pages.
+- Updated `StatsPanel` from the older generic analytics rows into GitHub beta-style editorial sections:
+  - `ed-section-head`, `ed-section-num`, `ed-section-title`, and `ed-section-sub`
+  - `ed-format-boxes` / `ed-format-box` for film type and format breakdowns
+  - `ed-stock-row`, `ed-stock-swatch`, `ed-stock-bar-wrap`, and `ed-stock-count` for leaderboard lists
+- Updated stats sections to follow the beta ordering:
+  - `I. Tipo de rollo`
+  - `II. Formatos`
+  - `III. Stocks favoritos`
+  - `IV. Laboratorios`
+  - `V. Cámaras`
+  - `VI. Ubicaciones`
+  - `VII. Categorías`
+  - `VIII. Tags`
+- Updated `TimelinePanel` from the generic grid/list into the GitHub beta timeline structure:
+  - `timeline-wrap`
+  - `tl-month`, `tl-month-label`, `tl-month-year`, `tl-month-name`
+  - `tl-month-head`, `tl-month-dot`, `tl-month-count`, `tl-month-rolls`
+  - `tl-row`, `tl-date`, `tl-id`, `tl-stack`, `tl-badges`, and `tl-notes`
+- Added timeline badge styling for film type, format, and status while preserving links to roll detail pages.
+- Updated responsive CSS so the new timeline rows stack cleanly on mobile.
+- Updated static tests so Stats and Timeline now assert against the real GitHub beta internal class structure, not just data presence.
+
+Validation commands used:
+
+```bash
+node --test tests/next-stats-timeline-flows.test.js
+node --test tests/next-stats-timeline-flows.test.js tests/next-ui-parity-baseline.test.js tests/next-mobile-navigation.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Validation result:
+
+- New Stats/Timeline internal parity assertions failed before implementation, as expected.
+- Focused Stats/Timeline/UI/mobile tests passed after implementation.
+- `tsc --noEmit` passed.
+- `next build` passed.
+- Full JS regression suite passed: 14/14 tests.
+- Python regression suite passed: 16/16 tests.
+
+Errors / lessons:
+
+- The previous Stats and Timeline routes already had correct data flow, but their inner panels still used generic Next.js-era class names. For parity work, always verify both the shell and the internal panel class structure against `analog-db-dashboard.html`.
+- Timeline needed a separate mobile stacking adjustment after moving from grid rows to the GitHub beta `tl-row` flex layout.
+
+Open follow-up:
+
+- Commit and deploy this internal Stats/Timeline parity pass to Vercel.
+- Continue with the internal Equipment panel parity pass next, especially cameras/lenses/forms and the mobile camera-delete follow-up previously noted.
