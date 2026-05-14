@@ -2077,3 +2077,69 @@ Open follow-up:
 
 - User should compare `/stats` and `/timeline` on Vercel against the GitHub beta internal layouts.
 - Continue with internal Equipment panel parity next.
+
+### 2026-05-14: Internal Equipment GitHub Beta Parity Pass
+
+Completed:
+
+- Continued exact GitHub beta UI parity for the authenticated Equipment page.
+- Updated `EquipmentPanel` from generic Next.js cards/forms into GitHub beta-style equipment catalog structure:
+  - `cam-catalog-grid`
+  - `cam-card`
+  - `cam-card-maker`
+  - `cam-card-model`
+  - `cam-card-badges`
+  - `cam-badge`
+  - `cam-card-footer`
+  - `cam-card-rolls`
+  - `cam-card-last`
+- Preserved existing Server Actions for adding/editing/removing or hiding cameras and lenses.
+- Restyled camera and lens forms with GitHub beta modal-style classes:
+  - `cam-modal-field`
+  - `cam-modal-label`
+  - `cam-modal-input`
+  - `cam-modal-select`
+  - `cam-modal-check`
+  - `cam-modal-save`
+- Added Equipment usage visual sections matching the beta pattern:
+  - `cam-stats-label`
+  - `cam-chart-wrap`
+  - `cam-bar-row`
+  - `cam-bottom-grid`
+  - `stat-card`
+- Extended `getEquipmentOverview()` to read `started` and `finished` from roll references so camera/lens cards can show `Último uso` without requiring user export/import or separate data migration.
+- Updated Equipment static tests to assert against the real GitHub beta catalog classes, not only functional form fields.
+
+Validation commands used:
+
+```bash
+node --test tests/next-equipment-flows.test.js
+npm run typecheck
+rm -rf .next
+npm run typecheck
+node --test tests/next-equipment-flows.test.js tests/next-ui-parity-baseline.test.js tests/next-mobile-navigation.test.js
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Validation result:
+
+- New Equipment internal parity assertions failed before implementation, as expected.
+- Focused Equipment/UI/mobile tests passed after implementation.
+- `tsc --noEmit` passed after the fixes below.
+- `next build` passed.
+- Full JS regression suite passed: 14/14 tests.
+- Python regression suite passed: 16/16 tests.
+
+Errors / lessons:
+
+- The first typecheck caught a real nullable issue in camera sorting: `camera.model` can be `null`, so comparisons must use `String(camera.model || "")`.
+- The first typecheck also reported duplicate generated `.next/types/* d 2.ts` definitions. Cleaning `.next` with `rm -rf .next` resolved the generated-file conflict before rerunning typecheck.
+- The beta Equipment page is camera-first on desktop, while the Next.js migration also supports lenses. Keep lenses in the same beta card language instead of inventing a separate visual system.
+
+Open follow-up:
+
+- Commit and deploy this internal Equipment parity pass to Vercel.
+- User should compare `/equipment` on Vercel against the GitHub beta Equipment page.
+- Continue remaining parity work by reviewing authenticated roll detail/edit/new screens against the GitHub beta modal/form behavior.

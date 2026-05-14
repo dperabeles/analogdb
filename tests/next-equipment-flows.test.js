@@ -44,8 +44,16 @@ assertIncludes(actions, 'show_in_quick_mode: false', 'referenced equipment shoul
 assertIncludes(actions, 'revalidatePath("/equipment")', 'equipment mutations should invalidate equipment view');
 
 const panel = read('src/features/equipment/equipment-panel.tsx');
-assertIncludes(panel, 'Camaras', 'equipment panel should render camera section');
+assertIncludes(panel, 'Cámaras', 'equipment panel should render camera section');
 assertIncludes(panel, 'Lentes', 'equipment panel should render lens section');
+assertIncludes(panel, 'cam-catalog-grid', 'equipment panel should use the GitHub beta camera catalog grid');
+assertIncludes(panel, 'cam-card', 'equipment panel should use GitHub beta camera cards');
+assertIncludes(panel, 'cam-card-maker', 'equipment panel should render beta camera maker label');
+assertIncludes(panel, 'cam-card-badges', 'equipment panel should render beta equipment badges');
+assertIncludes(panel, 'cam-stats-label', 'equipment panel should render beta usage stats label');
+assertIncludes(panel, 'cam-chart-wrap', 'equipment panel should render beta usage chart wrapper');
+assertIncludes(panel, 'cam-modal-field', 'equipment forms should use beta modal field styling');
+assertIncludes(panel, 'cam-modal-save', 'equipment forms should use beta modal save button styling');
 assertIncludes(panel, 'name="maker"', 'equipment forms should capture maker');
 assertIncludes(panel, 'name="model"', 'equipment forms should capture model');
 assertIncludes(panel, 'name="mount"', 'equipment forms should capture mount');
