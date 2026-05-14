@@ -1956,3 +1956,33 @@ Open follow-up:
 
 - Commit and deploy this shared-shell parity pass to Vercel.
 - Next UI parity work should align the internal Stats, Timeline, and Equipment panels with the exact GitHub beta layouts.
+
+### 2026-05-14: Vercel Verification After Shared Archive Shell Pass
+
+Completed:
+
+- Pushed shared-shell parity commit `5fd47e5` to `feature/nextjs-vercel-migration`.
+- Confirmed Vercel generated a new preview deployment:
+  - deployment id: `dpl_7pSZhUSa5XfupzYnW4AFTz2uaww3`
+  - deployment URL: `https://analogdb-repo-o0we1o301-arqdiegoperabeles-2865s-projects.vercel.app`
+  - branch alias: `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
+  - target: `preview`
+  - status: `Ready`
+- Checked recent Vercel error logs for `feature/nextjs-vercel-migration`; no recent error logs were found.
+
+Validation commands used:
+
+```bash
+npx --yes vercel inspect https://analogdb-repo-o0we1o301-arqdiegoperabeles-2865s-projects.vercel.app
+npx --yes vercel logs --level error --since 10m --branch feature/nextjs-vercel-migration --limit 50 --expand
+```
+
+Validation result:
+
+- The Vercel preview containing the shared archive shell pass is live and ready.
+- No recent runtime errors were reported by Vercel logs.
+
+Open follow-up:
+
+- User should compare Stats, Timeline, and Equipment shell/header alignment in Vercel against GitHub beta.
+- Next parity work should focus on internal panel layouts for Stats, Timeline, and Equipment.
