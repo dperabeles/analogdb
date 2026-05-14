@@ -2143,3 +2143,33 @@ Open follow-up:
 - Commit and deploy this internal Equipment parity pass to Vercel.
 - User should compare `/equipment` on Vercel against the GitHub beta Equipment page.
 - Continue remaining parity work by reviewing authenticated roll detail/edit/new screens against the GitHub beta modal/form behavior.
+
+### 2026-05-14: Vercel Verification After Internal Equipment Pass
+
+Completed:
+
+- Pushed internal Equipment parity commit `9033a08` to `feature/nextjs-vercel-migration`.
+- Confirmed Vercel generated a new preview deployment:
+  - deployment id: `dpl_64vQayBh63uAQUVSYK2Svt3mXsUb`
+  - deployment URL: `https://analogdb-repo-5eh3yuarx-arqdiegoperabeles-2865s-projects.vercel.app`
+  - branch alias: `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
+  - target: `preview`
+  - status: `Ready`
+- Checked recent Vercel error logs for `feature/nextjs-vercel-migration`; no recent error logs were found.
+
+Validation commands used:
+
+```bash
+npx --yes vercel inspect https://analogdb-repo-5eh3yuarx-arqdiegoperabeles-2865s-projects.vercel.app
+npx --yes vercel logs --level error --since 10m --branch feature/nextjs-vercel-migration --limit 50 --expand
+```
+
+Validation result:
+
+- The Vercel preview containing the internal Equipment parity pass is live and ready.
+- No recent runtime errors were reported by Vercel logs.
+
+Open follow-up:
+
+- User should compare `/equipment` on Vercel against the GitHub beta Equipment page.
+- Continue remaining parity work by reviewing authenticated roll detail/edit/new screens against the GitHub beta modal/form behavior.
