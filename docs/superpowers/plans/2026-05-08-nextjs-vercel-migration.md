@@ -2043,3 +2043,37 @@ Open follow-up:
 
 - Commit and deploy this internal Stats/Timeline parity pass to Vercel.
 - Continue with the internal Equipment panel parity pass next, especially cameras/lenses/forms and the mobile camera-delete follow-up previously noted.
+
+### 2026-05-14: Vercel Verification After Internal Stats/Timeline Pass
+
+Completed:
+
+- Pushed internal Stats/Timeline parity commit `78f6115` to `feature/nextjs-vercel-migration`.
+- Confirmed Vercel generated a new preview deployment:
+  - deployment id: `dpl_A2fV8KMMeDhceKwZfrTsA6nuwjmA`
+  - deployment URL: `https://analogdb-repo-5wz3slian-arqdiegoperabeles-2865s-projects.vercel.app`
+  - branch alias: `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
+  - target: `preview`
+  - status: `Ready`
+- Checked recent Vercel error logs for `feature/nextjs-vercel-migration`; no recent error logs were found.
+
+Validation commands used:
+
+```bash
+npx --yes vercel inspect https://analogdb-repo-5wz3slian-arqdiegoperabeles-2865s-projects.vercel.app
+npx --yes vercel logs --level error --since 10m --branch feature/nextjs-vercel-migration --limit 50 --expand
+```
+
+Validation result:
+
+- The Vercel preview containing the internal Stats/Timeline parity pass is live and ready.
+- No recent runtime errors were reported by Vercel logs.
+
+Errors / lessons:
+
+- Inspecting the branch alias immediately after push still showed the previous ready deployment for a moment. `vercel ls analogdb-repo --scope arqdiegoperabeles-2865s-projects` confirmed the new deployment was still building; wait for the new deployment URL to reach `Ready` before treating the alias as current.
+
+Open follow-up:
+
+- User should compare `/stats` and `/timeline` on Vercel against the GitHub beta internal layouts.
+- Continue with internal Equipment panel parity next.
