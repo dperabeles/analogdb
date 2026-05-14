@@ -1871,3 +1871,33 @@ Open follow-up:
 - Commit and deploy this dashboard parity pass to Vercel.
 - User should compare authenticated dashboard on Vercel against GitHub beta.
 - Next UI parity pass should cover Stats, Timeline, and Equipment with the same shared approved shell.
+
+### 2026-05-13: Vercel Verification After Dashboard Parity Pass
+
+Completed:
+
+- Pushed dashboard parity commit `9e21d72` to `feature/nextjs-vercel-migration`.
+- Confirmed Vercel generated a new preview deployment:
+  - deployment id: `dpl_64vJtPPECnFSmbWPTswLhUnhrzdW`
+  - deployment URL: `https://analogdb-repo-835doylm7-arqdiegoperabeles-2865s-projects.vercel.app`
+  - branch alias: `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
+  - target: `preview`
+  - status: `Ready`
+- Checked recent Vercel error logs for `feature/nextjs-vercel-migration`; no recent error logs were found.
+
+Validation commands used:
+
+```bash
+npx --yes vercel inspect https://analogdb-repo-835doylm7-arqdiegoperabeles-2865s-projects.vercel.app
+npx --yes vercel logs --level error --since 10m --branch feature/nextjs-vercel-migration --limit 50 --expand
+```
+
+Validation result:
+
+- The Vercel preview containing the dashboard parity pass is live and ready.
+- No recent runtime errors were reported by Vercel logs.
+
+Open follow-up:
+
+- User should compare the authenticated dashboard in Vercel against the current GitHub beta.
+- Continue exact GitHub parity on Stats, Timeline, and Equipment after dashboard review.
