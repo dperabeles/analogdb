@@ -2601,3 +2601,40 @@ Open follow-up:
 
 - Commit and deploy this database filter parity pass to Vercel.
 - Continue authenticated browser visual QA for `/database`, especially filter wrapping and mobile table/filter density.
+
+### 2026-05-15: Vercel Verification After Database Filters Pass
+
+Completed:
+
+- Pushed database filter parity commit `4f6bf3d` to `feature/nextjs-vercel-migration`.
+- Confirmed the remote GitHub branch points to `4f6bf3d6e9df95b8d0a85e8ea8eb0cb5131127fb`.
+- Confirmed Vercel Git automatically created a new preview deployment this time:
+  - deployment id: `dpl_32TxgPaye3d2BhprXjcnPp5uAcDq`
+  - deployment URL: `https://analogdb-repo-iif9bdwjz-arqdiegoperabeles-2865s-projects.vercel.app`
+  - branch alias: `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
+  - target: `preview`
+  - status: `Ready`
+- Checked Vercel error logs for the preview deployment; no error logs were found.
+
+Validation commands used:
+
+```bash
+git ls-remote origin feature/nextjs-vercel-migration
+npx --yes vercel ls analogdb-repo --scope arqdiegoperabeles-2865s-projects
+npx --yes vercel inspect https://analogdb-repo-iif9bdwjz-arqdiegoperabeles-2865s-projects.vercel.app --scope arqdiegoperabeles-2865s-projects
+npx --yes vercel logs https://analogdb-repo-iif9bdwjz-arqdiegoperabeles-2865s-projects.vercel.app --level error --since 10m --limit 50 --expand --scope arqdiegoperabeles-2865s-projects
+```
+
+Validation result:
+
+- The database filter parity pass is live on Vercel and the branch alias points to the new deployment.
+- No Vercel runtime error logs were found.
+
+Errors / lessons:
+
+- Unlike the previous pass, Vercel Git did auto-deploy this commit. Keep verifying every push because behavior can differ between commits.
+
+Open follow-up:
+
+- Continue authenticated browser visual QA for `/database`.
+- Next likely parity target: make table interactions closer to GitHub beta, especially sortable column behavior or filter count feedback.
