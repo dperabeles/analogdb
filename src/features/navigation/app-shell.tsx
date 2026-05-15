@@ -5,14 +5,14 @@ import { SignOutButton } from "@/features/auth/sign-out-button";
 import { MobileBottomNav } from "@/features/navigation/mobile-bottom-nav";
 
 type AppShellProps = {
-  active: "dashboard" | "new" | "stats" | "timeline" | "equipment" | "admin" | "detail" | "edit";
+  active: "dashboard" | "database" | "new" | "stats" | "timeline" | "equipment" | "account" | "admin" | "detail" | "edit";
   profile: AccessProfile | null;
   children: ReactNode;
 };
 
 const NAV_ITEMS = [
   { key: "dashboard", href: "/dashboard", label: "Dashboard", num: "01" },
-  { key: "new", href: "/rolls/new", label: "Database", num: "02" },
+  { key: "database", href: "/database", label: "Database", num: "02" },
   { key: "timeline", href: "/timeline", label: "Timeline", num: "03" },
   { key: "equipment", href: "/equipment", label: "Cámaras", num: "04" },
   { key: "stats", href: "/stats", label: "Estadísticas", num: "05" }

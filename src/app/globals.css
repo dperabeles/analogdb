@@ -2041,6 +2041,43 @@ h1 {
   gap: 44px;
 }
 
+.account-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.account-action-card {
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid var(--line);
+  background: rgba(244, 237, 226, 0.025);
+  color: var(--text);
+  padding: 18px;
+}
+
+.account-action-card span {
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.14em;
+}
+
+.account-action-card strong {
+  font-size: 18px;
+}
+
+.account-action-card small {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.account-signout-row {
+  width: min(100%, 260px);
+}
+
 .equipment-section {
   display: grid;
   gap: 18px;
@@ -2929,6 +2966,7 @@ h1 {
     min-width: 0;
     min-height: 60px;
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     border-right: 1px solid var(--line);
@@ -2944,6 +2982,40 @@ h1 {
   .mobile-bottom-nav-item[aria-current="page"] {
     color: var(--text);
     background: rgba(217, 74, 42, 0.16);
+  }
+
+  .mobile-bottom-nav-fab {
+    min-width: 0;
+    min-height: 60px;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    border-right: 1px solid var(--line);
+    color: var(--text);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .mobile-bottom-nav-fab span {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--accent);
+    color: #140f0c;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .mobile-bottom-nav-fab[aria-current="page"] span {
+    background: #f3eadb;
   }
 
   .workspace {
@@ -3053,7 +3125,8 @@ h1 {
   }
 
   .ed-index-grid,
-  .ed-workflow {
+  .ed-workflow,
+  .account-action-grid {
     grid-template-columns: 1fr;
   }
 

@@ -2356,3 +2356,60 @@ Open follow-up:
 
 - Start a systematic Vercel QA pass across desktop/mobile for public gate, dashboard, stats, timeline, equipment, roll detail, roll new/edit, and admin.
 - After QA, prioritize remaining visual gaps that block the Vercel preview from looking at least as polished as the current GitHub Pages beta.
+
+### 2026-05-15: Database Route And Mobile Nav Parity Pass
+
+Completed:
+
+- Started the systematic parity pass by comparing Next navigation against `analog-db-dashboard.html`.
+- Found a concrete GitHub beta mismatch:
+  - desktop `Database` nav was incorrectly pointing to `/rolls/new`
+  - mobile bottom nav showed `Data`, `Nuevo`, `Stats`, `Timeline`, `Equipo`
+  - GitHub beta mobile bottom nav is `Dash`, `Data`, centered `+ Nuevo`, `Stats`, `Cuenta`
+- Added a protected `/database` route for the full roll archive/list view:
+  - `AppShell active="database"`
+  - `PÁG·02 · BASE DE DATOS`
+  - `Tu archivo, en datos`
+  - `RollList` with existing search/status/sort filters
+- Updated `RollFilters` to submit to `/database` instead of `/dashboard`.
+- Updated desktop `AppShell` so `Database` now points to `/database`; the new-roll flow remains a primary action/FAB.
+- Updated mobile bottom nav to match the GitHub beta tab model:
+  - `Dash` -> `/dashboard`
+  - `Data` -> `/database`
+  - centered `+ Nuevo` -> `/rolls/new`
+  - `Stats` -> `/stats`
+  - `Cuenta` -> `/account`
+- Added a protected `/account` route so the mobile `Cuenta` tab does not lead to a missing page. It exposes account shortcuts to equipment/admin and a visible sign-out action for mobile.
+
+Validation commands used:
+
+```bash
+node --test tests/next-roll-read-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Validation result:
+
+- RED checks failed before implementation for the expected reasons:
+  - missing `/database`
+  - mobile `Data` did not link to the GitHub beta Database view
+  - desktop shell did not keep `Database` as its own nav item
+- Focused navigation/database parity tests passed after implementation.
+- `tsc --noEmit` passed.
+- `next build` passed and reported `/database` and `/account` as dynamic routes.
+- Full JS regression suite passed: 14/14 tests.
+- Python regression suite passed: 16/16 tests.
+
+Errors / lessons:
+
+- The prior Next shell incorrectly treated `Database` as the create-roll route. In the GitHub beta, `Database` is a complete roll archive view and `+ Cargar rollo` is a separate action.
+- Mobile parity should follow the beta information architecture first. Timeline and equipment still exist as routes, but on the beta mobile shell they live behind page/account flows rather than as bottom-nav tabs.
+
+Open follow-up:
+
+- Commit and deploy this database/mobile-nav parity pass to Vercel.
+- Verify the deployed branch alias has `/database` and `/account` live.
+- Continue the QA pass with visual review of `/database` against the GitHub beta table/list behavior.

@@ -13,7 +13,7 @@ const SORT_LABELS = [
 
 export function RollFilters({ filters }: RollFiltersProps) {
   return (
-    <form className="roll-filters" action="/dashboard">
+    <form className="roll-filters" action="/database">
       <label>
         Status
         <select name="status" defaultValue={filters.status || ""}>

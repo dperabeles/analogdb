@@ -22,11 +22,13 @@ assertIncludes(css, 'margin: 0 0 0 var(--sidebar-width)', 'workspace should clea
 
 const appShell = read('src/features/navigation/app-shell.tsx');
 assertIncludes(appShell, 'href: "/dashboard"', 'approved shell should keep Dashboard in the desktop nav');
+assertIncludes(appShell, 'href: "/database"', 'approved shell should keep Database in the desktop nav');
 assertIncludes(appShell, 'href: "/stats"', 'approved shell should keep Stats in the desktop nav');
 assertIncludes(appShell, 'href: "/timeline"', 'approved shell should keep Timeline in the desktop nav');
 assertIncludes(appShell, 'href: "/equipment"', 'approved shell should keep Equipment in the desktop nav');
 
 [
+  'src/app/database/page.tsx',
   'src/app/stats/page.tsx',
   'src/app/timeline/page.tsx',
   'src/app/equipment/page.tsx',

@@ -15,13 +15,18 @@ function assertIncludes(source, needle, message) {
 const mobileNav = read('src/features/navigation/mobile-bottom-nav.tsx');
 assertIncludes(mobileNav, 'mobile-bottom-nav', 'mobile nav should expose the shared bottom-nav class');
 assertIncludes(mobileNav, 'href: "/dashboard"', 'mobile nav should link to dashboard');
-assertIncludes(mobileNav, 'href: "/rolls/new"', 'mobile nav should link to new roll flow');
+assertIncludes(mobileNav, 'href: "/database"', 'mobile nav should link Data to the GitHub beta Database view');
 assertIncludes(mobileNav, 'href: "/stats"', 'mobile nav should link to stats');
-assertIncludes(mobileNav, 'href: "/timeline"', 'mobile nav should link to timeline');
-assertIncludes(mobileNav, 'href: "/equipment"', 'mobile nav should link to equipment');
+assertIncludes(mobileNav, 'href: "/account"', 'mobile nav should keep the GitHub beta Cuenta tab');
+assertIncludes(mobileNav, 'mobile-bottom-nav-fab', 'mobile nav should keep the centered new-roll FAB');
+assertIncludes(mobileNav, 'Dash', 'mobile nav should match the GitHub beta Dash label');
+assertIncludes(mobileNav, 'Data', 'mobile nav should match the GitHub beta Data label');
+assertIncludes(mobileNav, 'Cuenta', 'mobile nav should match the GitHub beta Cuenta label');
 assertIncludes(mobileNav, 'aria-current={active === item.key ? "page" : undefined}', 'mobile nav should mark active route');
 
 [
+  ['src/app/database/page.tsx', 'active="database"'],
+  ['src/app/account/page.tsx', 'active="account"'],
   ['src/app/stats/page.tsx', 'active="stats"'],
   ['src/app/timeline/page.tsx', 'active="timeline"'],
   ['src/app/equipment/page.tsx', 'active="equipment"']
@@ -46,6 +51,9 @@ const dashboard = read('src/app/dashboard/page.tsx');
 const appShell = read('src/features/navigation/app-shell.tsx');
 assertIncludes(dashboard, '<AppShell active="dashboard"', 'dashboard should pass active state through the approved shell');
 assertIncludes(appShell, '<MobileBottomNav active={active}', 'approved shell should render shared mobile bottom navigation');
+
+const account = read('src/app/account/page.tsx');
+assertIncludes(account, '<SignOutButton', 'account page should expose sign out because the sidebar is hidden on mobile');
 
 const css = read('src/app/globals.css');
 assertIncludes(css, '.mobile-bottom-nav', 'global CSS should style mobile bottom navigation');

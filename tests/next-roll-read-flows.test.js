@@ -22,6 +22,7 @@ function assertIncludes(source, needle, message) {
   'src/features/rolls/roll-list.tsx',
   'src/features/rolls/roll-filters.tsx',
   'src/features/rolls/roll-detail.tsx',
+  'src/app/database/page.tsx',
   'src/app/rolls/[code]/page.tsx'
 ].forEach(assertFile);
 
@@ -47,6 +48,11 @@ assertIncludes(filters, 'name="sort"', 'filters should expose sort selection');
 const dashboard = read('src/app/dashboard/page.tsx');
 assertIncludes(dashboard, 'getRolls()', 'approved dashboard should read rolls from Supabase');
 assertIncludes(dashboard, '<DashboardOverview', 'approved dashboard should render the GitHub-style workflow roll overview');
+
+const databasePage = read('src/app/database/page.tsx');
+assertIncludes(databasePage, '<AppShell active="database"', 'database page should be the GitHub beta Database route');
+assertIncludes(databasePage, '<RollList', 'database page should render the full roll archive table/card list');
+assertIncludes(databasePage, 'PÁG·02', 'database page should keep the GitHub beta page number');
 
 const dashboardOverview = read('src/features/rolls/dashboard-overview.tsx');
 assertIncludes(dashboardOverview, 'encodeURIComponent(roll.code)', 'dashboard workflow cards should link safely to detail routes');
