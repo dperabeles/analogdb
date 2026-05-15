@@ -23,9 +23,11 @@ function Field({
   required?: boolean;
 }) {
   return (
-    <label>
-      {label}
-      <input name={name} type={type} defaultValue={defaultValue ?? ""} required={required} />
+    <label className="editor-row">
+      <span className="editor-key">{label}</span>
+      <span className="editor-val">
+        <input name={name} type={type} defaultValue={defaultValue ?? ""} required={required} />
+      </span>
     </label>
   );
 }
@@ -42,16 +44,18 @@ function SelectField({
   options: string[];
 }) {
   return (
-    <label>
-      {label}
-      <select name={name} defaultValue={defaultValue || ""}>
-        <option value="">—</option>
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
+    <label className="editor-row">
+      <span className="editor-key">{label}</span>
+      <span className="editor-val">
+        <select name={name} defaultValue={defaultValue || ""}>
+          <option value="">—</option>
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </span>
     </label>
   );
 }
@@ -61,9 +65,9 @@ export function RollForm({ roll }: RollFormProps) {
     <form className="roll-form" action={saveRollAction}>
       <input name="originalCode" type="hidden" value={roll?.code || ""} />
 
-      <section className="form-section">
-        <h2>Film</h2>
-        <div className="form-grid">
+      <div className="editor-grid">
+        <section className="editor-section">
+          <div className="editor-sec-title">Film Info</div>
           <Field label="Código" name="code" defaultValue={roll?.code} required />
           <Field label="Film stock" name="filmStock" defaultValue={roll?.filmStock} />
           <Field label="Fabricante" name="manufacturer" defaultValue={roll?.manufacturer} />
@@ -74,24 +78,20 @@ export function RollForm({ roll }: RollFormProps) {
           <Field label="Exposiciones" name="exp" type="number" defaultValue={roll?.exp} />
           <Field label="ISO @" name="isoPushed" type="number" defaultValue={roll?.isoPushed} />
           <Field label="Push/Pull" name="pushPull" defaultValue={roll?.pushPull === "0" ? "" : roll?.pushPull} />
-        </div>
-      </section>
+        </section>
 
-      <section className="form-section">
-        <h2>Cámara y lente</h2>
-        <div className="form-grid">
+        <section className="editor-section">
+          <div className="editor-sec-title">Cámara &amp; Lente</div>
           <Field label="Marca cámara" name="maker" defaultValue={roll?.maker} />
           <Field label="Modelo cámara" name="modelName" defaultValue={roll?.modelName} />
           <Field label="Formato cámara" name="cameraFormat" defaultValue={roll?.cameraFormat} />
           <Field label="Tipo cámara" name="cameraType" defaultValue={roll?.cameraType} />
           <Field label="Montura cámara" name="cameraMount" defaultValue={roll?.cameraMount} />
           <Field label="Lente" name="lens" defaultValue={roll?.lens} />
-        </div>
-      </section>
+        </section>
 
-      <section className="form-section">
-        <h2>Archivo</h2>
-        <div className="form-grid">
+        <section className="editor-section">
+          <div className="editor-sec-title">Ubicación</div>
           <Field label="Ubicaciones" name="locations" defaultValue={roll?.locations} />
           <Field label="Categorías" name="photoType" defaultValue={roll?.photoType} />
           <Field label="Tags" name="tags" defaultValue={roll?.tags} />
@@ -102,15 +102,19 @@ export function RollForm({ roll }: RollFormProps) {
           <Field label="Lab scan" name="scan" defaultValue={roll?.scan} />
           <SelectField label="Status" name="status" defaultValue={roll?.status} options={Object.keys(STATUS_LABELS)} />
           <Field label="Rating" name="rating" type="number" defaultValue={roll?.rating} />
-        </div>
-        <label className="textarea-field">
-          Notas
-          <textarea name="notes" defaultValue={roll?.notes || ""} />
-        </label>
-      </section>
+        </section>
 
-      <div className="form-actions">
-        <button className="primary-action" type="submit">
+        <section className="editor-section">
+          <div className="editor-sec-title">Notas</div>
+          <label className="editor-notes-row">
+            <span className="editor-key">Notas</span>
+            <textarea name="notes" defaultValue={roll?.notes || ""} />
+          </label>
+        </section>
+      </div>
+
+      <div className="editor-actions">
+        <button className="btn-primary" type="submit">
           {roll ? "Guardar cambios" : "Crear rollo"}
         </button>
       </div>

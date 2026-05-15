@@ -3,8 +3,7 @@ import { notFound } from "next/navigation";
 import { AccessGate } from "@/features/auth/access-gate";
 import { AccessStatus } from "@/features/auth/access-status";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
-import { SignOutButton } from "@/features/auth/sign-out-button";
-import { MobileBottomNav } from "@/features/navigation/mobile-bottom-nav";
+import { AppShell } from "@/features/navigation/app-shell";
 import { getRollByCode } from "@/features/rolls/queries";
 import { RollForm } from "@/features/rolls/roll-form";
 
@@ -52,36 +51,21 @@ export default async function EditRollPage({ params }: EditRollPageProps) {
   if (!roll && !error) notFound();
 
   return (
-    <main className="app-shell">
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand-name">Analog Archive</span>
-          <span className="brand-stage">Edit roll</span>
+    <AppShell active="edit" profile={profile}>
+      <div className="ed-page-header">
+        <div>
+          <div className="ed-page-header-kicker">EDITAR &nbsp;·&nbsp; ROLLO</div>
+          <h1 className="ed-page-header-title">{decodedCode}</h1>
+          <div className="ed-page-header-sub">Actualiza la ficha del rollo sin cambiar el archivo base</div>
         </div>
-        <div className="actions">
-          <Link className="nav-link" href={`/rolls/${encodeURIComponent(decodedCode)}`}>
-            Detail
-          </Link>
-          <Link className="nav-link" href="/dashboard">
-            Dashboard
-          </Link>
-          <Link className="nav-link" href="/stats">
-            Stats
-          </Link>
-          <Link className="nav-link" href="/timeline">
-            Timeline
-          </Link>
-          <Link className="nav-link" href="/equipment">
-            Equipo
-          </Link>
-          <SignOutButton />
-        </div>
-      </header>
-      <MobileBottomNav active="edit" />
-      <section className="workspace">
-        {error ? <p className="auth-message auth-message-error">No se pudo cargar el roll: {error}</p> : null}
-        {roll ? <RollForm roll={roll} /> : null}
-      </section>
-    </main>
+      </div>
+      <div className="roll-editor-backlink">
+        <Link className="ed-modal-edit-btn" href={`/rolls/${encodeURIComponent(decodedCode)}`}>
+          Volver al detalle
+        </Link>
+      </div>
+      {error ? <p className="auth-message auth-message-error">No se pudo cargar el roll: {error}</p> : null}
+      {roll ? <RollForm roll={roll} /> : null}
+    </AppShell>
   );
 }

@@ -53,12 +53,20 @@ const form = read('src/features/rolls/roll-form.tsx');
   'name="notes"'
 ].forEach((needle) => assertIncludes(form, needle, `roll form should include ${needle}`));
 assertIncludes(form, 'action={saveRollAction}', 'roll form should submit through the Server Action');
+assertIncludes(form, 'editor-grid', 'roll form should use GitHub beta editor grid');
+assertIncludes(form, 'editor-section', 'roll form should use GitHub beta editor sections');
+assertIncludes(form, 'editor-row', 'roll form should use GitHub beta editor rows');
+assertIncludes(form, 'editor-actions', 'roll form should use GitHub beta editor actions');
 
 const newPage = read('src/app/rolls/new/page.tsx');
+assertIncludes(newPage, '<AppShell active="new"', 'new roll route should use the shared GitHub beta approved shell');
+assertIncludes(newPage, 'ed-page-header-kicker', 'new roll route should use the GitHub beta page header');
 assertIncludes(newPage, '<RollForm', 'new roll route should render the roll form');
 
 const editPage = read('src/app/rolls/[code]/edit/page.tsx');
 assertIncludes(editPage, 'getRollByCode', 'edit route should load the current roll');
+assertIncludes(editPage, '<AppShell active="edit"', 'edit roll route should use the shared GitHub beta approved shell');
+assertIncludes(editPage, 'ed-page-header-kicker', 'edit roll route should use the GitHub beta page header');
 assertIncludes(editPage, '<RollForm', 'edit route should render the roll form with the current roll');
 
 const dashboard = read('src/app/dashboard/page.tsx');

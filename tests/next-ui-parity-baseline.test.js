@@ -29,17 +29,17 @@ assertIncludes(appShell, 'href: "/equipment"', 'approved shell should keep Equip
 [
   'src/app/stats/page.tsx',
   'src/app/timeline/page.tsx',
-  'src/app/equipment/page.tsx'
+  'src/app/equipment/page.tsx',
+  'src/app/rolls/new/page.tsx',
+  'src/app/rolls/[code]/page.tsx',
+  'src/app/rolls/[code]/edit/page.tsx'
 ].forEach((filePath) => {
   const source = read(filePath);
   assertIncludes(source, '<AppShell', `${filePath} should use the shared approved shell`);
 });
 
 [
-  'src/app/admin/page.tsx',
-  'src/app/rolls/new/page.tsx',
-  'src/app/rolls/[code]/page.tsx',
-  'src/app/rolls/[code]/edit/page.tsx'
+  'src/app/admin/page.tsx'
 ].forEach((filePath) => {
   const source = read(filePath);
   assertIncludes(source, 'href="/dashboard"', `${filePath} should keep Dashboard in the approved desktop nav`);

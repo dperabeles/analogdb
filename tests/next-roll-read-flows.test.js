@@ -53,7 +53,15 @@ assertIncludes(dashboardOverview, 'encodeURIComponent(roll.code)', 'dashboard wo
 
 const detailPage = read('src/app/rolls/[code]/page.tsx');
 assertIncludes(detailPage, 'decodeURIComponent', 'detail page should decode URL roll codes');
+assertIncludes(detailPage, '<AppShell active="detail"', 'detail page should use the shared GitHub beta approved shell');
 assertIncludes(detailPage, '<RollDetail', 'detail page should render roll detail component');
+
+const detail = read('src/features/rolls/roll-detail.tsx');
+assertIncludes(detail, 'ed-modal-grid', 'roll detail should use GitHub beta modal detail grid');
+assertIncludes(detail, 'ed-modal-section', 'roll detail should use GitHub beta modal sections');
+assertIncludes(detail, 'ed-modal-row', 'roll detail should use GitHub beta modal rows');
+assertIncludes(detail, 'ed-cronologia', 'roll detail should render GitHub beta chronology block');
+assertIncludes(detail, 'ed-modal-actions', 'roll detail should use GitHub beta modal actions');
 
 const database = read('src/types/database.ts');
 assertIncludes(database, 'rolls_flat', 'Database type should include the rolls_flat view contract');

@@ -2173,3 +2173,68 @@ Open follow-up:
 
 - User should compare `/equipment` on Vercel against the GitHub beta Equipment page.
 - Continue remaining parity work by reviewing authenticated roll detail/edit/new screens against the GitHub beta modal/form behavior.
+
+### 2026-05-14: Roll Detail and Editor GitHub Beta Parity Pass
+
+Completed:
+
+- Continued exact GitHub beta UI parity for the authenticated roll read/write screens.
+- Moved approved roll routes onto the shared `AppShell`:
+  - `/rolls/new` with `AppShell active="new"`
+  - `/rolls/[code]` with `AppShell active="detail"`
+  - `/rolls/[code]/edit` with `AppShell active="edit"`
+- Updated `/rolls/new` and `/rolls/[code]/edit` to use GitHub beta page headers via `ed-page-header`, `ed-page-header-kicker`, `ed-page-header-title`, and `ed-page-header-sub`.
+- Updated `RollDetail` from generic detail grids into the GitHub beta modal detail structure:
+  - `modal-head`
+  - `modal-roll-id`
+  - `modal-tag`
+  - `modal-roll-name`
+  - `ed-modal-grid`
+  - `ed-modal-section`
+  - `ed-modal-row`
+  - `ed-modal-actions`
+- Added a static chronology block using the beta detail pattern:
+  - `ed-cronologia`
+  - `ed-cron-track`
+  - `ed-cron-step`
+  - `ed-cron-dot`
+- Updated `RollForm` from generic form sections into the GitHub beta editor structure:
+  - `editor-grid`
+  - `editor-section`
+  - `editor-row`
+  - `editor-key`
+  - `editor-val`
+  - `editor-notes-row`
+  - `editor-actions`
+- Preserved all existing form field names and Server Action submission through `saveRollAction`.
+- Updated static tests so roll read/write/mobile/UI parity checks assert the shared shell and GitHub beta detail/editor class structure.
+
+Validation commands used:
+
+```bash
+node --test tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-mobile-navigation.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Validation result:
+
+- New roll detail/editor parity assertions failed before implementation, as expected.
+- Focused roll read/write/mobile tests passed after implementation.
+- `tsc --noEmit` passed.
+- `next build` passed.
+- Full JS regression suite passed: 14/14 tests.
+- Python regression suite passed: 16/16 tests.
+
+Errors / lessons:
+
+- The first full JS suite run failed in `tests/next-ui-parity-baseline.test.js` because the test still expected manual nav links inside roll pages. After moving roll pages to `AppShell`, the test needed to assert `<AppShell` for those routes and keep manual-nav checks only for admin, which has not moved yet.
+- This pass intentionally preserves the existing Next.js page routes instead of recreating the legacy modal overlay behavior exactly. The visual structure now matches the GitHub beta modal/editor language, while navigation remains route-based for the migration.
+
+Open follow-up:
+
+- Commit and deploy this roll detail/editor parity pass to Vercel.
+- User should compare `/rolls/new`, an individual roll detail page, and edit page against the GitHub beta modal/editor feel.
+- Continue with admin shell parity or deeper roll form parity for smart selects/chips after visual review.
