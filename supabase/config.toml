@@ -1,7 +1,7 @@
 project_id = "analogdb"
 
 [auth]
-site_url = "https://dperabeles.github.io/analogdb/analog-db-dashboard.html"
+site_url = "https://analog-archive.com"
 additional_redirect_urls = [
   "https://dperabeles.github.io/analogdb/",
   "https://dperabeles.github.io/analogdb/analog-db-dashboard.html",
@@ -17,11 +17,15 @@ additional_redirect_urls = [
   "https://analog-archive.com/analog-db-dashboard.html",
   "https://analog-archive.com/forgot-password.html",
   "https://analog-archive.com/reset-password.html",
+  "https://analog-archive.com/",
+  "https://analog-archive.com/dashboard",
   "https://analog-archive.com/forgot-password",
   "https://analog-archive.com/reset-password",
   "https://www.analog-archive.com/analog-db-dashboard.html",
   "https://www.analog-archive.com/forgot-password.html",
   "https://www.analog-archive.com/reset-password.html",
+  "https://www.analog-archive.com/",
+  "https://www.analog-archive.com/dashboard",
   "https://www.analog-archive.com/forgot-password",
   "https://www.analog-archive.com/reset-password",
 ]

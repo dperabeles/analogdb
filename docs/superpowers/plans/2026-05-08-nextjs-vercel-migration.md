@@ -2718,3 +2718,40 @@ Open follow-up:
 
 - Continue authenticated browser visual QA for `/database` on the branch alias.
 - Next likely parity target: compare remaining visual differences on Database after sortable headers/filter count are live.
+
+### 2026-05-15: Supabase Auth Production Cutover
+
+Completed:
+
+- Updated `supabase/config.toml` so Supabase Auth `site_url` now points to the Vercel production domain:
+  - `https://analog-archive.com`
+- Kept GitHub Pages URLs in `additional_redirect_urls` during the transition so old password-recovery links and beta fallback URLs are not broken.
+- Added clean Next.js custom-domain redirects for:
+  - `https://analog-archive.com/`
+  - `https://analog-archive.com/dashboard`
+  - `https://www.analog-archive.com/`
+  - `https://www.analog-archive.com/dashboard`
+- Pushed the auth configuration to the linked Supabase project `dqjjxxqruxxfsfoejdzl`.
+
+Validation commands used:
+
+```bash
+node --test auth-recovery.test.js tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js
+supabase config push --linked
+supabase config push --project-ref dqjjxxqruxxfsfoejdzl --yes
+```
+
+Validation result:
+
+- Focused auth/static recovery checks passed: 3/3 tests.
+- Supabase confirmed the remote Auth service was updated and remote API/DB/Storage config was already up to date.
+
+Errors / lessons:
+
+- `supabase config push --linked` failed because this installed CLI version does not accept `--linked` for config push. Use `supabase config push --project-ref dqjjxxqruxxfsfoejdzl --yes` for this project.
+- The CLI still prompts for confirmation even with `--yes` on this version, but the command completed successfully in the current terminal context.
+
+Open follow-up:
+
+- Deploy the current Next.js branch to Vercel production so `analog-archive.com` serves the migrated app instead of the old static baseline.
+- After production is verified, update the cutover checklist and decide whether to leave GitHub Pages as a short rollback fallback or disable it immediately.
