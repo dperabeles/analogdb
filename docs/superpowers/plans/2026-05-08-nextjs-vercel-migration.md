@@ -2497,3 +2497,51 @@ Open follow-up:
 
 - Commit and deploy this database table parity pass to Vercel.
 - Continue authenticated browser visual QA for `/database`, especially desktop table density and mobile visible columns.
+
+### 2026-05-15: Vercel Verification After Database Table Pass
+
+Completed:
+
+- Pushed database table parity commit `6dc4d0d` to `feature/nextjs-vercel-migration`.
+- Confirmed the remote GitHub branch points to commit `6dc4d0d0269f033347f80d7cb030785f591f35a9`.
+- Checked GitHub commit status for `6dc4d0d`; no Vercel status/check had been registered.
+- Checked Vercel deployments; the branch alias still pointed to the previous deployment from May 14, 2026, so the Git integration did not create a new deployment automatically.
+- Created a clean local deployment copy from committed `HEAD` using `git archive` in `/private/tmp/analogdb-vercel-clean`.
+- Confirmed the clean deployment copy did not include the unrelated untracked file `supabase/landing_metrics.sql`.
+- Deployed manually to Vercel from the clean copy with commit metadata.
+- Confirmed the manual preview deployment:
+  - deployment id: `dpl_3NwkSmBZb662hHDdatqGbGTN58HA`
+  - deployment URL: `https://analogdb-repo-azp1ps7ok-arqdiegoperabeles-2865s-projects.vercel.app`
+  - target: `preview`
+  - status: `Ready`
+- Checked Vercel error logs for the manual preview deployment; no error logs were found.
+
+Validation commands used:
+
+```bash
+git ls-remote origin feature/nextjs-vercel-migration
+gh api repos/dperabeles/analogdb/commits/6dc4d0d0269f033347f80d7cb030785f591f35a9/status
+npx --yes vercel ls analogdb-repo --scope arqdiegoperabeles-2865s-projects
+git archive --format=tar HEAD -o /private/tmp/analogdb-vercel-clean.tar
+tar -xf /private/tmp/analogdb-vercel-clean.tar -C /private/tmp/analogdb-vercel-clean
+npx --yes vercel deploy /private/tmp/analogdb-vercel-clean --yes --target preview --scope arqdiegoperabeles-2865s-projects --meta githubCommitSha=6dc4d0d0269f033347f80d7cb030785f591f35a9 --meta githubCommitRef=feature/nextjs-vercel-migration
+npx --yes vercel inspect https://analogdb-repo-azp1ps7ok-arqdiegoperabeles-2865s-projects.vercel.app --scope arqdiegoperabeles-2865s-projects
+npx --yes vercel logs https://analogdb-repo-azp1ps7ok-arqdiegoperabeles-2865s-projects.vercel.app --level error --since 10m --limit 50 --expand --scope arqdiegoperabeles-2865s-projects
+```
+
+Validation result:
+
+- The database table parity pass is available on a Vercel preview deployment and builds successfully in Vercel.
+- The Vercel build output includes `/database` and `/account` as dynamic routes.
+- No Vercel runtime error logs were found for the manual preview.
+
+Errors / lessons:
+
+- Vercel Git integration did not automatically deploy commit `6dc4d0d` during this pass. Before assuming a pushed commit is live, always check `vercel ls` / `vercel inspect`.
+- Do not run manual `vercel deploy` from the dirty working tree. Use a clean local copy generated from committed `HEAD` so unrelated local files stay out of the deployment.
+- Manual preview deployments do not necessarily move the branch alias. Use the explicit preview URL above for this verification unless/until the branch alias is redeployed.
+
+Open follow-up:
+
+- Investigate why Vercel Git did not auto-deploy the latest branch commit if this repeats.
+- Continue authenticated browser visual QA using `https://analogdb-repo-azp1ps7ok-arqdiegoperabeles-2865s-projects.vercel.app`.
