@@ -2413,3 +2413,41 @@ Open follow-up:
 - Commit and deploy this database/mobile-nav parity pass to Vercel.
 - Verify the deployed branch alias has `/database` and `/account` live.
 - Continue the QA pass with visual review of `/database` against the GitHub beta table/list behavior.
+
+### 2026-05-15: Vercel Verification After Database And Mobile Nav Pass
+
+Completed:
+
+- Pushed database/mobile-nav parity commit `1e8965d` to `feature/nextjs-vercel-migration`.
+- Confirmed Vercel generated a new preview deployment:
+  - deployment id: `dpl_Fab64o4Me815Qdb2Rux581NQyYKs`
+  - deployment URL: `https://analogdb-repo-az563jn3a-arqdiegoperabeles-2865s-projects.vercel.app`
+  - branch alias: `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
+  - target: `preview`
+  - status: `Ready`
+- Checked recent Vercel error logs for `feature/nextjs-vercel-migration`; no recent error logs were found.
+- Checked direct unauthenticated `HEAD` requests for `/database` and `/account`.
+
+Validation commands used:
+
+```bash
+npx --yes vercel inspect https://analogdb-repo-az563jn3a-arqdiegoperabeles-2865s-projects.vercel.app
+npx --yes vercel logs --level error --since 10m --branch feature/nextjs-vercel-migration --limit 50 --expand
+curl -sS -I https://analogdb-repo-az563jn3a-arqdiegoperabeles-2865s-projects.vercel.app/database
+curl -sS -I https://analogdb-repo-az563jn3a-arqdiegoperabeles-2865s-projects.vercel.app/account
+```
+
+Validation result:
+
+- The Vercel preview containing the database route and mobile nav parity pass is live and ready.
+- No recent runtime errors were reported by Vercel logs.
+- Direct unauthenticated `HEAD` requests returned `401` from Vercel protection/SSO before reaching the app. This confirms the preview is protected externally; it does not indicate a Next.js route crash.
+
+Errors / lessons:
+
+- Vercel protected preview URLs cannot be externally smoke-tested with plain `curl` for authenticated routes. Use Vercel deployment status/logs plus a real browser session for final visual QA.
+
+Open follow-up:
+
+- User should verify `/database` and `/account` from an authenticated browser session on the branch alias.
+- Continue with visual polish of `/database` so the archive list feels closer to the GitHub beta Database table/list.
