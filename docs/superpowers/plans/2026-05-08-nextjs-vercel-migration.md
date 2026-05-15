@@ -17,7 +17,7 @@
 - Vercel project: `analogdb-repo`
 - Live Vercel URL: `https://analogdb-repo.vercel.app`
 - Custom domains: `https://analog-archive.com`, `https://www.analog-archive.com`
-- Deployment id: `dpl_FUNbeczQo2EkhpZxRBWUcyi5ANPx`
+- Deployment id: `dpl_6cscBrhHkWM37QQ1mQGg4atwpmXU`
 - Deployment status: Ready
 - Validated routes: `/`, `/dashboard`, `/forgot-password`, plus production aliases.
 - Supabase Auth redirects: production Vercel domain is now the Auth `site_url`; GitHub Pages URLs remain allow-listed during fallback.
@@ -2858,3 +2858,31 @@ Open follow-up:
 
 - Real authenticated browser smoke on `https://analog-archive.com` is still recommended because automated shell checks cannot exercise the user's approved Supabase session.
 - Keep GitHub Pages available as a short rollback URL until that real-user production smoke is confirmed.
+
+### 2026-05-15: Final Documentation Deploy Check
+
+Completed:
+
+- The final documentation commit to `main` triggered one more production deployment.
+- Confirmed final production deployment:
+  - deployment id: `dpl_6cscBrhHkWM37QQ1mQGg4atwpmXU`
+  - deployment URL: `https://analogdb-repo-ay6atork8-arqdiegoperabeles-2865s-projects.vercel.app`
+  - production aliases: `https://analog-archive.com`, `https://www.analog-archive.com`, `https://analogdb-repo.vercel.app`, and the main branch alias
+  - status: `Ready`
+- Checked production error logs for that deployment; no error logs were found.
+
+Validation commands used:
+
+```bash
+npx --yes vercel inspect https://analogdb-repo-ay6atork8-arqdiegoperabeles-2865s-projects.vercel.app --scope arqdiegoperabeles-2865s-projects
+npx --yes vercel logs https://analogdb-repo-ay6atork8-arqdiegoperabeles-2865s-projects.vercel.app --level error --since 10m --limit 50 --expand --scope arqdiegoperabeles-2865s-projects
+```
+
+Validation result:
+
+- The custom production domains point to the final Ready deployment.
+- No Vercel production error logs were found.
+
+Errors / lessons:
+
+- Documentation-only commits still trigger Vercel production builds from `main`. Use `[skip ci]` for this final documentation-only status commit to avoid another unnecessary deployment loop.
