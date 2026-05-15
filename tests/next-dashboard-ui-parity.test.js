@@ -26,7 +26,7 @@ assertIncludes(appShell, 'sidebar-account-card', 'approved shell should keep the
 const rollList = read('src/features/rolls/roll-list.tsx');
 assertIncludes(rollList, 'editorial-section-head rolls-header', 'roll archive should use the editorial section header');
 assertIncludes(rollList, 'editorial-section-num', 'roll archive should include a roman-numeral section marker');
-assertIncludes(rollList, 'roll-stock', 'roll rows should keep stock as the primary list field');
+assertIncludes(rollList, 'database-roll-main', 'database rows should keep stock as the primary table field');
 assertIncludes(rollList, 'manufacturer', 'roll rows should expose manufacturer context');
 
 const dashboardOverview = read('src/features/rolls/dashboard-overview.tsx');
@@ -43,7 +43,8 @@ assertIncludes(css, '.editorial-section-head', 'CSS should include reusable edit
 assertIncludes(css, '.ed-sidebar', 'CSS should style the GitHub beta editorial sidebar');
 assertIncludes(css, '.ed-index-grid', 'CSS should style the GitHub beta dashboard index grid');
 assertIncludes(css, '.ed-workflow', 'CSS should style the GitHub beta workflow columns');
-assertIncludes(css, 'grid-template-columns: 160px minmax(180px, 1.3fr)', 'desktop roll list should be dense and row-based');
-assertIncludes(css, '.roll-card:last-child', 'row list should avoid trailing borders');
+assertIncludes(css, '.database-table', 'CSS should style the GitHub beta database table');
+assertIncludes(css, 'min-width: 1180px', 'desktop database table should preserve dense legacy columns');
+assertIncludes(css, '.database-table tbody tr:last-child td', 'database table should avoid trailing row borders');
 
 console.log('next dashboard UI parity static checks passed');

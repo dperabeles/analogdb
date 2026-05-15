@@ -2451,3 +2451,49 @@ Open follow-up:
 
 - User should verify `/database` and `/account` from an authenticated browser session on the branch alias.
 - Continue with visual polish of `/database` so the archive list feels closer to the GitHub beta Database table/list.
+
+### 2026-05-15: Database Table Parity Pass
+
+Completed:
+
+- Compared the GitHub beta Database page in `analog-db-dashboard.html` against the new Next `/database` route.
+- Found that the route existed, but `RollList` still rendered the older card grid instead of the beta table/list structure.
+- Converted `RollList` to the GitHub beta database table model:
+  - `table-card`
+  - `table-scroll`
+  - `database-table`
+  - legacy columns for `#`, `Rollo`, `Tipo`, `Formato`, `Estado`, `ISO`, `Cámara`, `Lente`, `Ubicación`, `Category`, `Fecha`, `# Exp`, `Push/Pull`, `Lab`, and `Rating`
+- Kept each roll code linked to the detail route with `encodeURIComponent(roll.code)`.
+- Added responsive table CSS so mobile keeps the key legacy columns visible and hides lower-priority columns, matching the beta mobile density strategy.
+- Updated static parity tests that still expected the temporary card-list implementation.
+
+Validation commands used:
+
+```bash
+node --test tests/next-roll-read-flows.test.js
+node --test tests/next-roll-read-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Validation result:
+
+- RED check failed before implementation because `RollList` had no `table-card` / table structure.
+- Focused roll-read parity test passed after implementation.
+- Focused route/navigation parity tests passed: 3/3 tests.
+- `tsc --noEmit` passed.
+- `next build` passed and still reports `/database` as a dynamic route.
+- Full JS regression suite passed: 14/14 tests.
+- Python regression suite passed: 16/16 tests.
+
+Errors / lessons:
+
+- A route existing is not enough for parity. `/database` must keep the beta information architecture and visual density, not a generic card list.
+- One older dashboard UI parity test still expected `roll-stock` / card-list CSS. Updated it to assert the accepted database table structure instead.
+
+Open follow-up:
+
+- Commit and deploy this database table parity pass to Vercel.
+- Continue authenticated browser visual QA for `/database`, especially desktop table density and mobile visible columns.

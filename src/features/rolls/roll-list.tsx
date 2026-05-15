@@ -21,10 +21,6 @@ function stars(rating: number | null) {
   return "★".repeat(bounded) + "☆".repeat(5 - bounded);
 }
 
-function countByStatus(rolls: RollListItem[], status: string) {
-  return rolls.filter((roll) => roll.status === status).length;
-}
-
 export function RollList({ rolls, filters, error }: RollListProps) {
   const safeFilters = { ...filters, sort: normalizeRollSort(filters.sort) };
   const filteredRolls = sortRolls(filterRolls(rolls, safeFilters), safeFilters.sort);
@@ -43,43 +39,59 @@ export function RollList({ rolls, filters, error }: RollListProps) {
 
       {error ? <p className="auth-message auth-message-error">No se pudieron cargar los rolls: {error}</p> : null}
 
-      <div className="status-strip" aria-label="Status counts">
-        {Object.entries(STATUS_LABELS).map(([status, label]) => (
-          <div key={status} className="status-chip">
-            <span>{label}</span>
-            <strong>{countByStatus(rolls, status)}</strong>
-          </div>
-        ))}
-      </div>
-
       {filteredRolls.length ? (
-        <div className="roll-card-grid">
-          {filteredRolls.map((roll) => (
-            <Link key={roll.id} className="roll-card" href={`/rolls/${encodeURIComponent(roll.code)}`}>
-              <div className="roll-card-top">
-                <span className="roll-code">{roll.code}</span>
-                <span className="roll-status">{STATUS_LABELS[roll.status] || roll.status}</span>
-              </div>
-              <div className="roll-stock">
-                <span>{roll.filmStock || "Sin stock"}</span>
-                <small>{roll.manufacturer || "Manufacturer pending"}</small>
-              </div>
-              <div className="roll-meta">
-                <span>{roll.format || "Formato —"}</span>
-                <span>ISO {roll.iso ?? roll.isoPushed ?? "—"}</span>
-                {roll.exp || roll.expTaken ? <span>{roll.expTaken || roll.exp} exp</span> : null}
-                {roll.frameSettings ? <span>{roll.frameSettings} settings</span> : null}
-              </div>
-              <div className="roll-meta muted">
-                <span>{[roll.maker, roll.modelName].filter(Boolean).join(" ") || "Cámara —"}</span>
-                {roll.lens ? <span>{roll.lens}</span> : null}
-              </div>
-              <div className="roll-card-bottom">
-                <span>{roll.started || roll.finished || "Sin fecha"}</span>
-                <span>{stars(roll.rating)}</span>
-              </div>
-            </Link>
-          ))}
+        <div className="table-card">
+          <div className="table-scroll">
+            <table className="database-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Rollo</th>
+                  <th>Tipo</th>
+                  <th>Formato</th>
+                  <th>Estado</th>
+                  <th>ISO</th>
+                  <th>Cámara</th>
+                  <th>Lente</th>
+                  <th>Ubicación</th>
+                  <th>Category</th>
+                  <th>Fecha</th>
+                  <th># Exp</th>
+                  <th>Push/Pull</th>
+                  <th>Lab</th>
+                  <th>Rating</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRolls.map((roll) => (
+                  <tr key={roll.id}>
+                    <td>
+                      <Link className="roll-id" href={`/rolls/${encodeURIComponent(roll.code)}`}>
+                        {roll.code}
+                      </Link>
+                    </td>
+                    <td>
+                      <span className="database-roll-main">{roll.filmStock || "Sin stock"}</span>
+                      <span className="database-roll-sub">{roll.manufacturer || "Manufacturer pending"}</span>
+                    </td>
+                    <td>{roll.filmType || "—"}</td>
+                    <td>{roll.format || "—"}</td>
+                    <td>{STATUS_LABELS[roll.status] || roll.status}</td>
+                    <td>{roll.iso ?? roll.isoPushed ?? "—"}</td>
+                    <td>{[roll.maker, roll.modelName].filter(Boolean).join(" ") || "—"}</td>
+                    <td>{roll.lens || "—"}</td>
+                    <td>{roll.locations || "—"}</td>
+                    <td>{roll.photoType || "—"}</td>
+                    <td>{roll.started || roll.finished || "—"}</td>
+                    <td>{roll.expTaken || roll.exp || "—"}</td>
+                    <td>{roll.pushPull || "0"}</td>
+                    <td>{roll.dev || roll.scan || "—"}</td>
+                    <td>{stars(roll.rating)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <div className="empty-state">

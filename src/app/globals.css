@@ -1361,6 +1361,73 @@ h1 {
   justify-content: center;
 }
 
+.table-card {
+  overflow: hidden;
+  border: 1px solid rgba(244, 237, 226, 0.08);
+  border-radius: 2px;
+  background: #1c1612;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.database-table {
+  width: 100%;
+  min-width: 1180px;
+  border-collapse: collapse;
+}
+
+.database-table th {
+  border-bottom: 1px solid rgba(244, 237, 226, 0.1);
+  background: #1a1410;
+  color: rgba(232, 223, 209, 0.5);
+  padding: 10px 13px;
+  font-family: "DM Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.database-table td {
+  border-bottom: 1px solid rgba(244, 237, 226, 0.06);
+  color: var(--text);
+  padding: 10px 13px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.database-table tbody tr {
+  transition: background 0.12s ease;
+}
+
+.database-table tbody tr:hover {
+  background: #221a14;
+}
+
+.database-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.database-roll-main,
+.database-roll-sub {
+  display: block;
+}
+
+.database-roll-main {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.database-roll-sub {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
 .status-strip {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -3043,7 +3110,6 @@ h1 {
   }
 
   .roll-filters,
-  .roll-card-grid,
   .detail-grid,
   .form-grid,
   .ed-modal-grid,
@@ -3073,6 +3139,38 @@ h1 {
 
   .modal-roll-id {
     font-size: 38px;
+  }
+
+  .table-card {
+    border: 0;
+  }
+
+  .table-scroll {
+    overflow-x: visible;
+  }
+
+  .database-table {
+    min-width: 0;
+  }
+
+  .database-table th,
+  .database-table td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
+
+  .database-table th:nth-child(3),
+  .database-table td:nth-child(3),
+  .database-table th:nth-child(5),
+  .database-table td:nth-child(5),
+  .database-table th:nth-child(n + 7),
+  .database-table td:nth-child(n + 7) {
+    display: none;
+  }
+
+  .database-table th:first-child,
+  .database-table td:first-child {
+    padding-left: 4px;
   }
 
   .ed-modal-section:nth-child(odd),

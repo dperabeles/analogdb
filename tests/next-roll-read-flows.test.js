@@ -38,7 +38,14 @@ assertIncludes(rollTypes, 'normalizeFormatValue', 'rolls_flat rows should normal
 const list = read('src/features/rolls/roll-list.tsx');
 assertIncludes(list, 'filterRolls', 'roll list should apply filters before rendering');
 assertIncludes(list, 'sortRolls', 'roll list should support deterministic sort modes');
-assertIncludes(list, 'encodeURIComponent(roll.code)', 'roll cards should link safely to detail routes');
+assertIncludes(list, 'encodeURIComponent(roll.code)', 'database rows should link safely to detail routes');
+assertIncludes(list, 'table-card', 'database list should use the GitHub beta table card shell');
+assertIncludes(list, 'table-scroll', 'database list should preserve the GitHub beta horizontal table scroller');
+assertIncludes(list, '<table', 'database list should render as a table like the GitHub beta Database view');
+assertIncludes(list, '<th>#</th>', 'database table should keep the legacy roll number column');
+assertIncludes(list, '<th>Rollo</th>', 'database table should keep the legacy roll stock column');
+assertIncludes(list, '<th>Cámara</th>', 'database table should keep the legacy camera column');
+assertIncludes(list, '<th>Rating</th>', 'database table should keep the legacy rating column');
 
 const filters = read('src/features/rolls/roll-filters.tsx');
 assertIncludes(filters, 'name="status"', 'filters should expose status filtering');
