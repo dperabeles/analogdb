@@ -2238,3 +2238,33 @@ Open follow-up:
 - Commit and deploy this roll detail/editor parity pass to Vercel.
 - User should compare `/rolls/new`, an individual roll detail page, and edit page against the GitHub beta modal/editor feel.
 - Continue with admin shell parity or deeper roll form parity for smart selects/chips after visual review.
+
+### 2026-05-14: Vercel Verification After Roll Detail/Editor Pass
+
+Completed:
+
+- Pushed roll detail/editor parity commit `61332c1` to `feature/nextjs-vercel-migration`.
+- Confirmed Vercel generated a new preview deployment:
+  - deployment id: `dpl_Dvw5h9faZGArddA1Az8Rw5fxtzur`
+  - deployment URL: `https://analogdb-repo-nkpmr6n0c-arqdiegoperabeles-2865s-projects.vercel.app`
+  - branch alias: `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
+  - target: `preview`
+  - status: `Ready`
+- Checked recent Vercel error logs for `feature/nextjs-vercel-migration`; no recent error logs were found.
+
+Validation commands used:
+
+```bash
+npx --yes vercel inspect https://analogdb-repo-nkpmr6n0c-arqdiegoperabeles-2865s-projects.vercel.app
+npx --yes vercel logs --level error --since 10m --branch feature/nextjs-vercel-migration --limit 50 --expand
+```
+
+Validation result:
+
+- The Vercel preview containing the roll detail/editor parity pass is live and ready.
+- No recent runtime errors were reported by Vercel logs.
+
+Open follow-up:
+
+- User should compare `/rolls/new`, an individual roll detail page, and edit page against the GitHub beta modal/editor feel.
+- Continue with admin shell parity or deeper roll form parity for smart selects/chips after visual review.
