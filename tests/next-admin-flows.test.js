@@ -61,6 +61,9 @@ assertIncludes(panel, 'demote_from_admin', 'admin users should support downgrade
 const page = read('src/app/admin/page.tsx');
 assertIncludes(page, 'getCurrentAccessProfile', 'admin route should use the same auth gate as other protected routes');
 assertIncludes(page, 'getAdminOverview', 'admin route should load admin overview data');
+assertIncludes(page, '<AppShell active="admin"', 'admin route should use the shared GitHub beta approved shell');
+assertIncludes(page, 'ed-page-header-kicker', 'admin route should use the GitHub beta page header');
+assertIncludes(page, 'PÁG·06', 'admin route should match the GitHub beta admin page number');
 assertIncludes(page, '<AdminPanel', 'admin route should render the admin panel');
 
 const appShell = read('src/features/navigation/app-shell.tsx');

@@ -33,6 +33,7 @@ assertIncludes(mobileNav, 'aria-current={active === item.key ? "page" : undefine
 
 [
   ['src/app/rolls/new/page.tsx', 'active="new"'],
+  ['src/app/admin/page.tsx', 'active="admin"'],
   ['src/app/rolls/[code]/page.tsx', 'active="detail"'],
   ['src/app/rolls/[code]/edit/page.tsx', 'active="edit"']
 ].forEach(([filePath, activeMarker]) => {
@@ -40,10 +41,6 @@ assertIncludes(mobileNav, 'aria-current={active === item.key ? "page" : undefine
   assertIncludes(source, '<AppShell', `${filePath} should use the approved shell for mobile navigation`);
   assertIncludes(source, activeMarker, `${filePath} should pass the expected active state`);
 });
-
-const adminPage = read('src/app/admin/page.tsx');
-assertIncludes(adminPage, 'MobileBottomNav', 'admin should render mobile bottom navigation until it moves to AppShell');
-assertIncludes(adminPage, 'active="admin"', 'admin should pass the expected active state');
 
 const dashboard = read('src/app/dashboard/page.tsx');
 const appShell = read('src/features/navigation/app-shell.tsx');

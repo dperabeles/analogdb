@@ -4,8 +4,7 @@ import { getAdminOverview } from "@/features/admin/queries";
 import { AccessGate } from "@/features/auth/access-gate";
 import { AccessStatus } from "@/features/auth/access-status";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
-import { SignOutButton } from "@/features/auth/sign-out-button";
-import { MobileBottomNav } from "@/features/navigation/mobile-bottom-nav";
+import { AppShell } from "@/features/navigation/app-shell";
 
 export const dynamic = "force-dynamic";
 
@@ -41,81 +40,39 @@ export default async function AdminPage() {
 
   if (profile?.role !== "admin") {
     return (
-      <main className="app-shell">
-        <header className="topbar">
-          <div className="brand">
-            <span className="brand-name">Analog Archive</span>
-            <span className="brand-stage">Admin</span>
+      <AppShell active="admin" profile={profile}>
+        <div className="ed-page-header">
+          <div>
+            <div className="ed-page-header-kicker">PÁG·06 &nbsp;·&nbsp; ADMIN</div>
+            <h1 className="ed-page-header-title">Admin</h1>
+            <div className="ed-page-header-sub">Permisos restringidos para fundador y administradores</div>
           </div>
-          <div className="actions">
-            <Link className="nav-link" href="/dashboard">
-              Dashboard
-            </Link>
-            <Link className="nav-link" href="/rolls/new">
-              Nuevo
-            </Link>
-            <Link className="nav-link" href="/stats">
-              Stats
-            </Link>
-            <Link className="nav-link" href="/timeline">
-              Timeline
-            </Link>
-            <Link className="nav-link" href="/equipment">
-              Equipo
-            </Link>
-            <SignOutButton />
-          </div>
-        </header>
-        <MobileBottomNav active="admin" />
-        <section className="workspace auth-workspace">
+        </div>
+        <section className="auth-workspace">
           <div className="auth-status">
             <div className="eyebrow">Admin required</div>
             <h1>Sin acceso admin</h1>
             <p className="lead">Tu cuenta esta aprobada, pero no tiene permisos de administracion.</p>
           </div>
         </section>
-      </main>
+      </AppShell>
     );
   }
 
   const overview = await getAdminOverview();
 
   return (
-    <main className="app-shell">
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand-name">Analog Archive</span>
-          <span className="brand-stage">Admin</span>
+    <AppShell active="admin" profile={profile}>
+      <div className="ed-page-header">
+        <div>
+          <div className="ed-page-header-kicker">PÁG·06 &nbsp;·&nbsp; ADMIN</div>
+          <h1 className="ed-page-header-title">
+            Founder <em>workflow</em>
+          </h1>
+          <div className="ed-page-header-sub">Aprobación de usuarios, reactivación y votación de roles</div>
         </div>
-        <div className="actions">
-          <Link className="nav-link" href="/dashboard">
-            Dashboard
-          </Link>
-          <Link className="nav-link" href="/rolls/new">
-            Nuevo
-          </Link>
-          <Link className="nav-link" href="/stats">
-            Stats
-          </Link>
-          <Link className="nav-link" href="/timeline">
-            Timeline
-          </Link>
-          <Link className="nav-link" href="/equipment">
-            Equipo
-          </Link>
-          <SignOutButton />
-        </div>
-      </header>
-      <MobileBottomNav active="admin" />
-
-      <section className="workspace">
-        <div className="hero compact-hero">
-          <div className="eyebrow">Founder workflow</div>
-          <h1>Admin</h1>
-          <p className="lead">Aprobacion de usuarios, reactivacion de rechazados y votacion de cambios de rol.</p>
-        </div>
-        <AdminPanel overview={overview} />
-      </section>
-    </main>
+      </div>
+      <AdminPanel overview={overview} />
+    </AppShell>
   );
 }

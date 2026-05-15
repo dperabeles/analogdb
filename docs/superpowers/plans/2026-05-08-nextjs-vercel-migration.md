@@ -2272,3 +2272,52 @@ Open follow-up:
 
 - User should compare `/rolls/new`, an individual roll detail page, and edit page against the GitHub beta modal/editor feel.
 - Continue with admin shell parity or deeper roll form parity for smart selects/chips after visual review.
+
+### 2026-05-15: Admin Shared Shell Parity Pass
+
+Completed:
+
+- Moved the approved `/admin` route onto the shared GitHub beta `AppShell`.
+- Updated both admin states to use the shared shell:
+  - approved non-admin user state with `AppShell active="admin"`
+  - admin user state with `AppShell active="admin"`
+- Added GitHub beta page header treatment for admin:
+  - `ed-page-header`
+  - `ed-page-header-kicker`
+  - `ed-page-header-title`
+  - `ed-page-header-sub`
+- Preserved existing admin data and mutation logic:
+  - `getAdminOverview()`
+  - `AdminPanel`
+  - pending/approved/rejected user management
+  - admin action voting
+- Updated static tests so admin now asserts the shared shell instead of manual route navigation.
+
+Validation commands used:
+
+```bash
+node --test tests/next-admin-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Validation result:
+
+- New admin shell parity assertions failed before implementation, as expected.
+- Focused admin/mobile/UI parity tests passed after implementation.
+- `tsc --noEmit` passed.
+- `next build` passed.
+- Full JS regression suite passed: 14/14 tests.
+- Python regression suite passed: 16/16 tests.
+
+Errors / lessons:
+
+- Admin was the last authenticated route still carrying manual approved-state navigation. Moving it to `AppShell` completed the shared shell pass for protected Next.js routes.
+- Internal `AdminPanel` visual parity was intentionally left unchanged in this pass because admin is lower priority for beta testers and the server action/RPC logic is more sensitive.
+
+Open follow-up:
+
+- Commit and deploy this admin shell parity pass to Vercel.
+- Start a systematic Vercel QA pass across desktop/mobile for public gate, dashboard, stats, timeline, equipment, roll detail, roll new/edit, and admin.
