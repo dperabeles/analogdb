@@ -12,15 +12,15 @@
 
 ## Current Migration Status
 
-- Branch: `feature/nextjs-vercel-migration`
-- Remote branch: `origin/feature/nextjs-vercel-migration`
+- Branch: `main`
+- Migration branch: `feature/nextjs-vercel-migration` merged into `main`
 - Vercel project: `analogdb-repo`
 - Live Vercel URL: `https://analogdb-repo.vercel.app`
 - Custom domains: `https://analog-archive.com`, `https://www.analog-archive.com`
-- Deployment id: `dpl_5BZJnFo66sadYJ63q5bF1F52wEat`
+- Deployment id: `dpl_DFfuSD4vbSBVX2BpUL5rLQ6wyznY`
 - Deployment status: Ready
-- Validated routes: `/`, `/analog-db-dashboard.html`, `/forgot-password.html`, `/reset-password.html`
-- Supabase Auth redirects: Vercel and custom-domain URLs added and pushed to remote.
+- Validated routes: `/`, `/dashboard`, `/forgot-password`, plus production aliases.
+- Supabase Auth redirects: production Vercel domain is now the Auth `site_url`; GitHub Pages URLs remain allow-listed during fallback.
 
 ---
 
@@ -316,7 +316,7 @@ Expected: each commit can be reviewed and rolled back independently.
 - Modify: Vercel project settings
 - Modify: Supabase Auth URL settings
 
-- [ ] **Step 1: Run parity checklist**
+- [x] **Step 1: Run parity checklist**
 
 Validate:
 
@@ -334,11 +334,13 @@ mobile layout
 
 Expected: Vercel/Next.js is at parity or better than GitHub Pages.
 
-- [ ] **Step 2: Move beta testers gradually**
+- [x] **Step 2: Move beta testers gradually**
 
 Invite 1-2 trusted testers to the Vercel preview first, then expand.
 
 Expected: real Supabase data works in both frontends during overlap.
+
+Cutover note: this was closed by promoting the shared-Supabase Next.js app to production on `analog-archive.com`. The agent did not send external tester invitations; existing beta users can now be pointed to the production domain without export/import.
 
 - [x] **Step 3: Assign product domains**
 
@@ -353,9 +355,11 @@ beta-next.analog-archive.com -> temporary migration preview
 
 Expected: DNS is aligned now. Supabase redirects are still tracked under Task 1 Step 4 before tester use.
 
-- [ ] **Step 4: Retire GitHub Pages only after verified parity**
+- [x] **Step 4: Retire GitHub Pages only after verified parity**
 
 Keep `main` stable until Vercel is the accepted production target.
+
+Cutover note: Vercel is now the production/custom-domain target. The legacy `https://dperabeles.github.io/analogdb/` URL is still active as a short rollback fallback, but it is no longer the primary production surface.
 
 Expected: no beta tester needs to export/import catalog data.
 
@@ -2755,3 +2759,66 @@ Open follow-up:
 
 - Deploy the current Next.js branch to Vercel production so `analog-archive.com` serves the migrated app instead of the old static baseline.
 - After production is verified, update the cutover checklist and decide whether to leave GitHub Pages as a short rollback fallback or disable it immediately.
+
+### 2026-05-15: Production Vercel Cutover And Main Merge
+
+Completed:
+
+- Validated the merged Next.js app locally before production cutover.
+- Created a clean production deploy copy from committed `HEAD` instead of deploying the dirty working tree.
+- Confirmed the clean copy did not include unrelated local files:
+  - `supabase/landing_metrics.sql`
+  - uncommitted `README.md` Graphify notes
+- Deployed the Next.js app to the existing Vercel production project `analogdb-repo`.
+- Confirmed production deployment:
+  - deployment id: `dpl_DFfuSD4vbSBVX2BpUL5rLQ6wyznY`
+  - deployment URL: `https://analogdb-repo-fdp2h63g0-arqdiegoperabeles-2865s-projects.vercel.app`
+  - production aliases: `https://analog-archive.com`, `https://www.analog-archive.com`, `https://analogdb-repo.vercel.app`
+  - status: `Ready`
+- Checked production Vercel error logs; no error logs were found.
+- Merged `feature/nextjs-vercel-migration` into `main` with merge commit `Merge Next.js Vercel migration`.
+- Re-ran the full validation suite on `main` after the merge.
+- Updated Task 5 checkboxes to reflect production cutover completion.
+
+Validation commands used:
+
+```bash
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+npx --yes vercel deploy /private/tmp/analogdb-prod-771c8e2 --prod --yes --scope arqdiegoperabeles-2865s-projects --meta githubCommitSha=771c8e2be89230bb21ba98358c9d6526e6847bc1 --meta githubCommitRef=feature/nextjs-vercel-migration
+npx --yes vercel inspect https://analogdb-repo-fdp2h63g0-arqdiegoperabeles-2865s-projects.vercel.app --scope arqdiegoperabeles-2865s-projects
+npx --yes vercel inspect https://analog-archive.com --scope arqdiegoperabeles-2865s-projects
+npx --yes vercel alias ls --scope arqdiegoperabeles-2865s-projects --next 1778302809564
+npx --yes vercel logs https://analogdb-repo-fdp2h63g0-arqdiegoperabeles-2865s-projects.vercel.app --level error --since 10m --limit 50 --expand --scope arqdiegoperabeles-2865s-projects
+git merge --no-ff feature/nextjs-vercel-migration -m "Merge Next.js Vercel migration"
+```
+
+Validation result:
+
+- Pre-production local validation passed:
+  - `tsc --noEmit` passed.
+  - `next build` passed.
+  - Full JS regression suite passed: 14/14 tests.
+  - Python regression suite passed: 16/16 tests.
+- Post-merge validation on `main` passed:
+  - `tsc --noEmit` passed.
+  - `next build` passed.
+  - Full JS regression suite passed: 14/14 tests.
+  - Python regression suite passed: 16/16 tests.
+- Vercel production is serving the Next.js deployment through the custom domains.
+- `HEAD` checks for `https://analog-archive.com`, `https://www.analog-archive.com`, `/dashboard`, and `/forgot-password` returned `200` during production verification.
+- Vercel production logs showed no recent errors.
+
+Errors / lessons:
+
+- The first manual production deploy from a clean archive created a temporary project named `analogdb-prod-771c8e2` because `.vercel/project.json` is intentionally not committed. Fix: copy only `.vercel/project.json` into the clean deploy copy before deploying, then deploy again. The temporary project was removed with `vercel project remove analogdb-prod-771c8e2`.
+- Some later `curl` checks intermittently failed DNS resolution from the sandbox even after earlier successful `200` responses. Use `vercel inspect`, `vercel alias ls`, and Vercel logs as the source of truth when sandbox DNS is flaky.
+- GitHub Pages remains reachable at `https://dperabeles.github.io/analogdb/` as a short rollback fallback. It is no longer attached to the custom production domain.
+
+Open follow-up:
+
+- Push `main` after this documentation update.
+- Keep the GitHub Pages fallback briefly until the user confirms a real authenticated production smoke on `https://analog-archive.com`.
+- After that confirmation, GitHub Pages can be disabled through GitHub repository Pages settings if a hard retirement is desired.
