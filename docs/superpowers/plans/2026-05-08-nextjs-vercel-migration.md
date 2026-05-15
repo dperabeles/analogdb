@@ -2264,6 +2264,10 @@ Validation result:
 - The Vercel preview containing the roll detail/editor parity pass is live and ready.
 - No recent runtime errors were reported by Vercel logs.
 
+Errors / lessons:
+
+- The first push of the docs-only verification commit hung without terminal output. Checked for stuck git processes, killed the hanging `git push` / `git-remote-https` processes, confirmed the branch was still `ahead 1`, then retried `git push origin feature/nextjs-vercel-migration` successfully.
+
 Open follow-up:
 
 - User should compare `/rolls/new`, an individual roll detail page, and edit page against the GitHub beta modal/editor feel.
