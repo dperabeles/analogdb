@@ -17,7 +17,7 @@
 - Vercel project: `analogdb-repo`
 - Live Vercel URL: `https://analogdb-repo.vercel.app`
 - Custom domains: `https://analog-archive.com`, `https://www.analog-archive.com`
-- Deployment id: `dpl_DFfuSD4vbSBVX2BpUL5rLQ6wyznY`
+- Deployment id: `dpl_FUNbeczQo2EkhpZxRBWUcyi5ANPx`
 - Deployment status: Ready
 - Validated routes: `/`, `/dashboard`, `/forgot-password`, plus production aliases.
 - Supabase Auth redirects: production Vercel domain is now the Auth `site_url`; GitHub Pages URLs remain allow-listed during fallback.
@@ -2822,3 +2822,39 @@ Open follow-up:
 - Push `main` after this documentation update.
 - Keep the GitHub Pages fallback briefly until the user confirms a real authenticated production smoke on `https://analog-archive.com`.
 - After that confirmation, GitHub Pages can be disabled through GitHub repository Pages settings if a hard retirement is desired.
+
+### 2026-05-15: Final Main Production Deployment
+
+Completed:
+
+- Pushed `main` to GitHub after merging the migration branch and documenting production cutover.
+- Confirmed Git/Vercel created the final production deployment from `main`:
+  - deployment id: `dpl_FUNbeczQo2EkhpZxRBWUcyi5ANPx`
+  - deployment URL: `https://analogdb-repo-7275xqj2y-arqdiegoperabeles-2865s-projects.vercel.app`
+  - production aliases: `https://analog-archive.com`, `https://www.analog-archive.com`, `https://analogdb-repo.vercel.app`, and the main branch alias
+  - status: `Ready`
+- Checked production error logs for the final main deployment; no error logs were found.
+
+Validation commands used:
+
+```bash
+git push origin main
+npx --yes vercel ls analogdb-repo --scope arqdiegoperabeles-2865s-projects
+npx --yes vercel inspect https://analogdb-repo-7275xqj2y-arqdiegoperabeles-2865s-projects.vercel.app --scope arqdiegoperabeles-2865s-projects
+npx --yes vercel logs https://analogdb-repo-7275xqj2y-arqdiegoperabeles-2865s-projects.vercel.app --level error --since 10m --limit 50 --expand --scope arqdiegoperabeles-2865s-projects
+```
+
+Validation result:
+
+- `main` is now the source branch for the migrated Next.js app.
+- The custom production domains point to the final `main` deployment.
+- No Vercel production error logs were found after the final deployment.
+
+Errors / lessons:
+
+- The final Git-triggered production deploy briefly reported `Building`; wait for `vercel inspect` to show `Ready` before treating the cutover as complete.
+
+Open follow-up:
+
+- Real authenticated browser smoke on `https://analog-archive.com` is still recommended because automated shell checks cannot exercise the user's approved Supabase session.
+- Keep GitHub Pages available as a short rollback URL until that real-user production smoke is confirmed.
