@@ -9,6 +9,11 @@ export type RollSort = "newest" | "started" | "finished" | "rating";
 export type RollFilters = {
   status?: string;
   q?: string;
+  filmType?: string;
+  format?: string;
+  expFresh?: string;
+  camera?: string;
+  lab?: string;
   sort?: RollSort;
 };
 
@@ -119,21 +124,34 @@ export function mapRollFlatRow(row: RollFlatRow): RollListItem | null {
 export function filterRolls(rolls: RollListItem[], filters: RollFilters) {
   const status = filters.status?.trim();
   const q = filters.q?.trim().toLowerCase();
+  const filmType = filters.filmType?.trim();
+  const format = filters.format?.trim();
+  const expFresh = filters.expFresh?.trim();
+  const camera = filters.camera?.trim();
+  const lab = filters.lab?.trim();
 
   return rolls.filter((roll) => {
     if (status && roll.status !== status) return false;
+    if (filmType && roll.filmType !== filmType) return false;
+    if (format && normalizeFormatValue(roll.format) !== normalizeFormatValue(format)) return false;
+    if (expFresh && roll.expFresh !== expFresh) return false;
+    if (camera && roll.modelName !== camera) return false;
+    if (lab && roll.dev !== lab) return false;
     if (!q) return true;
 
     const haystack = [
       roll.code,
       roll.filmStock,
       roll.manufacturer,
+      roll.filmType,
+      roll.format,
       roll.maker,
       roll.modelName,
       roll.lens,
       roll.locations,
       roll.photoType,
       roll.tags,
+      roll.dev,
       roll.notes
     ]
       .filter(Boolean)

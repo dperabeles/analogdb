@@ -28,6 +28,7 @@ assertIncludes(rollList, 'editorial-section-head rolls-header', 'roll archive sh
 assertIncludes(rollList, 'editorial-section-num', 'roll archive should include a roman-numeral section marker');
 assertIncludes(rollList, 'database-roll-main', 'database rows should keep stock as the primary table field');
 assertIncludes(rollList, 'manufacturer', 'roll rows should expose manufacturer context');
+assertIncludes(rollList, 'rolls={rolls}', 'database filters should receive rolls to populate camera/lab options like GitHub beta');
 
 const dashboardOverview = read('src/features/rolls/dashboard-overview.tsx');
 assertIncludes(dashboardOverview, 'ed-index-grid', 'dashboard overview should match the GitHub beta index grid');
@@ -46,5 +47,6 @@ assertIncludes(css, '.ed-workflow', 'CSS should style the GitHub beta workflow c
 assertIncludes(css, '.database-table', 'CSS should style the GitHub beta database table');
 assertIncludes(css, 'min-width: 1180px', 'desktop database table should preserve dense legacy columns');
 assertIncludes(css, '.database-table tbody tr:last-child td', 'database table should avoid trailing row borders');
+assertIncludes(css, 'repeat(5, minmax(132px, 0.85fr))', 'database filters should allow the GitHub beta multi-filter bar');
 
 console.log('next dashboard UI parity static checks passed');

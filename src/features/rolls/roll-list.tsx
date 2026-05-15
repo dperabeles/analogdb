@@ -35,7 +35,7 @@ export function RollList({ rolls, filters, error }: RollListProps) {
         </div>
       </div>
 
-      <RollFiltersForm filters={safeFilters} />
+      <RollFiltersForm filters={safeFilters} rolls={rolls} />
 
       {error ? <p className="auth-message auth-message-error">No se pudieron cargar los rolls: {error}</p> : null}
 

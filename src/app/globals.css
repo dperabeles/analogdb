@@ -1336,8 +1336,8 @@ h1 {
 
 .roll-filters {
   display: grid;
-  grid-template-columns: minmax(150px, 0.8fr) minmax(220px, 1.5fr) minmax(140px, 0.8fr) auto;
-  gap: 12px;
+  grid-template-columns: minmax(220px, 1.5fr) repeat(5, minmax(132px, 0.85fr)) auto;
+  gap: 8px;
   align-items: end;
 }
 
@@ -1355,9 +1355,11 @@ h1 {
   background: #221a15;
   color: var(--text);
   padding: 0 11px;
+  width: 100%;
 }
 
 .roll-filters button {
+  min-height: 42px;
   justify-content: center;
 }
 

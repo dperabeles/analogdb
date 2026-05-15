@@ -2545,3 +2545,59 @@ Open follow-up:
 
 - Investigate why Vercel Git did not auto-deploy the latest branch commit if this repeats.
 - Continue authenticated browser visual QA using `https://analogdb-repo-azp1ps7ok-arqdiegoperabeles-2865s-projects.vercel.app`.
+
+### 2026-05-15: Database Filters Parity Pass
+
+Completed:
+
+- Compared the GitHub beta Database filters against the Next `/database` filters.
+- Found that Next still exposed the earlier status/sort filter UI instead of the beta filter bar.
+- Updated `RollFilters` to match the GitHub beta Database filter model:
+  - text search with `Buscar rollos...`
+  - `filmType` with `Todos los tipos`
+  - `format` with `Todos los formatos`
+  - `expFresh` with `Exp / Fresh`
+  - `camera` with `Todas las cámaras`
+  - `lab` with `Todos los labs`
+- Updated `RollFilters` to receive the current roll list so camera and lab options are populated dynamically from user data, like the beta.
+- Updated `/database` search params to pass the new filter fields.
+- Updated `filterRolls()` to apply the GitHub beta filter behavior:
+  - exact film type
+  - normalized format matching
+  - fresh/expired state
+  - camera model
+  - dev lab
+  - text search across code, stock, manufacturer, type, format, camera, lens, locations, categories, tags, lab, and notes
+- Adjusted the filter CSS to support the multi-filter beta bar without desktop overflow and to collapse cleanly on mobile.
+
+Validation commands used:
+
+```bash
+node --test tests/next-roll-read-flows.test.js tests/next-dashboard-ui-parity.test.js
+node --test tests/next-roll-read-flows.test.js tests/next-dashboard-ui-parity.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Validation result:
+
+- RED checks failed before implementation for the expected reasons:
+  - missing beta `filmType`, `format`, `expFresh`, `camera`, and `lab` filters
+  - filters did not receive `rolls` for dynamic camera/lab options
+- Focused filter/database parity tests passed after implementation.
+- `tsc --noEmit` passed.
+- `next build` passed.
+- Full JS regression suite passed: 14/14 tests.
+- Python regression suite passed: 16/16 tests.
+
+Errors / lessons:
+
+- Status/sort were useful intermediate controls, but they did not match the accepted GitHub beta Database UI. For parity work, prefer the beta information architecture unless there is a data-loss or functional reason not to.
+- Dynamic filter options should come from the user's visible roll data, not hardcoded placeholders.
+
+Open follow-up:
+
+- Commit and deploy this database filter parity pass to Vercel.
+- Continue authenticated browser visual QA for `/database`, especially filter wrapping and mobile table/filter density.

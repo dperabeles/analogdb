@@ -11,6 +11,11 @@ type DatabasePageProps = {
   searchParams?: Promise<{
     status?: string;
     q?: string;
+    filmType?: string;
+    format?: string;
+    expFresh?: string;
+    camera?: string;
+    lab?: string;
     sort?: string;
   }>;
 };
@@ -51,6 +56,11 @@ export default async function DatabasePage({ searchParams }: DatabasePageProps) 
   const filters = {
     status: params?.status,
     q: params?.q,
+    filmType: params?.filmType,
+    format: params?.format,
+    expFresh: params?.expFresh,
+    camera: params?.camera,
+    lab: params?.lab,
     sort: normalizeRollSort(params?.sort)
   };
   const { rolls, error } = await getRolls();
