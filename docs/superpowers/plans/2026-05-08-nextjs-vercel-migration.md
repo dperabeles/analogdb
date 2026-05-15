@@ -2321,3 +2321,38 @@ Open follow-up:
 
 - Commit and deploy this admin shell parity pass to Vercel.
 - Start a systematic Vercel QA pass across desktop/mobile for public gate, dashboard, stats, timeline, equipment, roll detail, roll new/edit, and admin.
+
+### 2026-05-15: Vercel Verification After Admin Shell Pass
+
+Completed:
+
+- Pushed admin shared shell parity commit `e30c668` to `feature/nextjs-vercel-migration`.
+- Confirmed Vercel generated a new preview deployment:
+  - deployment id: `dpl_9JTSraiK35ooEh4PAyfcVfn6eqRu`
+  - deployment URL: `https://analogdb-repo-p31wmxy8i-arqdiegoperabeles-2865s-projects.vercel.app`
+  - branch alias: `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
+  - target: `preview`
+  - status: `Ready`
+- Checked recent Vercel error logs for `feature/nextjs-vercel-migration`; no recent error logs were found.
+
+Validation commands used:
+
+```bash
+npx --yes vercel inspect https://analogdb-repo-p31wmxy8i-arqdiegoperabeles-2865s-projects.vercel.app
+npx --yes vercel logs --level error --since 10m --branch feature/nextjs-vercel-migration --limit 50 --expand
+```
+
+Validation result:
+
+- The Vercel preview containing the admin shared shell parity pass is live and ready.
+- No recent runtime errors were reported by Vercel logs.
+
+Errors / lessons:
+
+- No deployment or runtime errors were observed in this pass.
+- Keep admin internal panel parity as a follow-up; this pass only moved the route shell/header/navigation onto the accepted GitHub beta visual structure.
+
+Open follow-up:
+
+- Start a systematic Vercel QA pass across desktop/mobile for public gate, dashboard, stats, timeline, equipment, roll detail, roll new/edit, and admin.
+- After QA, prioritize remaining visual gaps that block the Vercel preview from looking at least as polished as the current GitHub Pages beta.
