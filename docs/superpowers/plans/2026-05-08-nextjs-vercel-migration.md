@@ -2638,3 +2638,45 @@ Open follow-up:
 
 - Continue authenticated browser visual QA for `/database`.
 - Next likely parity target: make table interactions closer to GitHub beta, especially sortable column behavior or filter count feedback.
+
+### 2026-05-15: Database Table Interaction Parity Pass
+
+Completed:
+
+- Compared GitHub beta table behavior in `analog-db-dashboard.html` against the Next `/database` route.
+- Added GitHub beta-style sortable table headers to the Next Database table.
+- Added `sortDir` support to the roll filter contract and normalized sort/filter helpers.
+- Added table sort links that preserve the active beta filters while toggling ascending/descending order.
+- Added accessible `aria-sort` state on sortable headers.
+- Added `sort-asc` / `sort-desc` classes and visual arrow markers.
+- Added the beta-style filtered/total roll counter above the table.
+- Kept existing roll detail links and table columns unchanged.
+
+Validation commands used:
+
+```bash
+node --test tests/next-roll-read-flows.test.js tests/next-dashboard-ui-parity.test.js
+npm run typecheck
+npm run build
+node --test auth-recovery.test.js tests/camera-lens-quick-add.test.js tests/camera-quick-mode.test.js tests/next-auth-gates.test.js tests/next-public-gate-github-parity.test.js tests/next-roll-read-flows.test.js tests/next-roll-write-flows.test.js tests/next-admin-flows.test.js tests/next-equipment-flows.test.js tests/next-stats-timeline-flows.test.js tests/next-mobile-navigation.test.js tests/next-ui-parity-baseline.test.js tests/next-dashboard-ui-parity.test.js tests/roll-format-normalization.test.js
+python3 -m unittest tests/test_rejected_admin_ui.py tests/test_film_catalog.py tests/test_exposure_settings.py
+```
+
+Validation result:
+
+- RED checks failed before implementation because the Next table had no sortable header links, no filter count, and no sort classes.
+- Focused Database/table interaction parity tests passed after implementation.
+- `tsc --noEmit` passed.
+- `next build` passed.
+- Full JS regression suite passed: 14/14 tests.
+- Python regression suite passed: 16/16 tests.
+
+Errors / lessons:
+
+- The first implementation normalized `sortDir` only inside `RollList`. The static contract test correctly flagged that `filters.sortDir` should live in the shared roll filter helper layer, so the normalization was moved into `normalizeRollFilters()`.
+- Sorting behavior needs to preserve active filters in the URL; otherwise users can lose their current Database view when clicking a column header.
+
+Open follow-up:
+
+- Commit and deploy this database table interaction parity pass to Vercel.
+- Continue authenticated browser visual QA for `/database`, especially comparing sorting/filter count against the GitHub beta table.

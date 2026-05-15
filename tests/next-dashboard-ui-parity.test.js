@@ -47,6 +47,9 @@ assertIncludes(css, '.ed-workflow', 'CSS should style the GitHub beta workflow c
 assertIncludes(css, '.database-table', 'CSS should style the GitHub beta database table');
 assertIncludes(css, 'min-width: 1180px', 'desktop database table should preserve dense legacy columns');
 assertIncludes(css, '.database-table tbody tr:last-child td', 'database table should avoid trailing row borders');
+assertIncludes(css, 'thead th.sort-asc::after', 'database table should show GitHub beta ascending sort marker');
+assertIncludes(css, 'thead th.sort-desc::after', 'database table should show GitHub beta descending sort marker');
+assertIncludes(css, '.filter-count', 'database CSS should keep GitHub beta filtered count styling');
 assertIncludes(css, 'repeat(5, minmax(132px, 0.85fr))', 'database filters should allow the GitHub beta multi-filter bar');
 
 console.log('next dashboard UI parity static checks passed');

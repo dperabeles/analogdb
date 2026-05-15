@@ -5,7 +5,7 @@ import { getCurrentAccessProfile } from "@/features/auth/profile";
 import { AppShell } from "@/features/navigation/app-shell";
 import { getRolls } from "@/features/rolls/queries";
 import { RollList } from "@/features/rolls/roll-list";
-import { normalizeRollSort } from "@/features/rolls/roll-types";
+import { normalizeRollSort, normalizeRollSortDir } from "@/features/rolls/roll-types";
 
 type DatabasePageProps = {
   searchParams?: Promise<{
@@ -17,6 +17,7 @@ type DatabasePageProps = {
     camera?: string;
     lab?: string;
     sort?: string;
+    sortDir?: string;
   }>;
 };
 
@@ -61,7 +62,8 @@ export default async function DatabasePage({ searchParams }: DatabasePageProps) 
     expFresh: params?.expFresh,
     camera: params?.camera,
     lab: params?.lab,
-    sort: normalizeRollSort(params?.sort)
+    sort: normalizeRollSort(params?.sort),
+    sortDir: normalizeRollSortDir(params?.sortDir)
   };
   const { rolls, error } = await getRolls();
 

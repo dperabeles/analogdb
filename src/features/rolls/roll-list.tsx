@@ -1,10 +1,11 @@
 import Link from "next/link";
 import {
   filterRolls,
-  normalizeRollSort,
+  normalizeRollFilters,
   sortRolls,
   STATUS_LABELS,
   type RollFilters,
+  type RollSort,
   type RollListItem
 } from "@/features/rolls/roll-types";
 import { RollFilters as RollFiltersForm } from "@/features/rolls/roll-filters";
@@ -21,9 +22,42 @@ function stars(rating: number | null) {
   return "★".repeat(bounded) + "☆".repeat(5 - bounded);
 }
 
+const TABLE_COLUMNS: { label: string; sort: RollSort }[] = [
+  { label: "#", sort: "code" },
+  { label: "Rollo", sort: "filmStock" },
+  { label: "Tipo", sort: "filmType" },
+  { label: "Formato", sort: "format" },
+  { label: "Estado", sort: "expFresh" },
+  { label: "ISO", sort: "iso" },
+  { label: "Cámara", sort: "camera" },
+  { label: "Lente", sort: "lens" },
+  { label: "Ubicación", sort: "locations" },
+  { label: "Category", sort: "photoType" },
+  { label: "Fecha", sort: "started" },
+  { label: "# Exp", sort: "expTaken" },
+  { label: "Push/Pull", sort: "pushPull" },
+  { label: "Lab", sort: "lab" },
+  { label: "Rating", sort: "rating" }
+];
+
+function sortLink(filters: RollFilters, sort: RollSort) {
+  const params = new URLSearchParams();
+  const nextDir = filters.sort === sort && filters.sortDir === "asc" ? "desc" : "asc";
+
+  (["status", "q", "filmType", "format", "expFresh", "camera", "lab"] as const).forEach((key) => {
+    const value = filters[key];
+    if (value) params.set(key, value);
+  });
+
+  params.set("sort", sort);
+  params.set("sortDir", nextDir);
+
+  return `/database?${params.toString()}`;
+}
+
 export function RollList({ rolls, filters, error }: RollListProps) {
-  const safeFilters = { ...filters, sort: normalizeRollSort(filters.sort) };
-  const filteredRolls = sortRolls(filterRolls(rolls, safeFilters), safeFilters.sort);
+  const safeFilters = normalizeRollFilters(filters);
+  const filteredRolls = sortRolls(filterRolls(rolls, safeFilters), safeFilters.sort, safeFilters.sortDir);
 
   return (
     <section className="rolls-panel" aria-label="Roll archive">
@@ -37,6 +71,10 @@ export function RollList({ rolls, filters, error }: RollListProps) {
 
       <RollFiltersForm filters={safeFilters} rolls={rolls} />
 
+      <div className="filter-count">
+        {filteredRolls.length} / {rolls.length} rollos
+      </div>
+
       {error ? <p className="auth-message auth-message-error">No se pudieron cargar los rolls: {error}</p> : null}
 
       {filteredRolls.length ? (
@@ -45,21 +83,20 @@ export function RollList({ rolls, filters, error }: RollListProps) {
             <table className="database-table">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Rollo</th>
-                  <th>Tipo</th>
-                  <th>Formato</th>
-                  <th>Estado</th>
-                  <th>ISO</th>
-                  <th>Cámara</th>
-                  <th>Lente</th>
-                  <th>Ubicación</th>
-                  <th>Category</th>
-                  <th>Fecha</th>
-                  <th># Exp</th>
-                  <th>Push/Pull</th>
-                  <th>Lab</th>
-                  <th>Rating</th>
+                  {TABLE_COLUMNS.map((column) => {
+                    const active = safeFilters.sort === column.sort;
+                    const sortClass = active ? (safeFilters.sortDir === "asc" ? "sort-asc" : "sort-desc") : undefined;
+
+                    return (
+                      <th
+                        key={column.sort}
+                        className={sortClass}
+                        aria-sort={active ? (safeFilters.sortDir === "asc" ? "ascending" : "descending") : "none"}
+                      >
+                        <Link href={sortLink(safeFilters, column.sort)}>{column.label}</Link>
+                      </th>
+                    );
+                  })}
                 </tr>
               </thead>
               <tbody>

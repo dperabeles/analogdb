@@ -42,10 +42,15 @@ assertIncludes(list, 'encodeURIComponent(roll.code)', 'database rows should link
 assertIncludes(list, 'table-card', 'database list should use the GitHub beta table card shell');
 assertIncludes(list, 'table-scroll', 'database list should preserve the GitHub beta horizontal table scroller');
 assertIncludes(list, '<table', 'database list should render as a table like the GitHub beta Database view');
-assertIncludes(list, '<th>#</th>', 'database table should keep the legacy roll number column');
-assertIncludes(list, '<th>Rollo</th>', 'database table should keep the legacy roll stock column');
-assertIncludes(list, '<th>Cámara</th>', 'database table should keep the legacy camera column');
-assertIncludes(list, '<th>Rating</th>', 'database table should keep the legacy rating column');
+assertIncludes(list, 'sortLink', 'database table headers should behave like GitHub beta sortable columns');
+assertIncludes(list, 'filter-count', 'database list should show filtered/total count like GitHub beta');
+assertIncludes(list, 'aria-sort', 'database table should expose current sort state accessibly');
+assertIncludes(list, 'sort-asc', 'database table should apply GitHub beta ascending sort class');
+assertIncludes(list, 'sort-desc', 'database table should apply GitHub beta descending sort class');
+assertIncludes(list, 'label: "#"', 'database table should keep the legacy roll number column');
+assertIncludes(list, 'label: "Rollo"', 'database table should keep the legacy roll stock column');
+assertIncludes(list, 'label: "Cámara"', 'database table should keep the legacy camera column');
+assertIncludes(list, 'label: "Rating"', 'database table should keep the legacy rating column');
 
 const filters = read('src/features/rolls/roll-filters.tsx');
 assertIncludes(filters, 'name="q"', 'filters should expose text search');
@@ -66,6 +71,7 @@ assertIncludes(rollTypesForFilters, 'filters.format', 'roll filtering should sup
 assertIncludes(rollTypesForFilters, 'filters.expFresh', 'roll filtering should support GitHub beta fresh/expired filter');
 assertIncludes(rollTypesForFilters, 'filters.camera', 'roll filtering should support GitHub beta camera filter');
 assertIncludes(rollTypesForFilters, 'filters.lab', 'roll filtering should support GitHub beta lab filter');
+assertIncludes(rollTypesForFilters, 'filters.sortDir', 'roll sorting should support GitHub beta sort direction toggles');
 
 const dashboard = read('src/app/dashboard/page.tsx');
 assertIncludes(dashboard, 'getRolls()', 'approved dashboard should read rolls from Supabase');

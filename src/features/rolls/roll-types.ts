@@ -4,7 +4,25 @@ export type RollFlatRow = Database["public"]["Views"]["rolls_flat"]["Row"];
 
 export type RollStatus = "In Camera" | "To Develop" | "In Development" | "Developed" | "Archived";
 
-export type RollSort = "newest" | "started" | "finished" | "rating";
+export type RollSort =
+  | "newest"
+  | "code"
+  | "filmStock"
+  | "filmType"
+  | "format"
+  | "expFresh"
+  | "iso"
+  | "camera"
+  | "lens"
+  | "locations"
+  | "photoType"
+  | "started"
+  | "expTaken"
+  | "pushPull"
+  | "lab"
+  | "rating";
+
+export type RollSortDir = "asc" | "desc";
 
 export type RollFilters = {
   status?: string;
@@ -15,6 +33,7 @@ export type RollFilters = {
   camera?: string;
   lab?: string;
   sort?: RollSort;
+  sortDir?: RollSortDir;
 };
 
 export type RollListItem = {
@@ -162,19 +181,73 @@ export function filterRolls(rolls: RollListItem[], filters: RollFilters) {
   });
 }
 
-export function sortRolls(rolls: RollListItem[], sort: RollSort = "newest") {
+function sortValue(roll: RollListItem, sort: RollSort) {
+  if (sort === "code") return roll.code;
+  if (sort === "filmStock") return roll.filmStock;
+  if (sort === "filmType") return roll.filmType;
+  if (sort === "format") return roll.format;
+  if (sort === "expFresh") return roll.expFresh;
+  if (sort === "iso") return roll.iso ?? roll.isoPushed;
+  if (sort === "camera") return roll.modelName;
+  if (sort === "lens") return roll.lens;
+  if (sort === "locations") return roll.locations;
+  if (sort === "photoType") return roll.photoType;
+  if (sort === "started") return roll.started;
+  if (sort === "expTaken") return roll.expTaken ?? roll.exp;
+  if (sort === "pushPull") return roll.pushPull;
+  if (sort === "lab") return roll.dev;
+  if (sort === "rating") return roll.rating;
+  return roll.id;
+}
+
+export function sortRolls(rolls: RollListItem[], sort: RollSort = "newest", sortDir: RollSortDir = "desc") {
   const copy = [...rolls];
-  const dateValue = (value: string | null) => (value ? Date.parse(value) || 0 : 0);
+  const direction = sortDir === "asc" ? 1 : -1;
 
   return copy.sort((a, b) => {
-    if (sort === "started") return dateValue(b.started) - dateValue(a.started) || b.id - a.id;
-    if (sort === "finished") return dateValue(b.finished) - dateValue(a.finished) || b.id - a.id;
-    if (sort === "rating") return (b.rating || 0) - (a.rating || 0) || b.id - a.id;
-    return b.id - a.id;
+    const av = sortValue(a, sort);
+    const bv = sortValue(b, sort);
+    let result = 0;
+
+    if (typeof av === "number" || typeof bv === "number") {
+      result = (Number(av) || 0) - (Number(bv) || 0);
+    } else {
+      result = String(av || "").localeCompare(String(bv || ""), "es", { numeric: true });
+    }
+
+    return result * direction || (b.id - a.id);
   });
 }
 
 export function normalizeRollSort(value: string | undefined): RollSort {
-  if (value === "started" || value === "finished" || value === "rating") return value;
+  if (
+    value === "code" ||
+    value === "filmStock" ||
+    value === "filmType" ||
+    value === "format" ||
+    value === "expFresh" ||
+    value === "iso" ||
+    value === "camera" ||
+    value === "lens" ||
+    value === "locations" ||
+    value === "photoType" ||
+    value === "started" ||
+    value === "expTaken" ||
+    value === "pushPull" ||
+    value === "lab" ||
+    value === "rating"
+  ) return value;
   return "newest";
+}
+
+export function normalizeRollSortDir(value: string | undefined): RollSortDir {
+  return value === "asc" ? "asc" : "desc";
+}
+
+export function normalizeRollFilters(filters: RollFilters): RollFilters {
+  return {
+    ...filters,
+    sort: normalizeRollSort(filters.sort),
+    sortDir: normalizeRollSortDir(filters.sortDir)
+  };
 }
