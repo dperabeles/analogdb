@@ -2680,3 +2680,41 @@ Open follow-up:
 
 - Commit and deploy this database table interaction parity pass to Vercel.
 - Continue authenticated browser visual QA for `/database`, especially comparing sorting/filter count against the GitHub beta table.
+
+### 2026-05-15: Vercel Verification After Database Table Interaction Pass
+
+Completed:
+
+- Pushed database table interaction parity commit `ff001fd` to `feature/nextjs-vercel-migration`.
+- Confirmed the remote GitHub branch points to `ff001fda81c26c44b7fa893bf929706722a60261`.
+- Confirmed Vercel Git automatically created a new preview deployment:
+  - deployment id: `dpl_3oyAgCX7TwvCXtQTumrr9QLrmG9v`
+  - deployment URL: `https://analogdb-repo-pwjomikg8-arqdiegoperabeles-2865s-projects.vercel.app`
+  - branch alias: `https://analogdb-repo-git-featu-3bc83d-arqdiegoperabeles-2865s-projects.vercel.app`
+  - target: `preview`
+  - status: `Ready`
+- Checked Vercel error logs for the preview deployment; no error logs were found.
+
+Validation commands used:
+
+```bash
+git ls-remote origin feature/nextjs-vercel-migration
+npx --yes vercel ls analogdb-repo --scope arqdiegoperabeles-2865s-projects
+npx --yes vercel inspect https://analogdb-repo-pwjomikg8-arqdiegoperabeles-2865s-projects.vercel.app --scope arqdiegoperabeles-2865s-projects
+npx --yes vercel logs https://analogdb-repo-pwjomikg8-arqdiegoperabeles-2865s-projects.vercel.app --level error --since 10m --limit 50 --expand --scope arqdiegoperabeles-2865s-projects
+```
+
+Validation result:
+
+- The database table interaction parity pass is live on Vercel and the branch alias points to the new deployment.
+- No Vercel runtime error logs were found.
+
+Errors / lessons:
+
+- Initial `git ls-remote` failed inside the sandbox with DNS resolution for `github.com`; rerunning with approved network permissions succeeded and confirmed the remote SHA.
+- Vercel deployment status should be checked twice when the first inspect shows `Building`; this pass became `Ready` on the second inspect.
+
+Open follow-up:
+
+- Continue authenticated browser visual QA for `/database` on the branch alias.
+- Next likely parity target: compare remaining visual differences on Database after sortable headers/filter count are live.
