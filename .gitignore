@@ -18,6 +18,7 @@ scripts/graphify-update.sh
 .DS_Store
 Thumbs.db
 desktop.ini
+__pycache__/
 
 # Supabase local config (si tuviera secretos)
 supabase/.temp/
@@ -27,3 +28,16 @@ supabase/config.toml
 *.swp
 *.swo
 .vscode/settings.json
+.vercel
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+tsconfig.tsbuildinfo
+npm-debug.log*
+
+# Local environment files
+.env
+.env.local
+.env*.local
