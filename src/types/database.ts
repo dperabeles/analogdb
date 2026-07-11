@@ -39,13 +39,22 @@ export type Database = {
         Row: {
           id: number;
           name: string;
+          // Columnas de ANA-97/103 usadas por la web (schema real completo
+          // en supabase/migrations; regen de tipos pendiente — el CLI actual
+          // usa legacy API keys, deshabilitadas desde 2026-04-25)
+          match_key: string | null;
+          city: string | null;
         };
         Insert: {
           id?: number;
           name: string;
+          match_key?: string | null;
+          city?: string | null;
         };
         Update: {
           name?: string;
+          match_key?: string | null;
+          city?: string | null;
         };
         Relationships: [];
       };
