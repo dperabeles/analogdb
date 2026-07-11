@@ -122,17 +122,66 @@ async function upsertCamera(
   return data.id;
 }
 
+/**
+ * Espejo del trigger SQL `labs_match_key_trg`: minúsculas, sin acentos,
+ * solo [a-z0-9]. Debe mantenerse idéntico al trigger (y al helper Dart
+ * `Lab.normalizeMatchKey` de la app móvil).
+ */
+function normalizeLabMatchKey(name: string): string {
+  const from = "áàäâãéèëêíìïîóòöôõúùüûñç";
+  const to = "aaaaaeeeeiiiiooooouuuunc";
+  let out = "";
+  for (const ch of name.toLowerCase()) {
+    const idx = from.indexOf(ch);
+    out += idx >= 0 ? to[idx] : ch;
+  }
+  return out.replace(/[^a-z0-9]/g, "");
+}
+
+/**
+ * Resuelve un lab por MARCA (match_key) — ANA-103. La web no captura ciudad,
+ * así que reutiliza cualquier sucursal existente de la marca (typos y
+ * variantes de acentos incluidos) y solo inserta cuando la marca es nueva.
+ * Ya no depende del unique en `name` (que se retira para permitir
+ * sucursales); el backstop de carreras es el unique (match_key, city).
+ */
 async function upsertLab(name: string | null) {
   if (!name) return null;
+  const clean = name.trim();
+  if (!clean) return null;
 
   const supabase = await createServerSupabaseClient();
+  const key = normalizeLabMatchKey(clean);
+
+  const { data: existing, error: findError } = await supabase
+    .from("labs")
+    .select("id")
+    .eq("match_key", key)
+    .order("id")
+    .limit(1);
+  if (findError) throw findError;
+  if (existing && existing.length > 0) return existing[0].id;
+
   const { data, error } = await supabase
     .from("labs")
-    .upsert({ name }, { onConflict: "name" })
+    .insert({ name: clean })
     .select("id")
     .single();
 
-  if (error) throw error;
+  if (error) {
+    // Carrera: otro request creó la marca entre el select y el insert.
+    if (error.code === "23505") {
+      const { data: raced, error: retryError } = await supabase
+        .from("labs")
+        .select("id")
+        .eq("match_key", key)
+        .order("id")
+        .limit(1);
+      if (retryError) throw retryError;
+      if (raced && raced.length > 0) return raced[0].id;
+    }
+    throw error;
+  }
   return data.id;
 }
 
