@@ -259,10 +259,9 @@ as $$
 declare
   webhook_secret text;
 begin
-  if new.status is distinct from 'pending' then
-    return new;
-  end if;
-
+  -- 20260807: sin filtro por status. Antes había un early return por
+  -- 'pending' que dejó el aviso mudo cuando los perfiles pasaron a nacer
+  -- 'approved' (20260526).
   begin
     select pac.config_value
     into webhook_secret
@@ -297,10 +296,11 @@ begin
 end;
 $$;
 
+-- 20260807: sin WHEN — avisa de CUALQUIER registro nuevo. El nombre
+-- conserva "pending" porque la Edge Function desplegada vive en esa URL.
 create trigger profiles_notify_pending_signup
 after insert on public.profiles
 for each row
-when (new.status = 'pending')
 execute function public.notify_pending_signup();
 
 create or replace function public.notify_profile_approved()

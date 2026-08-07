@@ -34,7 +34,7 @@ function renderEmailHtml(record: PendingProfileRecord, appUrl: string) {
     <div style="font-family:Inter,Arial,sans-serif;background:#11100d;color:#f3eadb;padding:24px;">
       <div style="max-width:640px;margin:0 auto;border:1px solid rgba(244,237,226,0.12);background:#18140f;padding:32px;">
         <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#a89d8c;margin-bottom:14px;">Analog Archive</div>
-        <h1 style="margin:0 0 14px 0;font-size:28px;line-height:1.1;font-family:Georgia,serif;font-weight:700;color:#f3eadb;">Nuevo registro pendiente</h1>
+        <h1 style="margin:0 0 14px 0;font-size:28px;line-height:1.1;font-family:Georgia,serif;font-weight:700;color:#f3eadb;">Nuevo registro</h1>
         <p style="margin:0 0 22px 0;font-size:14px;line-height:1.7;color:#d8ccba;">Un usuario nuevo solicitó acceso a la beta privada y está esperando aprobación manual.</p>
         <div style="border:1px solid rgba(244,237,226,0.08);background:#140f0c;padding:18px 20px;margin-bottom:24px;">
           <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8d8375;margin-bottom:10px;">Solicitante</div>
@@ -50,7 +50,7 @@ function renderEmailHtml(record: PendingProfileRecord, appUrl: string) {
 
 function renderEmailText(record: PendingProfileRecord, appUrl: string) {
   return [
-    "Nuevo registro pendiente en Analog Archive",
+    "Nuevo registro en Analog Archive",
     "",
     `Display name: ${record.display_name || "Sin display name"}`,
     `Correo: ${record.email || "Sin correo"}`,
@@ -91,8 +91,11 @@ Deno.serve(async (req) => {
 
   const payload = (await req.json()) as PendingSignupPayload;
   const record = payload?.record;
-  if (!record || record.status !== "pending") {
-    return new Response(JSON.stringify({ skipped: true, reason: "non_pending_payload" }), {
+  // Sin filtro por status: desde 20260526 los perfiles nacen 'approved' y
+  // filtrar por 'pending' dejaba el aviso mudo. Solo se exige que venga un
+  // registro válido.
+  if (!record) {
+    return new Response(JSON.stringify({ skipped: true, reason: "empty_payload" }), {
       status: 202,
       headers: jsonHeaders,
     });
@@ -114,7 +117,7 @@ Deno.serve(async (req) => {
     body: JSON.stringify({
       from: fromEmail,
       to: [adminEmail],
-      subject: "Nuevo registro pendiente en Analog Archive",
+      subject: "Nuevo registro en Analog Archive",
       html: renderEmailHtml(record, publicAppUrl),
       text: renderEmailText(record, publicAppUrl),
     }),
