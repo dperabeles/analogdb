@@ -55,3 +55,18 @@ verify_enabled = false
 [auth.email.template.recovery]
 subject = "Restablece tu acceso a Analogdb"
 content_path = "./supabase/templates/recovery.html"
+
+# ── Edge Functions ───────────────────────────────────────────────────────
+# Las dos funciones de correo las llama la BASE DE DATOS (triggers, vía
+# pg_net), no un usuario con sesión. Por eso NO deben pedir JWT: la puerta
+# de entrada de Supabase rechazaba la llamada con
+# `401 UNAUTHORIZED_NO_AUTH_HEADER` antes de que el código corriera.
+#
+# La autenticación real es el header `x-webhook-secret`, que ambas comparan
+# contra PENDING_SIGNUP_WEBHOOK_SECRET. Dejarlo aquí y no como bandera
+# `--no-verify-jwt` es lo que impide que el próximo deploy lo vuelva a romper.
+[functions.notify-pending-signup]
+verify_jwt = false
+
+[functions.notify-profile-approved]
+verify_jwt = false
