@@ -37,12 +37,25 @@ create table public.profiles (
   user_id uuid primary key references auth.users(id) on delete cascade,
   email text not null,
   display_name text not null,
-  status text not null check (status in ('pending', 'approved', 'rejected')),
+  -- Default 'approved' desde 20260526: el registro ya no pasa por aprobación
+  -- manual (el trigger handle_new_auth_user inserta approved + approved_at).
+  status text not null default 'approved' check (status in ('pending', 'approved', 'rejected')),
   created_at timestamptz not null default now(),
   approved_at timestamptz,
   approved_by uuid references auth.users(id) on delete set null,
   rejected_at timestamptz,
   rejected_by uuid references auth.users(id) on delete set null,
+  -- Soporte móvil (20260526). Andamiaje para notificaciones push: aún no se
+  -- envía nada, pero las columnas existen en producción y la app ya escribe
+  -- rolls.marked_to_develop_at.
+  fcm_token text,
+  fcm_platform text check (fcm_platform in ('ios','android')),
+  fcm_token_updated_at timestamptz,
+  last_mobile_version text,
+  last_mobile_seen_at timestamptz,
+  last_terms_accepted_version text,
+  last_terms_accepted_at timestamptz,
+  notification_prefs jsonb default '{"account_status": true, "roll_reminders": true, "legal_updates": true}'::jsonb,
   check (char_length(btrim(display_name)) >= 3 and char_length(btrim(display_name)) <= 20),
   check (display_name = btrim(display_name))
 );
@@ -127,8 +140,30 @@ create table public.rolls (
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
   owner_user_id uuid not null references auth.users(id) on delete cascade,
+  -- Recordatorios de revelado (20260526). La app móvil escribe
+  -- marked_to_develop_at al pasar el film a "Por revelar".
+  marked_to_develop_at timestamptz,
+  last_reminder_sent_at timestamptz,
   constraint rolls_owner_code_unique unique (owner_user_id, code)
 );
+
+-- Log de notificaciones push enviadas (20260526). Acceso restringido al
+-- rol de servicio (ver el grant en la migración);
+-- todavía no se envía nada, existe para cuando se active el envío.
+create table public.push_log (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references public.profiles(user_id) on delete cascade,
+  type text not null,
+  title text not null,
+  body text not null,
+  deeplink text,
+  status text not null check (status in ('sent', 'failed', 'opted_out')),
+  fcm_response_code int,
+  created_at timestamptz default now()
+);
+
+create index push_log_user_id_created_at_idx
+  on public.push_log (user_id, created_at desc);
 
 create table public.frame_tags (
   id uuid primary key default gen_random_uuid(),
@@ -358,9 +393,10 @@ begin
     new.id,
     new.email,
     requested_display_name,
-    'pending',
-    null,
-    null,
+    -- 20260526: sin aprobación manual, el registro entra directo.
+    'approved',
+    now(),
+    null,  -- approved_by: nadie lo aprobó, fue automático
     null,
     null
   )
@@ -736,12 +772,28 @@ to public
 with check (
   user_id = auth.uid()
   and email = auth.jwt() ->> 'email'
-  and status = 'pending'
-  and approved_at is null
-  and approved_by is null
+  -- 20260526: acepta 'approved' porque ese es el default del registro.
+  and status in ('pending', 'approved')
   and rejected_at is null
   and rejected_by is null
 );
+
+-- 20260526: el usuario puede actualizar SOLO sus columnas móviles (token de
+-- push, preferencias, versión). El grant acotado es la defensa real: la
+-- policy sola dejaría tocar cualquier columna.
+grant update (
+  fcm_token, fcm_platform, fcm_token_updated_at,
+  last_mobile_version, last_mobile_seen_at,
+  last_terms_accepted_version, last_terms_accepted_at,
+  notification_prefs
+) on public.profiles to authenticated;
+
+create policy profiles_self_update_mobile
+on public.profiles
+for update
+to public
+using (user_id = auth.uid())
+with check (user_id = auth.uid());
 
 create policy profiles_self_select
 on public.profiles
