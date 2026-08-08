@@ -35,9 +35,9 @@ function renderEmailHtml(record: PendingProfileRecord, appUrl: string) {
       <div style="max-width:640px;margin:0 auto;border:1px solid rgba(244,237,226,0.12);background:#18140f;padding:32px;">
         <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#a89d8c;margin-bottom:14px;">Analog Archive</div>
         <h1 style="margin:0 0 14px 0;font-size:28px;line-height:1.1;font-family:Georgia,serif;font-weight:700;color:#f3eadb;">Nuevo registro</h1>
-        <p style="margin:0 0 22px 0;font-size:14px;line-height:1.7;color:#d8ccba;">Un usuario nuevo solicitó acceso a la beta privada y está esperando aprobación manual.</p>
+        <p style="margin:0 0 22px 0;font-size:14px;line-height:1.7;color:#d8ccba;">Alguien se registró en Analog Archive. La cuenta ya está activa — no hay nada que aprobar.</p>
         <div style="border:1px solid rgba(244,237,226,0.08);background:#140f0c;padding:18px 20px;margin-bottom:24px;">
-          <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8d8375;margin-bottom:10px;">Solicitante</div>
+          <div style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8d8375;margin-bottom:10px;">Usuario</div>
           <div style="font-size:18px;font-weight:700;color:#f3eadb;margin-bottom:6px;">${displayName}</div>
           <div style="font-size:14px;color:#d8ccba;margin-bottom:6px;">${email}</div>
           <div style="font-size:12px;color:#9c9284;">${createdAt}</div>
