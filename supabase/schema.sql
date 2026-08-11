@@ -15,7 +15,9 @@ drop function if exists public.notify_pending_signup() cascade;
 drop function if exists public.notify_profile_approved() cascade;
 drop function if exists public.handle_new_auth_user() cascade;
 drop function if exists public.cast_admin_action_vote(uuid, text) cascade;
-drop function if exists public.request_admin_action(text, uuid) cascade;
+drop function if exists public.cancel_admin_action(uuid, text) cascade;
+drop function if exists public.request_admin_action(text, uuid, text) cascade;
+drop function if exists public.notify_admin_action() cascade;
 drop function if exists public.admin_set_profile_status(uuid, text) cascade;
 drop function if exists public.app_is_founder(uuid) cascade;
 drop function if exists public.app_is_admin(uuid) cascade;
@@ -200,7 +202,11 @@ create table public.admin_actions (
   status text not null check (status in ('pending', 'approved', 'rejected', 'executed', 'cancelled')),
   created_at timestamptz not null default now(),
   resolved_at timestamptz,
-  resolved_reason text
+  resolved_reason text,
+  -- Por qué se propuso (lo escribe quien propone; resolved_reason lo escribe
+  -- el sistema al resolver). Caducidad tras la cual ya no se puede votar.
+  request_reason text,
+  expires_at timestamptz
 );
 
 create table public.admin_action_approvals (
@@ -491,7 +497,11 @@ begin
 end;
 $$;
 
-create or replace function public.request_admin_action(p_action_type text, p_target_user_id uuid)
+create or replace function public.request_admin_action(
+  p_action_type text,
+  p_target_user_id uuid,
+  p_reason text default null
+)
 returns public.admin_actions
 language plpgsql
 security definer
@@ -500,6 +510,7 @@ as $$
 declare
   actor_id uuid := auth.uid();
   created_action public.admin_actions;
+  existing_action public.admin_actions;
 begin
   if not public.app_is_admin(actor_id) then
     raise exception 'admin required';
@@ -517,8 +528,34 @@ begin
     raise exception 'founder admin cannot be demoted';
   end if;
 
-  insert into public.admin_actions (action_type, target_user_id, created_by, status)
-  values (p_action_type, p_target_user_id, actor_id, 'pending')
+  -- Idempotente: si ya hay una propuesta viva para el mismo usuario y tipo,
+  -- se devuelve esa en vez de crear una segunda (cancelar una y dejar viva a
+  -- su gemela era incoherente).
+  select *
+  into existing_action
+  from public.admin_actions
+  where action_type = p_action_type
+    and target_user_id = p_target_user_id
+    and status = 'pending'
+    and (expires_at is null or now() <= expires_at)
+  order by created_at desc
+  limit 1;
+
+  if found then
+    return existing_action;
+  end if;
+
+  insert into public.admin_actions (
+    action_type, target_user_id, created_by, status, request_reason, expires_at
+  )
+  values (
+    p_action_type,
+    p_target_user_id,
+    actor_id,
+    'pending',
+    nullif(btrim(coalesce(p_reason, '')), ''),
+    now() + interval '30 days'
+  )
   returning * into created_action;
 
   return created_action;
@@ -557,6 +594,19 @@ begin
   end if;
 
   if action_row.status <> 'pending' then
+    return action_row;
+  end if;
+
+  -- Caducidad: una propuesta vencida no se vota, se auto-cancela. Null-safe
+  -- para filas anteriores a la migración de endurecimiento.
+  if action_row.expires_at is not null and now() > action_row.expires_at then
+    update public.admin_actions
+    set
+      status = 'cancelled',
+      resolved_at = now(),
+      resolved_reason = 'Expired without unanimous approval'
+    where id = p_action_id
+    returning * into action_row;
     return action_row;
   end if;
 
@@ -638,6 +688,137 @@ begin
   return action_row;
 end;
 $$;
+
+create or replace function public.cancel_admin_action(
+  p_action_id uuid,
+  p_reason text default null
+)
+returns public.admin_actions
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  actor_id uuid := auth.uid();
+  action_row public.admin_actions;
+  actor_is_requester boolean;
+begin
+  if not public.app_is_admin(actor_id) then
+    raise exception 'admin required';
+  end if;
+
+  select *
+  into action_row
+  from public.admin_actions
+  where id = p_action_id;
+
+  if not found then
+    raise exception 'admin action not found';
+  end if;
+
+  -- Idempotente: si ya se resolvió (ejecutada, rechazada o cancelada), se
+  -- devuelve tal cual. Cancelar dos veces no es un error.
+  if action_row.status <> 'pending' then
+    return action_row;
+  end if;
+
+  actor_is_requester := action_row.created_by = actor_id;
+
+  if not actor_is_requester and not public.app_is_founder(actor_id) then
+    raise exception 'only the requester or the founder can cancel';
+  end if;
+
+  update public.admin_actions
+  set
+    status = 'cancelled',
+    resolved_at = now(),
+    resolved_reason = coalesce(
+      nullif(btrim(coalesce(p_reason, '')), ''),
+      case when actor_is_requester
+        then 'Cancelled by requester'
+        else 'Cancelled by founder'
+      end
+    )
+  where id = p_action_id
+  returning * into action_row;
+
+  return action_row;
+end;
+$$;
+
+create or replace function public.notify_admin_action()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  webhook_secret text;
+  event_name text;
+  target_email text;
+  target_name text;
+  actor_email text;
+  actor_name text;
+begin
+  if tg_op = 'INSERT' then
+    event_name := 'requested';
+  elsif new.status = 'executed' and old.status is distinct from 'executed' then
+    event_name := 'executed';
+  else
+    return new;
+  end if;
+
+  begin
+    select pac.config_value
+    into webhook_secret
+    from public.private_app_config pac
+    where pac.config_key = 'pending_signup_webhook_secret'
+    limit 1;
+
+    if webhook_secret is null or webhook_secret = '' then
+      raise notice 'admin action notification skipped: missing webhook secret';
+      return new;
+    end if;
+
+    -- Un correo con dos UUID no le sirve a nadie. La resolución de nombres se
+    -- hace aquí, que es donde hay permiso (security definer), y no en la Edge
+    -- Function — que necesitaría una credencial elevada propia para lograr lo
+    -- mismo. Menos secretos circulando.
+    select p.email, p.display_name into target_email, target_name
+    from public.profiles p where p.user_id = new.target_user_id;
+
+    select p.email, p.display_name into actor_email, actor_name
+    from public.profiles p where p.user_id = new.created_by;
+
+    perform net.http_post(
+      url := 'https://dqjjxxqruxxfsfoejdzl.supabase.co/functions/v1/notify-admin-action',
+      headers := jsonb_build_object(
+        'Content-Type', 'application/json',
+        'x-webhook-secret', webhook_secret
+      ),
+      body := jsonb_build_object(
+        'event', event_name,
+        'record', to_jsonb(new),
+        'target', jsonb_build_object('email', target_email, 'display_name', target_name),
+        'actor', jsonb_build_object('email', actor_email, 'display_name', actor_name)
+      )
+    );
+  exception
+    -- El aviso NUNCA debe tumbar un cambio de rol: si falla, se anota y sigue.
+    -- Misma lección que el aviso de registros nuevos.
+    when others then
+      raise notice 'admin action notification skipped: %', sqlerrm;
+  end;
+
+  return new;
+end;
+$$;
+
+drop trigger if exists admin_actions_notify on public.admin_actions;
+create trigger admin_actions_notify
+after insert or update of status on public.admin_actions
+for each row
+execute function public.notify_admin_action();
 
 create or replace function public.landing_metrics()
 returns jsonb
@@ -1124,7 +1305,8 @@ using (public.app_is_admin(auth.uid()));
 revoke all on function public.app_is_admin(uuid) from public;
 revoke all on function public.app_is_founder(uuid) from public;
 revoke all on function public.admin_set_profile_status(uuid, text) from public;
-revoke all on function public.request_admin_action(text, uuid) from public;
+revoke all on function public.request_admin_action(text, uuid, text) from public;
+revoke all on function public.cancel_admin_action(uuid, text) from public;
 revoke all on function public.cast_admin_action_vote(uuid, text) from public;
 revoke all on function public.landing_metrics() from public;
 revoke all on function public.notify_pending_signup() from public;
@@ -1132,6 +1314,7 @@ revoke all on function public.notify_pending_signup() from public;
 grant execute on function public.app_is_admin(uuid) to authenticated;
 grant execute on function public.app_is_founder(uuid) to authenticated;
 grant execute on function public.admin_set_profile_status(uuid, text) to authenticated;
-grant execute on function public.request_admin_action(text, uuid) to authenticated;
+grant execute on function public.request_admin_action(text, uuid, text) to authenticated;
+grant execute on function public.cancel_admin_action(uuid, text) to authenticated;
 grant execute on function public.cast_admin_action_vote(uuid, text) to authenticated;
 grant execute on function public.landing_metrics() to anon, authenticated;
