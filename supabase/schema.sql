@@ -583,6 +583,7 @@ declare
   eligible_admin_count integer;
   approved_vote_count integer;
   has_rejection boolean;
+  first_approval_at timestamptz;
 begin
   if not public.app_is_admin(actor_id) then
     raise exception 'admin required';
@@ -605,8 +606,7 @@ begin
     return action_row;
   end if;
 
-  -- Caducidad: una propuesta vencida no se vota, se auto-cancela. Null-safe
-  -- para filas anteriores a la migración de endurecimiento.
+  -- Caducidad: una propuesta vencida no se vota, se auto-cancela.
   if action_row.expires_at is not null and now() > action_row.expires_at then
     update public.admin_actions
     set
@@ -634,10 +634,18 @@ begin
     return action_row;
   end if;
 
+  -- El `decided_at` solo se refresca si el voto cambia de sentido. Si no,
+  -- confirmar reiniciaría el enfriamiento y nunca se cumpliría.
   insert into public.admin_action_approvals (action_id, admin_user_id, decision)
   values (p_action_id, actor_id, p_decision)
   on conflict (action_id, admin_user_id)
-  do update set decision = excluded.decision, decided_at = now();
+  do update set
+    decision = excluded.decision,
+    decided_at = case
+      when public.admin_action_approvals.decision = excluded.decision
+        then public.admin_action_approvals.decided_at
+      else now()
+    end;
 
   select exists(
     select 1
@@ -673,6 +681,26 @@ begin
     return action_row;
   end if;
 
+  -- ▼ NUEVO: enfriamiento cuando la unanimidad la firma una sola persona.
+  --
+  -- Solo al PROMOVER. Degradar es inmediato a propósito: revocar acceso
+  -- deprisa es una propiedad deseable, retrasarlo sería el error contrario.
+  if eligible_admin_count = 1 and action_row.action_type = 'promote_to_admin' then
+    select min(aaa.decided_at)
+    into first_approval_at
+    from public.admin_action_approvals aaa
+    where aaa.action_id = p_action_id
+      and aaa.decision = 'approved';
+
+    if first_approval_at is null
+       or now() < first_approval_at + interval '24 hours' then
+      -- Queda aprobada pero sin ejecutar. Vuelve a llamarse a esta función
+      -- pasadas las 24 h para confirmar.
+      return action_row;
+    end if;
+  end if;
+  -- ▲ NUEVO
+
   if action_row.action_type = 'promote_to_admin' then
     insert into public.user_roles (user_id, role, is_founder, granted_by)
     values (action_row.target_user_id, 'admin', false, actor_id)
@@ -689,7 +717,10 @@ begin
   set
     status = 'executed',
     resolved_at = now(),
-    resolved_reason = 'Unanimous approval reached'
+    resolved_reason = case
+      when eligible_admin_count = 1 then 'Approved by sole admin after cooling-off'
+      else 'Unanimous approval reached'
+    end
   where id = p_action_id
   returning * into action_row;
 
