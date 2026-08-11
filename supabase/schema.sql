@@ -21,6 +21,9 @@ drop function if exists public.notify_admin_action() cascade;
 drop function if exists public.admin_set_profile_status(uuid, text) cascade;
 drop function if exists public.app_is_founder(uuid) cascade;
 drop function if exists public.app_is_admin(uuid) cascade;
+drop function if exists public.gear_normalize_camera() cascade;
+drop function if exists public.gear_normalize_lens() cascade;
+drop function if exists public.gear_match_key(text, text, text) cascade;
 drop function if exists public.normalize_gear_maker(text) cascade;
 drop function if exists public.touch_updated_at() cascade;
 
@@ -102,6 +105,8 @@ create table public.cameras (
   supports_interchangeable_lenses boolean not null default true,
   show_in_quick_mode boolean not null default true,
   owner_user_id uuid not null references auth.users(id) on delete cascade,
+  -- Derivada por trigger: identidad ignorando mayúsculas y espacios de más.
+  match_key text not null,
   unique (owner_user_id, maker, model)
 );
 
@@ -114,6 +119,8 @@ create table public.lenses (
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
   owner_user_id uuid not null references auth.users(id) on delete cascade,
+  -- Derivada por trigger: identidad ignorando mayúsculas y espacios de más.
+  match_key text not null,
   unique (owner_user_id, maker, model, mount)
 );
 
@@ -834,6 +841,64 @@ immutable
 as $$
   select nullif(initcap(lower(btrim(p_maker))), '');
 $$;
+
+create or replace function public.gear_match_key(
+  p_maker text,
+  p_model text,
+  p_mount text default null
+)
+returns text
+language sql
+immutable
+as $$
+  select lower(btrim(regexp_replace(coalesce(p_maker, ''), '\s+', ' ', 'g')))
+      || '|'
+      || lower(btrim(regexp_replace(coalesce(p_model, ''), '\s+', ' ', 'g')))
+      || case
+           when p_mount is null then ''
+           else '|' || lower(btrim(regexp_replace(p_mount, '\s+', ' ', 'g')))
+         end;
+$$;
+
+create or replace function public.gear_normalize_camera()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.maker := public.normalize_gear_maker(new.maker);
+  new.match_key := public.gear_match_key(new.maker, new.model);
+  return new;
+end;
+$$;
+
+create or replace function public.gear_normalize_lens()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.maker := public.normalize_gear_maker(new.maker);
+  new.match_key := public.gear_match_key(new.maker, new.model, new.mount);
+  return new;
+end;
+$$;
+
+drop trigger if exists cameras_gear_normalize on public.cameras;
+create trigger cameras_gear_normalize
+before insert or update on public.cameras
+for each row
+execute function public.gear_normalize_camera();
+
+drop trigger if exists lenses_gear_normalize on public.lenses;
+create trigger lenses_gear_normalize
+before insert or update on public.lenses
+for each row
+execute function public.gear_normalize_lens();
+
+create unique index if not exists cameras_owner_match_key_idx
+  on public.cameras (owner_user_id, match_key);
+
+create unique index if not exists lenses_owner_match_key_idx
+  on public.lenses (owner_user_id, match_key);
 
 create or replace function public.landing_metrics()
 returns jsonb
