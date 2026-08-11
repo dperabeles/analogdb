@@ -68,7 +68,7 @@ function CameraForm({ camera, mode = "add" }: { camera?: CameraItem; mode?: "add
   return (
     <form className={`equipment-form cam-inline-form cam-inline-form-${mode}`} action={saveCameraAction}>
       {camera ? <input type="hidden" name="cameraId" value={camera.id} /> : null}
-      <Field label="Fabricante" name="maker" defaultValue={camera?.maker} placeholder="PENTAX, CANON, MAMIYA..." required />
+      <Field label="Fabricante" name="maker" defaultValue={camera?.maker} placeholder="Pentax, Canon, Mamiya..." required />
       <Field label="Modelo" name="model" defaultValue={camera?.model} placeholder="Super Program, M645J..." required />
       <label className="cam-modal-field">
         <span className="cam-modal-label">Formato</span>

@@ -21,6 +21,27 @@ function requiredText(formData: FormData, key: string) {
   return value;
 }
 
+/// Normaliza una marca a Capitalización de Título: PENTAX / pentax / PeNtAx
+/// → Pentax.
+///
+/// Esta web guardaba la marca de cámara con `.toUpperCase()` mientras la app
+/// móvil la guarda con el casing canónico de su lista de vocabulario
+/// ("Pentax"). Resultado: la MISMA marca vivía como dos valores distintos y
+/// cualquier métrica cruzada entre usuarios contaba Pentax y PENTAX por
+/// separado. Encima no se veía, porque la app pinta la marca en mayúsculas al
+/// mostrarla. Los lentes se salvaron de casualidad: su acción nunca tuvo el
+/// `.toUpperCase()` — y por eso están limpios.
+///
+/// El MODELO no se toca: ahí el casing tiene significado ("OM-1N", "500 C/M").
+function normalizeMaker(value: string) {
+  return value
+    .split(/\s+/)
+    .map((word) =>
+      word ? word[0].toLocaleUpperCase("es") + word.slice(1).toLocaleLowerCase("es") : word
+    )
+    .join(" ");
+}
+
 function idValue(formData: FormData, key: string) {
   const value = text(formData, key);
   if (!value) return null;
@@ -57,7 +78,7 @@ export async function saveCameraAction(formData: FormData) {
   const id = idValue(formData, "cameraId");
   const row: CameraInsert = {
     owner_user_id: profile.userId,
-    maker: requiredText(formData, "maker").toUpperCase(),
+    maker: normalizeMaker(requiredText(formData, "maker")),
     model: requiredText(formData, "model"),
     format: requiredText(formData, "format"),
     type: text(formData, "type"),
@@ -97,7 +118,7 @@ export async function saveLensAction(formData: FormData) {
   const id = idValue(formData, "lensId");
   const row: LensInsert = {
     owner_user_id: profile.userId,
-    maker: requiredText(formData, "maker"),
+    maker: normalizeMaker(requiredText(formData, "maker")),
     model: requiredText(formData, "model"),
     mount: requiredText(formData, "mount"),
     show_in_quick_mode: checked(formData, "showInQuickMode")

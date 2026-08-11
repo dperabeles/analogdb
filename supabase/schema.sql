@@ -21,6 +21,7 @@ drop function if exists public.notify_admin_action() cascade;
 drop function if exists public.admin_set_profile_status(uuid, text) cascade;
 drop function if exists public.app_is_founder(uuid) cascade;
 drop function if exists public.app_is_admin(uuid) cascade;
+drop function if exists public.normalize_gear_maker(text) cascade;
 drop function if exists public.touch_updated_at() cascade;
 
 drop table if exists public.admin_action_approvals cascade;
@@ -819,6 +820,20 @@ create trigger admin_actions_notify
 after insert or update of status on public.admin_actions
 for each row
 execute function public.notify_admin_action();
+
+-- Casing canónico de una marca de equipo: PENTAX/pentax → Pentax.
+--
+-- Existe porque la web guardaba la marca de cámara en MAYÚSCULAS y la app
+-- móvil con el casing de su lista canónica: la misma marca vivía como dos
+-- valores y los agregados cruzados entre usuarios los contaban por separado.
+-- Espejo de normalizeMaker() en src/features/equipment/actions.ts.
+create or replace function public.normalize_gear_maker(p_maker text)
+returns text
+language sql
+immutable
+as $$
+  select nullif(initcap(lower(btrim(p_maker))), '');
+$$;
 
 create or replace function public.landing_metrics()
 returns jsonb
