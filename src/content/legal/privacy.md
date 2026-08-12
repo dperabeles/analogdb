@@ -142,7 +142,7 @@ Lo que **NO se borra automáticamente** y debes contactarnos para gestionar:
 - Aportes a catálogos compartidos (`film_stocks` y `labs` que creaste y otros usuarios usan) — se anonimizan pero se mantienen disponibles. Si quieres eliminar también esos aportes, escríbenos a `legal@analog-archive.com`.
 
 ### 6.4 · Limitar el uso de tus datos
-Puedes desactivar push notifications desde la configuración del sistema (iOS/Android) o desde `Cuenta → Notificaciones`.
+Las notificaciones push todavía no están disponibles en la app. Cuando lo estén, podrás desactivarlas desde la configuración del sistema (iOS/Android) y desde la app. Mientras tanto no enviamos ninguna, y no se genera ningún token de Firebase.
 
 ### 6.5 · Portabilidad
 La exportación JSON está diseñada como estructura legible (no propietaria) para que puedas migrar a otra herramienta si así lo decides.
@@ -204,6 +204,8 @@ Bajo la **California Consumer Privacy Act** y **California Privacy Rights Act**,
 - Eliminar tu información personal (right to delete)
 - Corregir información inexacta (right to correct)
 - Opt-out de la venta o sharing de información — **no vendemos ni compartimos información para publicidad cross-context**
+
+**Global Privacy Control (GPC).** Si tu navegador envía la señal `Sec-GPC: 1`, la reconocemos y la respetamos automáticamente: no hace falta que hagas nada más. Como no vendemos ni compartimos datos para publicidad, el resultado práctico es el mismo para todo el mundo — pero la señal queda registrada y cualquier herramienta que integremos en el futuro la respetará desde el primer día.
 - Limitar el uso de sensitive personal information — **no colectamos sensitive PI**
 - No discriminación por ejercer estos derechos
 - Designar un agente autorizado para ejercer estos derechos en tu nombre
