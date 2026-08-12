@@ -407,7 +407,7 @@ Aceptas recibir comunicaciones electrónicas relacionadas con el servicio:
 - Boletines o material promocional sin tu suscripción explícita
 - Comunicaciones de marketing de terceros
 
-Puedes ajustar preferencias de comunicación desde `Cuenta → Notificaciones`.
+Puedes ajustar tus preferencias de comunicación escribiéndonos. Cuando la app incorpore notificaciones push, podrás gestionarlas desde ahí.
 
 ---
 
