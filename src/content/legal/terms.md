@@ -471,10 +471,9 @@ Ninguna renuncia a hacer cumplir un derecho bajo estos Términos constituirá re
 
 ## 22 · Cambios a estos Términos
 
-Si modificamos materialmente estos Términos, te notificaremos:
+Si modificamos materialmente estos Términos, te notificaremos **con un aviso destacado en la aplicación y en el sitio web durante al menos 30 días antes** de su entrada en vigor.
 
-- **Por correo electrónico** a la dirección registrada en tu cuenta
-- **Con un banner en la aplicación** durante al menos **30 días antes** de su entrada en vigor
+Elegimos el aviso en la app en lugar del correo a propósito: es donde de verdad lo vas a ver. No te enviaremos correos por este motivo.
 
 Cambios menores (correcciones tipográficas, aclaraciones, actualizaciones de fechas) se publicarán sin notificación adicional.
 

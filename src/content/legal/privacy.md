@@ -430,10 +430,9 @@ Cualquier modificación material a este Aviso de Privacidad será notificada med
 
 ## 16 · Cambios a este aviso
 
-Si modificamos este aviso de manera material, te notificaremos:
+Si modificamos este aviso de manera material, te notificaremos **con un aviso destacado dentro de la app y en el sitio web durante al menos 30 días** antes de la fecha efectiva del cambio.
 
-- **Por correo electrónico** a la dirección registrada en tu cuenta
-- **Con un banner visible** dentro de la app y en el sitio web durante al menos **30 días** antes de la fecha efectiva del cambio
+Elegimos el aviso en la app en lugar del correo a propósito: es donde de verdad lo vas a ver. No te enviaremos correos por este motivo.
 
 Tu uso continuado del servicio después de la fecha efectiva constituye aceptación del aviso modificado. Si no estás de acuerdo, puedes exportar tus datos y eliminar tu cuenta antes de esa fecha.
 
