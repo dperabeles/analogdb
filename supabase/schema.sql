@@ -94,7 +94,18 @@ create table public.film_stocks (
 create table public.labs (
   id bigint generated always as identity primary key,
   name text not null unique
-);
+,
+  -- Campos del directorio. Sin teléfono a propósito: el móvil de un lab
+  -- pequeño suele ser el número personal de su dueño.
+  address text,
+  website text,
+  accepts_mail boolean not null default false,
+  services text[] not null default '{}',
+  formats text[] not null default '{}',
+  constraint labs_services_vocab
+    check (services <@ array['c41', 'e6', 'bw', 'scan', 'print']::text[]),
+  constraint labs_formats_vocab
+    check (formats <@ array['35mm', '120', 'large', 'super8', '110']::text[]));
 
 create table public.cameras (
   id bigint generated always as identity primary key,
