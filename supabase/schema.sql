@@ -100,12 +100,18 @@ create table public.labs (
   address text,
   website text,
   accepts_mail boolean not null default false,
+  -- Tres dimensiones ORTOGONALES. Antes services mezclaba química con
+  -- servicio y no se podía preguntar "¿quién ESCANEA gran formato?".
   services text[] not null default '{}',
+  processes text[] not null default '{}',
   formats text[] not null default '{}',
   constraint labs_services_vocab
-    check (services <@ array['c41', 'e6', 'bw', 'scan', 'print']::text[]),
+    check (services <@ array['develop', 'scan', 'print']::text[]),
+  constraint labs_processes_vocab
+    check (processes <@ array['c41', 'e6', 'bw', 'ecn2']::text[]),
   constraint labs_formats_vocab
-    check (formats <@ array['35mm', '120', 'large', 'super8', '110']::text[]));
+    check (formats <@ array['35mm', '120', 'large', '110', 'aps',
+                            'super8', '8mm', '16mm']::text[]));
 
 create table public.cameras (
   id bigint generated always as identity primary key,
