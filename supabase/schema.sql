@@ -1141,7 +1141,10 @@ select
   r.rating as "RATING",
   r.notes as "NOTES",
   r.updated_at,
-  coalesce(re_stats.frame_settings_count, 0)::integer as "FRAME SETTINGS"
+  coalesce(re_stats.frame_settings_count, 0)::integer as "FRAME SETTINGS",
+  -- El nombre de un lab no lo identifica: "Bengala" son dos sucursales.
+  r.dev_lab_id as "DEV LAB ID",
+  r.scan_lab_id as "SCAN LAB ID"
 from public.rolls r
 left join public.film_stocks fs on fs.id = r.film_stock_id
 left join public.cameras c on c.id = r.camera_id
