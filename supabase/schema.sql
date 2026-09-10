@@ -107,6 +107,11 @@ create table public.labs (
   formats text[] not null default '{}',
   constraint labs_services_vocab
     check (services <@ array['develop', 'scan', 'print']::text[]),
+  -- El catálogo es compartido: cualquier usuario puede dar de alta un lab, y
+  -- la app abre este valor como enlace. Solo handle, nunca una URL.
+  constraint labs_instagram_handle
+    check (instagram is null or btrim(instagram) = ''
+           or instagram ~ '^@?[A-Za-z0-9._]{1,30}$'),
   constraint labs_processes_vocab
     check (processes <@ array['c41', 'e6', 'bw', 'ecn2']::text[]),
   constraint labs_formats_vocab
