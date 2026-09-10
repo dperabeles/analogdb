@@ -109,6 +109,13 @@ create table public.labs (
     check (services <@ array['develop', 'scan', 'print']::text[]),
   -- El catálogo es compartido: cualquier usuario puede dar de alta un lab, y
   -- la app abre este valor como enlace. Solo handle, nunca una URL.
+  -- Moderación: el catálogo es compartido y cualquiera puede proponer.
+  status text not null default 'pending',
+  created_by uuid references auth.users(id) on delete set null,
+  created_at timestamptz not null default now(),
+  reviewed_by uuid references auth.users(id) on delete set null,
+  reviewed_at timestamptz,
+  constraint labs_status_vocab check (status in ('pending','approved','rejected')),
   constraint labs_instagram_handle
     check (instagram is null or btrim(instagram) = ''
            or instagram ~ '^@?[A-Za-z0-9._]{1,30}$'),
