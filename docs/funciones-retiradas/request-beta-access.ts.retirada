@@ -1,0 +1,104 @@
+const jsonHeaders = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS"
+};
+function json(status, body) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: jsonHeaders
+  });
+}
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+Deno.serve(async (req)=>{
+  if (req.method === "OPTIONS") {
+    return new Response("ok", {
+      headers: jsonHeaders
+    });
+  }
+  if (req.method !== "POST") {
+    return json(405, {
+      error: "method_not_allowed"
+    });
+  }
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !serviceRoleKey) {
+    return json(500, {
+      error: "missing_server_configuration"
+    });
+  }
+  let payload = {};
+  try {
+    payload = await req.json();
+  } catch  {
+    return json(400, {
+      error: "invalid_json"
+    });
+  }
+  const displayName = (payload.display_name || "").trim();
+  const email = (payload.email || "").trim().toLowerCase();
+  const password = payload.password || "";
+  if (displayName.length < 3 || displayName.length > 20) {
+    return json(400, {
+      error: "invalid_display_name",
+      message: "Display name must be 3-20 characters."
+    });
+  }
+  if (!isValidEmail(email)) {
+    return json(400, {
+      error: "invalid_email",
+      message: "Correo invalido."
+    });
+  }
+  if (password.length < 8) {
+    return json(400, {
+      error: "invalid_password",
+      message: "Password must be at least 8 characters."
+    });
+  }
+  const createRes = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`
+    },
+    body: JSON.stringify({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        display_name: displayName
+      }
+    })
+  });
+  const responseText = await createRes.text();
+  let responseBody = {};
+  try {
+    responseBody = responseText ? JSON.parse(responseText) : {};
+  } catch  {
+    responseBody = {
+      raw: responseText
+    };
+  }
+  if (!createRes.ok) {
+    const message = String(responseBody.msg || responseBody.message || responseBody.error_description || "");
+    if (createRes.status === 422 || /already been registered|already registered|already exists/i.test(message)) {
+      return json(409, {
+        error: "email_exists",
+        message: "Ese correo ya tiene una solicitud o una cuenta registrada."
+      });
+    }
+    return json(createRes.status, {
+      error: "signup_failed",
+      message: message || "No fue posible crear la cuenta."
+    });
+  }
+  return json(200, {
+    ok: true
+  });
+});
