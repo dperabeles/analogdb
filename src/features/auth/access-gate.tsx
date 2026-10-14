@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { buildSignupRequest } from "./signup-identity";
 
 type Message = {
   tone: "neutral" | "error" | "success";
@@ -116,12 +117,10 @@ export function AccessGate() {
   async function handleSignup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
-    const displayName = String(form.get("displayName") || "").trim();
-    const email = String(form.get("email") || "").trim();
-    const password = String(form.get("password") || "");
+    const signup = buildSignupRequest(form);
 
-    if (displayName.length < 3 || displayName.length > 20) {
-      setMessage({ tone: "error", text: "Display name must be 3-20 characters." });
+    if (!signup.ok) {
+      setMessage({ tone: "error", text: signup.error });
       return;
     }
 
@@ -129,13 +128,7 @@ export function AccessGate() {
     setMessage({ tone: "neutral", text: "Enviando solicitud..." });
 
     const supabase = createBrowserSupabaseClient();
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { display_name: displayName }
-      }
-    });
+    const { error } = await supabase.auth.signUp(signup.request);
 
     if (error) {
       setBusy(null);
@@ -213,6 +206,23 @@ export function AccessGate() {
             Display name
             <input name="displayName" type="text" minLength={3} maxLength={20} placeholder="Display name" required />
           </label>
+          <label>
+            Nombre de usuario
+            <input
+              name="username"
+              type="text"
+              autoComplete="username"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              placeholder="@usuario"
+              aria-describedby="signup-username-help"
+              required
+            />
+          </label>
+          <p className="gate-help" id="signup-username-help">
+            De 3 a 24 letras o números. Punto y guion bajo sólo entre ellos. Se guarda en minúsculas.
+          </p>
           <label>
             Correo
             <input name="email" type="email" autoComplete="email" placeholder="Correo" required />

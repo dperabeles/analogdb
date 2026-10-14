@@ -42,14 +42,16 @@ const gate = read('src/features/auth/access-gate.tsx');
 assertIncludes(gate, 'signInWithPassword', 'gate should support email/password login');
 assertIncludes(gate, 'router.replace("/dashboard")', 'successful login should leave the public gate and enter the dashboard');
 assertIncludes(gate, 'signUp', 'gate should support beta access request');
-assertIncludes(gate, "data: { display_name: displayName }", 'signup should preserve display_name metadata for the existing trigger');
+assertIncludes(gate, 'signUp(signup.request)', 'signup should use the validated identity request');
+const signupIdentity = read('src/features/auth/signup-identity.ts');
+assertIncludes(signupIdentity, "data: { display_name: displayName, username }", 'signup should preserve display_name metadata and add username for the existing trigger');
 
 const recovery = read('src/features/auth/password-recovery-form.tsx');
 assertIncludes(recovery, 'resetPasswordForEmail', 'forgot-password route should send Supabase recovery email');
 assertIncludes(recovery, '/reset-password', 'recovery email should return to the Next reset-password route');
 
 const update = read('src/features/auth/update-password-form.tsx');
-assertIncludes(update, 'updateUser({ password })', 'reset-password route should update the active recovery session password');
+assert.match(update, /\bupdateUser\s*\(\s*\{\s*password\s*,?\s*\}\s*\)/, 'reset-password route should update the active recovery session password');
 
 const middleware = read('middleware.ts');
 assertIncludes(middleware, 'updateSupabaseSession', 'middleware should keep Supabase SSR cookies fresh');
