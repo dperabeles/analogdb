@@ -26,9 +26,10 @@ begin
   return v;
 end $$;
 
-create function pg_temp.inv_member(p_user uuid) returns void language plpgsql as $$
+create function pg_temp.inv_member(p_user uuid, p_feature text default 'film_inventory')
+returns void language plpgsql as $$
 begin
-  insert into app_private.feature_members (feature, user_id) values ('film_inventory', p_user);
+  insert into app_private.feature_members (feature, user_id) values (p_feature, p_user);
 end $$;
 
 -- Act as an account (null = no session), like PostgREST does.
