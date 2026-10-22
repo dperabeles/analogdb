@@ -109,8 +109,17 @@ begin
     'film_roll', pinv, 'MXN'), 'P1109');
   perform pg_temp.espera_error(format('select public.expense_void(gen_random_uuid(), %L, %L, 1)', 'film_roll', pinv), 'P1109');
 
-  -- After the roll or the camera is deleted, the records stay editable.
+  -- After the roll or the camera is deleted, a voided record still cannot come
+  -- back next to the one that replaced it.
   delete from public.rolls where id = r2;
+  perform pg_temp.espera_error(format('select public.expense_restore(gen_random_uuid(), %L, %L, 2)', 'lab', devsc), 'P1111');
+  delete from public.rolls where id = r;
+  perform pg_temp.espera_error(format('select public.expense_restore(gen_random_uuid(), %L, %L, 5)', 'film_roll', fr), 'P1111');
+  perform pg_temp.espera_error(format('select public.expense_restore(gen_random_uuid(), %L, %L, 5)', 'lab', lc), 'P1111');
+  delete from public.cameras where id = cam;
+  perform pg_temp.espera_error(format('select public.expense_restore(gen_random_uuid(), %L, %L, 5)', 'equipment', eq), 'P1111');
+
+  -- And the records stay editable.
   eq3 := (public.equipment_cost_set(gen_random_uuid(), 'camera', cam2, null, 90000, 'MXN', null) ->> 'id')::uuid;
   delete from public.cameras where id = cam2;
   res := public.expense_update(gen_random_uuid(), 'lab', dev2, 1, 21000, 'MXN', '2026-07-01');

@@ -64,6 +64,9 @@ begin
   perform pg_temp.como(a);
   res := public.equipment_cost_set(gen_random_uuid(), 'camera', cam, null, 350000, 'MXN', '2026-04-04');
   pc2 := (res ->> 'id')::uuid;
+  assert (res ->> 'version')::int = 4, 'new purchase continues the camera versions';
+  perform pg_temp.espera_error(format('select public.equipment_cost_set(gen_random_uuid(), %L, %s, 1, 1, %L, null)',
+    'camera', cam, 'MXN'), 'P1105');
   delete from public.cameras where id = cam;
   delete from public.lenses where id = zl;
   perform pg_temp.yo();

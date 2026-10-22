@@ -71,7 +71,11 @@ begin
     'select public.film_cost_set(gen_random_uuid(), %s, 3, 100, %L, null)', r, 'MXN'), 'P1105');
   res := public.film_cost_set(gen_random_uuid(), r, null, 24000, 'MXN', null);
   pid2 := (res ->> 'id')::uuid;
-  assert pid2 <> pid and (res ->> 'version')::int = 1, 'new purchase after void';
+  assert pid2 <> pid and (res ->> 'version')::int = 4, 'new purchase continues the roll versions';
+  -- A device that still holds version 1 of the first purchase cannot
+  -- overwrite the new one.
+  perform pg_temp.espera_error(format(
+    'select public.film_cost_set(gen_random_uuid(), %s, 1, 1, %L, null)', r, 'MXN'), 'P1105');
   -- Nothing to clear: no-op.
   res := public.film_cost_set(gen_random_uuid(), r0, null, null, null, null);
   assert res = '{"id": null, "version": null, "active": false}'::jsonb, 'clearing nothing is a no-op';
