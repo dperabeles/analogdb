@@ -5,7 +5,7 @@
 do $$
 declare
   a uuid; b uuid;
-  p bigint; g bigint; l1 bigint; l2 bigint; c1 bigint; z1 bigint; z2 bigint; cb bigint;
+  p bigint; g bigint; l1 bigint; l2 bigint; c1 bigint; c2 bigint; z1 bigint; z2 bigint; cb bigint;
   p1 uuid; p2 uuid; p3 uuid; p4 uuid; p5 uuid;
   r1 bigint; r2 bigint; r3 bigint; r4 bigint; r5 bigint; r6 bigint;
   s jsonb;
@@ -19,6 +19,8 @@ begin
   insert into public.labs (name, status) values ('Lab Costos Sum Uno', 'approved') returning id into l1;
   insert into public.labs (name, status) values ('Lab Costos Sum Dos', 'approved') returning id into l2;
   insert into public.cameras (owner_user_id, maker, model, format) values (a, 'Prueba Cost', 'Cam Sum', '35mm') returning id into c1;
+  -- A camera nobody priced: it only counts as missing in all time.
+  insert into public.cameras (owner_user_id, maker, model, format) values (a, 'Prueba Cost', 'Cam Sum Dos', '35mm') returning id into c2;
   insert into public.lenses (owner_user_id, maker, model, mount) values (a, 'Prueba Cost', 'Lente Sum Uno', 'M') returning id into z1;
   insert into public.lenses (owner_user_id, maker, model, mount) values (a, 'Prueba Cost', 'Lente Sum Dos', 'M') returning id into z2;
   insert into public.cameras (owner_user_id, maker, model, format) values (b, 'Prueba Cost', 'Cam Sum B', '35mm') returning id into cb;
@@ -125,6 +127,9 @@ begin
   assert (select e from jsonb_array_elements(s -> 'lab_details') e where (e ->> 'lab_id')::bigint = l2)
        = jsonb_build_object('lab_id', l2, 'dev_scan_minor', 20000, 'dev_minor', 0, 'scan_minor', 0, 'amount_minor', 20000),
        'L2 all time';
+  -- Gear without price in all time: Z1 (date only), Z2 (its only purchase was
+  -- voided) and C2 (never priced). A year only counts dated purchases.
+  assert s -> 'coverage' = '{"film_units_unpriced":1,"equipment_unpriced":3}'::jsonb, format('coverage all: %s', s -> 'coverage');
 
   -- 2025: no payments, but R3 was finished then.
   s := public.costs_summary('MXN', 2025);
