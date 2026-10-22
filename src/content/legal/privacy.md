@@ -49,6 +49,8 @@ Los datos que ingresas voluntariamente al catalogar tus rollos de fotografía:
 - **Token de Firebase Cloud Messaging (FCM)** — identificador opaco para enviarte notificaciones push
 - **Plataforma** (iOS o Android)
 - **Versión de la app** instalada
+- **Zona horaria del dispositivo** (por ejemplo, `America/Monterrey`), para mandarte los recordatorios a tu hora y no de madrugada
+- **Última vez que abriste la app**
 - **Idioma del sistema** (para localización futura)
 
 ### 2.5 · Datos de uso y errores
