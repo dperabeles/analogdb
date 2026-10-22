@@ -29,10 +29,13 @@ begin
   assert app_private.film_unit_expired(null, false, '2026-10-21'), 'undated declared expired';
   assert not app_private.film_unit_expired('{"year":2030}', false, '2026-10-21'), 'date wins over declaration';
 
-  -- The device date is trusted within one day of the server's.
+  -- The device date may be up to a day ahead (time zones) and up to a year
+  -- behind (a load queued offline syncs later), never further.
   perform app_private.check_local_date(current_date - 1);
   perform app_private.check_local_date(current_date + 1);
+  perform app_private.check_local_date(current_date - 10);
   perform pg_temp.espera_error('select app_private.check_local_date(current_date + 2)', 'P1103');
+  perform pg_temp.espera_error('select app_private.check_local_date(current_date - 400)', 'P1103');
   perform pg_temp.espera_error('select app_private.check_local_date(null)', 'P1103');
 
   a := pg_temp.inv_user('taba');

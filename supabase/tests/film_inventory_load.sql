@@ -97,6 +97,20 @@ begin
     gen_random_uuid(), portra, '{"year":2028}', cam35), 'P1103');
   assert (select count(*) from public.rolls) = rolls_before, 'rejected loads create no roll';
   assert (select string_agg(status, ',' order by id) from public.film_units) = units_before, 'rejected loads move no unit';
+
+  -- Offline: a load queued days ago keeps its day and its moment, like the
+  -- direct roll insert does.
+  res := public.inventory_load(gen_random_uuid(), portra, 35, '{"year":2028}', null, current_date - 10,
+                               cam35, null, 36, null, (current_date - 10) + time '15:00');
+  assert (select started from public.rolls where id = (res ->> 'roll_id')::bigint) = current_date - 10, 'offline load keeps its day';
+  assert (select created_at from public.rolls where id = (res ->> 'roll_id')::bigint)
+       = ((current_date - 10) + time '15:00')::timestamptz, 'offline load keeps its moment';
+  perform pg_temp.espera_error(format('select public.inventory_load(%L, %s, 35, %L, null, current_date - 400, %s, null, 36, null, null)',
+    gen_random_uuid(), portra, '{"year":2028}', cam35), 'P1103');
+  perform pg_temp.espera_error(format('select public.inventory_load(%L, %s, 35, %L, null, current_date, %s, null, 36, null, now() - interval %L)',
+    gen_random_uuid(), portra, '{"year":2028}', cam35, '5 days'), 'P1103');
+  perform pg_temp.espera_error(format('select public.inventory_load(%L, %s, 35, %L, null, current_date, %s, null, 36, null, now() + interval %L)',
+    gen_random_uuid(), portra, '{"year":2028}', cam35, '3 days'), 'P1103');
   perform pg_temp.yo();
 
   -- Codes follow the app rule and never truncate.
@@ -141,6 +155,18 @@ begin
     gen_random_uuid(), r1, gold, may), 'P1104');
   perform pg_temp.espera_error(format('select public.inventory_swap(%L, %s, %s, 35, %L, null)',
     gen_random_uuid(), roll_b, portra, feb), 'P1109');
+  -- Edited the usual way after loading, then corrected to its own line: the
+  -- unit stays and the roll goes back to matching it.
+  update public.rolls set film_stock_id = portra, expiration_date = '{"year":2030}' where id = r1;
+  res := public.inventory_swap(gen_random_uuid(), r1, gold, 35, feb, null);
+  assert (select (film_stock_id, expiration_date::jsonb, fresh) from public.rolls where id = r1)
+       = (gold, feb, true), 'same-line correction reconciles the roll';
+  assert (select unit_price_minor from public.roll_film_origin where roll_id = r1) = 18000, 'same unit, same cost';
+  -- rolls.expiration_date is the film_expiration_date domain: only the date
+  -- changed here, so the comparison reaches that column.
+  update public.rolls set expiration_date = '{"year":2031}' where id = r1;
+  res := public.inventory_swap(gen_random_uuid(), r1, gold, 35, feb, null);
+  assert (select expiration_date::jsonb from public.rolls where id = r1) = feb, 'date-only edit reconciled';
 
   -- Delete a loaded roll with eight frames and return its unit.
   res := public.inventory_load(gen_random_uuid(), portra, 35, '{"year":2028}', null, current_date, cam35, null, 36, null);

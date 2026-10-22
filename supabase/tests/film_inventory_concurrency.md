@@ -43,3 +43,19 @@ The jobs were unscheduled and their run history deleted. The account was
 deleted with `app.borrando_cuenta` on: 0 rows left in the inventory tables,
 `rolls`, `deleted_rows`, `feature_members` and `username_claims`; scratch
 table dropped; pg_net queue empty.
+
+## Two corrections of the same line at once (review fix)
+
+Account `conc-b@inventario.invalid`, empty line. Jobs r1/r2 (before the fix)
+and g1/g2 (after) both call `inventory_adjust` with `expected 0 → new 1` and
+different command ids; the first keeps its transaction open 6 s.
+
+| run | first | second | units left |
+|---|---|---|---|
+| before (04:47) | `{"available":1}` | `{"available":1}` at 04:47:43.23, while the first was open | **2** — both inserted |
+| after (04:50) | `{"available":1}` | waited 04:50:19.07 → 24.10, then `P1105 version_conflict` | 1 |
+
+The fix takes a per-account lock in `app_private.command_replay`, which every
+inventory write calls first, so writes of one account run one after another.
+The account, its film stock, the scratch table and the job history were
+deleted afterwards.
