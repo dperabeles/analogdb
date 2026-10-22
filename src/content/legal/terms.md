@@ -1,6 +1,6 @@
 # Términos de Servicio — Analog Archive
 
-**Última actualización:** 24 de mayo de 2026
+**Última actualización:** 22 de octubre de 2026
 **Idioma de referencia:** Español (México) — versión en inglés disponible bajo petición.
 
 ---
@@ -471,7 +471,7 @@ Ninguna renuncia a hacer cumplir un derecho bajo estos Términos constituirá re
 
 ## 22 · Cambios a estos Términos
 
-Si modificamos materialmente estos Términos, te notificaremos **con un aviso destacado en la aplicación y en el sitio web durante al menos 30 días antes** de su entrada en vigor.
+Si modificamos materialmente estos Términos, te notificaremos **con un aviso destacado en la aplicación y en el sitio web al menos 5 días antes** de su entrada en vigor.
 
 Elegimos el aviso en la app en lugar del correo a propósito: es donde de verdad lo vas a ver. No te enviaremos correos por este motivo.
 

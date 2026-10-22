@@ -1,6 +1,6 @@
 # Aviso de Privacidad — Analog Archive
 
-**Última actualización:** 24 de mayo de 2026
+**Última actualización:** 22 de octubre de 2026
 **Idioma de referencia:** Español (México) — versión en inglés disponible bajo petición.
 
 ---
@@ -40,6 +40,7 @@ Los datos que ingresas voluntariamente al catalogar tus rollos de fotografía:
 - **Rollos:** stock de película, formato físico (35mm, 120, Super 8, 16mm, 110, Large Format), ISO, fechas (cargado, expuesto, enviado a revelar, revelado), push/pull, rating, notas, locaciones (texto libre, no GPS), tipos de fotografía, tags
 - **Cámaras:** fabricante, modelo, formato soportado, fecha de adquisición
 - **Lentes:** montura, distancia focal, apertura máxima
+- **Inventario y costos (opcional):** si decides usarlos, guardamos el film que compras y aún no usas (película, formato, cantidad y caducidad impresa), el precio por unidad, la moneda y la fecha de cada compra; lo que pagaste por revelar y escanear cada rollo (importe, moneda, fecha y laboratorio); el precio y la fecha de compra de tus cámaras y lentes; y tu moneda predeterminada. Son datos que capturas tú, solo los ves tú y no los compartimos con nadie
 - **Ajustes por fotograma:** apertura, velocidad, indicadores de flash/blanco-y-negro/trípode, notas por frame (hasta 36 por rollo)
 - **Contribuciones a catálogos comunitarios:** entradas que agregues a los catálogos compartidos de stocks de película y laboratorios (`film_stocks`, `labs`)
 
@@ -424,13 +425,13 @@ Tus datos pueden ser transferidos a Estados Unidos conforme al **Artículo 36 de
 
 ### 15.7 · Cambios al aviso
 
-Cualquier modificación material a este Aviso de Privacidad será notificada mediante correo electrónico a la dirección registrada en tu cuenta y mediante banner en la aplicación durante al menos **30 días**.
+Los cambios a este Aviso de Privacidad se notifican como se describe en la sección 16.
 
 ---
 
 ## 16 · Cambios a este aviso
 
-Si modificamos este aviso de manera material, te notificaremos **con un aviso destacado dentro de la app y en el sitio web durante al menos 30 días** antes de la fecha efectiva del cambio.
+Si modificamos este aviso de manera material, te notificaremos **con un aviso destacado dentro de la app y en el sitio web al menos 5 días** antes de la fecha efectiva del cambio.
 
 Elegimos el aviso en la app en lugar del correo a propósito: es donde de verdad lo vas a ver. No te enviaremos correos por este motivo.
 

@@ -1,6 +1,6 @@
 # Política de Cookies — Analog Archive
 
-**Última actualización:** 24 de mayo de 2026
+**Última actualización:** 22 de octubre de 2026
 **Idioma de referencia:** Español (México) — versión en inglés disponible bajo petición.
 
 ---
@@ -193,9 +193,10 @@ Esta política y nuestro uso de cookies cumple con:
 
 Si modificamos materialmente esta Política de Cookies (por ejemplo, agregamos analytics opcionales o cualquier nueva categoría de cookies), te notificaremos:
 
-- Por correo electrónico a la dirección registrada en tu cuenta
-- Con un banner visible en el sitio web durante al menos 30 días
+- Con un aviso destacado en el sitio web y en la app al menos 5 días antes de la fecha efectiva del cambio
 - Mediante actualización de la fecha en la parte superior de este documento
+
+Como en el Aviso de Privacidad, no te enviaremos correos por este motivo.
 
 Cambios menores (correcciones tipográficas, aclaraciones, actualización de URLs de proveedores) se publicarán sin notificación adicional.
 
