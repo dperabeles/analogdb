@@ -7,7 +7,6 @@ declare
   cam bigint; zl bigint; camb bigint; cam2 bigint; cam3 bigint;
   res jsonb; cmd uuid := gen_random_uuid();
   pc uuid; pc2 uuid; pz uuid;
-  archived bigint;
 begin
   a := pg_temp.inv_user('cea');
   b := pg_temp.inv_user('ceb');
@@ -85,13 +84,10 @@ begin
   perform pg_temp.yo();
   assert not exists (select 1 from public.cameras where id = cam3), 'plain camera deleted';
 
-  -- Last: deleting the account leaves no purchases and archives nothing new.
-  select count(*) into archived from public.deleted_rows where dueno = a;
+  -- Last: deleting the account leaves no purchases and an empty trash.
   perform pg_temp.como(a);
   perform public.delete_my_account();
   perform pg_temp.yo();
   assert not exists (select 1 from public.equipment_purchases where owner_user_id = a), 'purchases gone';
-  assert (select count(*) from public.deleted_rows where dueno = a) = archived, 'no new archived copies';
-  assert not exists (select 1 from public.deleted_rows where dueno = a and tabla = 'equipment_purchases'),
-         'no archived purchases';
+  assert not exists (select 1 from public.deleted_rows where dueno = a), 'trash emptied with the account';
 end $$;

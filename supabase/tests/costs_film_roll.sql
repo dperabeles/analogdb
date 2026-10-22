@@ -8,7 +8,6 @@ declare
   r bigint; r0 bigint; ru bigint; rn bigint; rb bigint;
   pu uuid; pid uuid; pid2 uuid;
   res jsonb; res2 jsonb;
-  archived bigint;
   cmd1 uuid := gen_random_uuid();
 begin
   a := pg_temp.inv_user('cfa');
@@ -145,15 +144,11 @@ begin
   perform pg_temp.yo();
   assert not exists (select 1 from public.film_purchases where roll_id = rb), 'B roll untouched';
 
-  -- Last: deleting the account leaves no rows and archives nothing new. The
-  -- roll deleted above was archived then; account deletion does not purge
-  -- earlier archives (pre-existing behavior, outside this work).
-  select count(*) into archived from public.deleted_rows where dueno = a;
+  -- Last: deleting the account leaves no rows and an empty trash, including
+  -- the roll archived when it was deleted above.
   perform pg_temp.como(a);
   perform public.delete_my_account();
   perform pg_temp.yo();
   assert not exists (select 1 from public.film_purchases where owner_user_id = a), 'purchases gone';
-  assert (select count(*) from public.deleted_rows where dueno = a) = archived, 'no new archived copies';
-  assert not exists (select 1 from public.deleted_rows where dueno = a and tabla = 'film_purchases'),
-         'no archived purchases';
+  assert not exists (select 1 from public.deleted_rows where dueno = a), 'trash emptied with the account';
 end $$;

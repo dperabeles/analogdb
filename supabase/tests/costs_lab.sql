@@ -12,7 +12,7 @@ declare
   sep jsonb := '[{"kind":"dev","amount_minor":18000,"currency":"MXN","charged_on":"2026-05-02"},
                  {"kind":"scan","amount_minor":12000,"currency":"MXN","charged_on":"2026-05-02"}]';
   dev_id uuid; scan_id uuid;
-  rows_before bigint; archived bigint;
+  rows_before bigint;
   bad text;
 begin
   a := pg_temp.inv_user('cla');
@@ -157,12 +157,10 @@ begin
     rc, '[]', '[]'), 'P1102');
   perform pg_temp.yo();
 
-  -- Last: deleting the account leaves no charges and archives nothing new.
-  select count(*) into archived from public.deleted_rows where dueno = a;
+  -- Last: deleting the account leaves no charges and an empty trash.
   perform pg_temp.como(a);
   perform public.delete_my_account();
   perform pg_temp.yo();
   assert not exists (select 1 from public.lab_charges where owner_user_id = a), 'charges gone';
-  assert (select count(*) from public.deleted_rows where dueno = a) = archived, 'no new archived copies';
-  assert not exists (select 1 from public.deleted_rows where dueno = a and tabla = 'lab_charges'), 'no archived charges';
+  assert not exists (select 1 from public.deleted_rows where dueno = a), 'trash emptied with the account';
 end $$;
