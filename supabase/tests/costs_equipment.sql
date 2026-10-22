@@ -74,6 +74,8 @@ begin
           from public.equipment_purchases where id = pc2), 'camera purchase keeps its name';
   assert (select lens_id is null and label = 'Prueba Cost Lente Uno' and voided_at is null
           from public.equipment_purchases where id = pz), 'lens purchase keeps its name';
+  assert (select version from public.equipment_purchases where id = pc2) = 5
+     and (select version from public.equipment_purchases where id = pz) = 2, 'freezing bumps the version';
 
   -- Gear without purchases works as before.
   perform pg_temp.como(a);

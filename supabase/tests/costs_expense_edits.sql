@@ -110,25 +110,25 @@ begin
   perform pg_temp.espera_error(format('select public.expense_void(gen_random_uuid(), %L, %L, 1)', 'film_roll', pinv), 'P1109');
 
   -- After the roll or the camera is deleted, a voided record still cannot come
-  -- back next to the one that replaced it.
+  -- back next to the one that replaced it. Freezing bumps every version.
   delete from public.rolls where id = r2;
-  perform pg_temp.espera_error(format('select public.expense_restore(gen_random_uuid(), %L, %L, 2)', 'lab', devsc), 'P1111');
+  perform pg_temp.espera_error(format('select public.expense_restore(gen_random_uuid(), %L, %L, 3)', 'lab', devsc), 'P1111');
   delete from public.rolls where id = r;
-  perform pg_temp.espera_error(format('select public.expense_restore(gen_random_uuid(), %L, %L, 5)', 'film_roll', fr), 'P1111');
-  perform pg_temp.espera_error(format('select public.expense_restore(gen_random_uuid(), %L, %L, 5)', 'lab', lc), 'P1111');
+  perform pg_temp.espera_error(format('select public.expense_restore(gen_random_uuid(), %L, %L, 6)', 'film_roll', fr), 'P1111');
+  perform pg_temp.espera_error(format('select public.expense_restore(gen_random_uuid(), %L, %L, 6)', 'lab', lc), 'P1111');
   delete from public.cameras where id = cam;
-  perform pg_temp.espera_error(format('select public.expense_restore(gen_random_uuid(), %L, %L, 5)', 'equipment', eq), 'P1111');
+  perform pg_temp.espera_error(format('select public.expense_restore(gen_random_uuid(), %L, %L, 6)', 'equipment', eq), 'P1111');
 
   -- And the records stay editable.
   eq3 := (public.equipment_cost_set(gen_random_uuid(), 'camera', cam2, null, 90000, 'MXN', null) ->> 'id')::uuid;
   delete from public.cameras where id = cam2;
-  res := public.expense_update(gen_random_uuid(), 'lab', dev2, 1, 21000, 'MXN', '2026-07-01');
-  res := public.expense_void(gen_random_uuid(), 'lab', dev2, 2);
-  res := public.expense_restore(gen_random_uuid(), 'lab', dev2, 3);
+  res := public.expense_update(gen_random_uuid(), 'lab', dev2, 2, 21000, 'MXN', '2026-07-01');
+  res := public.expense_void(gen_random_uuid(), 'lab', dev2, 3);
+  res := public.expense_restore(gen_random_uuid(), 'lab', dev2, 4);
   assert (res ->> 'active')::boolean, 'undo after the roll was deleted';
-  res := public.expense_update(gen_random_uuid(), 'equipment', eq3, 1, 95000, 'MXN', null);
-  res := public.expense_void(gen_random_uuid(), 'equipment', eq3, 2);
-  res := public.expense_restore(gen_random_uuid(), 'equipment', eq3, 3);
+  res := public.expense_update(gen_random_uuid(), 'equipment', eq3, 2, 95000, 'MXN', null);
+  res := public.expense_void(gen_random_uuid(), 'equipment', eq3, 3);
+  res := public.expense_restore(gen_random_uuid(), 'equipment', eq3, 4);
   assert (res ->> 'active')::boolean, 'undo after the camera was deleted';
   perform pg_temp.yo();
   assert (select roll_id is null and amount_minor = 21000 and voided_at is null from public.lab_charges where id = dev2),

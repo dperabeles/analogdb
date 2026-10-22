@@ -99,6 +99,10 @@ begin
   end loop;
   perform pg_temp.espera_error(format('select public.lab_costs_save(gen_random_uuid(), %s, %L, %L)',
     r, '[{"id":"x","version":1}]', '[]'), 'P1103');
+  foreach bad in array array['[5]', '["x"]', '[{"version":1}]', '[{"id":"' || gen_random_uuid() || '"}]'] loop
+    perform pg_temp.espera_error(format('select public.lab_costs_save(gen_random_uuid(), %s, %L, %L)',
+      r, bad, '[]'), 'P1103');
+  end loop;
 
   -- Each service keeps its own currency; totals never mix them.
   res := public.lab_costs_save(gen_random_uuid(), r, '[]',
@@ -119,6 +123,7 @@ begin
   update public.labs set active = false, merged_into_id = l3 where id = l2;
   assert (select string_agg(e ->> 'lab_id', ',' order by e ->> 'kind') from public.roll_costs c, jsonb_array_elements(c.lab) e
           where c.roll_id = r) = l3 || ',' || l3, 'follows a lab merge';
+  assert (select roll_code from public.expense_origins where id = dev_id) = 'R911', 'expense shows the live roll code';
 
   -- Changed again, then deleted the usual way with more than 5 frames: the
   -- charges keep the last lab and the code, and stay active.
@@ -130,6 +135,8 @@ begin
   assert (select roll_id is null and lab_id = l1 and roll_code = 'R911' and voided_at is null
           from public.lab_charges where id = dev_id), 'dev frozen with its last lab';
   assert (select lab_id = l3 and roll_code = 'R911' from public.lab_charges where id = scan_id), 'scan frozen too';
+  assert (select version from public.lab_charges where id = dev_id) = 2, 'freezing bumps the version';
+  assert (select roll_code from public.expense_origins where id = dev_id) = 'R911', 'expense keeps the roll code';
   assert (select count(*) from public.lab_charges where roll_code = 'R911' and voided_at is not null) = 3,
          'voided charges are frozen as well';
 

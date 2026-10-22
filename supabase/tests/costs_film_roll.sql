@@ -49,8 +49,8 @@ begin
   assert res2 = res, 'replay returns the same receipt';
   perform pg_temp.yo();
   assert (select count(*) from public.film_purchases where roll_id = r) = 1, 'replay adds nothing';
-  assert (select origin || quantity || film_stock_id || format from public.film_purchases where id = pid)
-       = 'roll1' || portra || '35', 'one unit of the roll film';
+  assert (select origin = 'roll' and quantity = 1 and film_stock_id is null and format is null
+          from public.film_purchases where id = pid), 'one unit; film and format come from the live roll';
   assert not exists (select 1 from public.film_units where purchase_id = pid), 'no stock created';
 
   -- Correct with the version; a stale or missing version conflicts.
@@ -98,6 +98,8 @@ begin
   assert (select film_stock_id is null and format is null from public.film_purchases where roll_id = r0),
          'no film, no format';
 
+  assert (select roll_code from public.expense_origins where id = pid2) = 'R901', 'expense shows the live roll code';
+
   -- Deleting the roll the usual way (with more than 5 frames) freezes the film.
   insert into public.roll_exposures (roll_id, frame_number) select r, n from generate_series(1, 8) n;
   perform pg_temp.como(a);
@@ -106,6 +108,8 @@ begin
   assert not exists (select 1 from public.rolls where id = r), 'roll deleted';
   assert (select roll_id is null and film_stock_id = gold and format = 35 and voided_at is null
           from public.film_purchases where id = pid2), 'frozen with the film it had, still active';
+  assert (select version from public.film_purchases where id = pid2) = 5, 'freezing bumps the version';
+  assert (select roll_code from public.expense_origins where id = pid2) = 'R901', 'expense keeps the roll code';
 
   -- Rolls loaded from the inventory, with and without purchase, are managed there.
   insert into public.film_purchases (owner_user_id, film_stock_id, format, quantity, unit_price_minor, currency)
