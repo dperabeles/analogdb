@@ -95,22 +95,29 @@ begin
   assert (pg_temp.dr(e)).resolved_at is not null, 'sent to develop: resolved';
   assert not exists (select 1 from public.inbox_develop_rings where roll_id = re), 'ring count forgotten';
 
-  -- Cleanup after 90 days read.
+  -- Cleanup 90 days after resolving, read or not (Diego, 23-oct).
   insert into public.inbox_policy_notices (title_es, title_en, summary_es, summary_en, url, effective_on, published_by)
   values ('t', 't', 's', 's', 'https://analog-archive.com/privacy', '2025-01-01', g) returning id into pol;
   insert into public.inbox_notices (owner_user_id, kind, roll_id, detected_at, shown_at, read_at, resolved_at)
-  values (g, 'missing_lab', pg_temp.buzon_roll(g, 'Developed'), t0, t0, t0 - interval '89 days', t0),
-         (g, 'missing_lab', pg_temp.buzon_roll(g, 'Developed'), t0, t0, t0 - interval '90 days', t0),
-         (g, 'missing_lab', pg_temp.buzon_roll(g, 'Developed'), t0, t0, null, t0 - interval '400 days');
+  values (g, 'missing_lab', pg_temp.buzon_roll(g, 'Developed'), t0, t0, t0 - interval '100 days', t0 - interval '89 days'),
+         (g, 'missing_lab', pg_temp.buzon_roll(g, 'Developed'), t0, t0, null, t0 - interval '90 days'),
+         (g, 'missing_lab', pg_temp.buzon_roll(g, 'Developed'), t0, t0, t0 - interval '400 days', null);
+  -- A question answered from its card is resolved without being read.
+  insert into public.inbox_notices (owner_user_id, kind, camera_id, detected_at, shown_at, resolved_at)
+  values (g, 'camera_lens_question', pg_temp.buzon_camera(g), t0, t0, t0 - interval '91 days');
   insert into public.inbox_notices (owner_user_id, kind, policy_id, detected_at, shown_at, read_at, resolved_at)
   values (g, 'policy_change', pol, t0, t0, t0 - interval '400 days', t0);
   insert into public.inbox_notices (owner_user_id, kind, detected_at, shown_at, read_at, dismissed_at)
   values (g, 'backlog_incomplete', t0, t0, t0 - interval '400 days', t0 - interval '400 days');
   perform app_private.inbox_cleanup(g, t0);
   assert (select count(*) from public.inbox_notices where owner_user_id = g and kind = 'missing_lab') = 2,
-         '89 days and unread stay, 90 days goes';
+         'resolved 89 days ago and open stay, resolved 90 days ago goes';
   assert not exists (select 1 from public.inbox_notices where owner_user_id = g and kind = 'missing_lab'
-                     and read_at = t0 - interval '90 days'), 'the 90-day one went';
+                     and resolved_at = t0 - interval '90 days'), 'the 90-day one went, unread';
+  assert exists (select 1 from public.inbox_notices where owner_user_id = g and kind = 'missing_lab'
+                 and resolved_at = t0 - interval '89 days'), 'read long ago but resolved 89 days ago stays';
+  assert not exists (select 1 from public.inbox_notices where owner_user_id = g and kind = 'camera_lens_question'),
+         'the answered question went too';
   assert exists (select 1 from public.inbox_notices where owner_user_id = g and kind = 'policy_change'), 'policy kept';
   assert exists (select 1 from public.inbox_notices where owner_user_id = g and kind = 'backlog_incomplete'),
          'dismissed group kept as a marker';

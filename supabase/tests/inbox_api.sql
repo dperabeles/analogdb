@@ -38,7 +38,7 @@ begin
   assert (select count(*) from jsonb_array_elements(l -> 'notices') x where x ->> 'kind' = 'backlog_incomplete') = 1,
          'group in the first response';
   assert (l ->> 'unread')::int = 1, 'one unread';
-  assert l ? 'admin' and l ? 'seen_keys' and (l -> 'admin') = 'null'::jsonb, 'shape, no admin block';
+  assert l ? 'admin' and l ? 'seen_keys' and (l -> 'admin') = '{"es_admin": false}'::jsonb, 'shape, not an admin';
   e := (l -> 'notices') -> 0;
   assert e ? 'read' and e ? 'resolved' and e ? 'pinned' and e ? 'items' and e ? 'roll' and e ? 'camera' and e ? 'policy',
          'notice shape';
