@@ -3,6 +3,23 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
+import {
+  changedRollFields,
+  formatStorageValue,
+  nullable,
+  parseOriginalValues,
+  planRollUpdate,
+  readRollForm,
+  rollFormDefaults,
+  toArray,
+  toDate,
+  toFilmType,
+  toFresh,
+  toInt,
+  type CameraDetails,
+  type RollFormValues
+} from "@/features/rolls/roll-edit";
+import { mapRollFlatRow } from "@/features/rolls/roll-types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 
@@ -21,49 +38,6 @@ function requiredText(formData: FormData, key: string) {
   return value;
 }
 
-function toInt(value: string | null) {
-  if (!value || value === "-") return null;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-}
-
-function toDate(value: string | null) {
-  if (!value) return null;
-  const clean = value.slice(0, 10);
-  return clean.length === 10 ? clean : null;
-}
-
-function toArray(value: string | null) {
-  if (!value) return [];
-  return value
-    .split(value.includes("|") ? "|" : ",")
-    .map((item) => item.trim())
-    .filter(Boolean);
-}
-
-function toFresh(value: string | null) {
-  if (value === "FRESH") return true;
-  if (value === "EXPIRED") return false;
-  return null;
-}
-
-function toFilmType(value: string | null): FilmType {
-  if (value === "COLOR" || value === "B/W" || value === "SLIDE") return value;
-  return null;
-}
-
-function formatStorageValue(value: string | null) {
-  if (!value) return null;
-  const clean = value.trim();
-  if (/^(35|35mm|135)$/i.test(clean)) return 35;
-  if (/^120$/i.test(clean)) return 120;
-  if (/^super\s*8$/i.test(clean)) return 8;
-  if (/^110$/i.test(clean)) return 110;
-  if (/^16mm$/i.test(clean)) return 16;
-  if (/^large format$/i.test(clean)) return 45;
-  return null;
-}
-
 async function requireApprovedProfile() {
   const { state, profile } = await getCurrentAccessProfile();
   if (state !== "approved" || !profile) {
@@ -72,33 +46,54 @@ async function requireApprovedProfile() {
   return profile;
 }
 
-async function upsertFilmStock(manufacturerValue: string | null, nameValue: string | null, iso: number | null, type: FilmType) {
+type ApprovedProfile = Awaited<ReturnType<typeof requireApprovedProfile>>;
+
+/**
+ * Busca la película por fabricante y nombre, y solo la crea si no existe.
+ *
+ * Antes era un upsert, y el catálogo es compartido: a un admin le reescribía
+ * la película de todos (ISO, tipo y `in_catalog = false`, que la saca del
+ * catálogo), y a cualquier otra cuenta le fallaba el guardado, porque solo un
+ * admin puede actualizar `film_stocks`. El ISO y el tipo solo se usan al crear.
+ */
+async function resolveFilmStock(manufacturerValue: string | null, nameValue: string | null, iso: number | null, type: FilmType) {
   if (!manufacturerValue && !nameValue) return null;
 
   const manufacturer = manufacturerValue || "";
   const name = nameValue || "";
   const supabase = await createServerSupabaseClient();
+  const find = () =>
+    supabase.from("film_stocks").select("id").eq("manufacturer", manufacturer).eq("name", name).limit(1);
+
+  const { data: existing, error: findError } = await find();
+  if (findError) throw findError;
+  if (existing && existing.length > 0) return existing[0].id;
+
   const { data, error } = await supabase
     .from("film_stocks")
-    .upsert(
-      { manufacturer, name, iso, type, in_catalog: false },
-      { onConflict: "manufacturer,name" }
-    )
+    .insert({ manufacturer, name, iso, type, in_catalog: false })
     .select("id")
     .single();
 
-  if (error) throw error;
+  if (error) {
+    // Carrera: otro request la creó entre el select y el insert.
+    if (error.code === "23505") {
+      const { data: raced, error: retryError } = await find();
+      if (retryError) throw retryError;
+      if (raced && raced.length > 0) return raced[0].id;
+    }
+    throw error;
+  }
   return data.id;
 }
 
-async function upsertCamera(
-  ownerUserId: string,
-  maker: string | null,
-  model: string | null,
-  format: string | null,
-  type: string | null,
-  mount: string | null
-) {
+/**
+ * Resuelve la cámara por marca y modelo. Solo escribe en la cámara los datos
+ * de [details]: al cambiar el rollo a otra cámara, el formato, tipo y montura
+ * que el formulario traía son los de la cámara anterior y no deben pisar los
+ * de la nueva.
+ */
+async function upsertCamera(ownerUserId: string, maker: string | null, model: string | null, details: CameraDetails) {
   if (!maker && !model) return null;
 
   const supabase = await createServerSupabaseClient();
@@ -109,9 +104,7 @@ async function upsertCamera(
         owner_user_id: ownerUserId,
         maker,
         model,
-        format,
-        type,
-        mount
+        ...details
       },
       { onConflict: "owner_user_id,maker,model" }
     )
@@ -189,6 +182,19 @@ export async function saveRollAction(formData: FormData) {
   const profile = await requireApprovedProfile();
   const code = requiredText(formData, "code");
   const originalCode = text(formData, "originalCode");
+
+  if (originalCode) {
+    await updateRoll(profile, originalCode, formData);
+  } else {
+    await createRoll(profile, code, formData);
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath(`/rolls/${encodeURIComponent(code)}`);
+  redirect(`/rolls/${encodeURIComponent(code)}`);
+}
+
+async function createRoll(profile: ApprovedProfile, code: string, formData: FormData) {
   const manufacturer = text(formData, "manufacturer");
   const filmStock = text(formData, "filmStock");
   const iso = toInt(text(formData, "iso"));
@@ -202,8 +208,8 @@ export async function saveRollAction(formData: FormData) {
   const scan = text(formData, "scan");
 
   const [filmStockId, cameraId, devLabId, scanLabId] = await Promise.all([
-    upsertFilmStock(manufacturer, filmStock, iso, filmType),
-    upsertCamera(profile.userId, maker, modelName, cameraFormat, cameraType, cameraMount),
+    resolveFilmStock(manufacturer, filmStock, iso, filmType),
+    upsertCamera(profile.userId, maker, modelName, { format: cameraFormat, type: cameraType, mount: cameraMount }),
     upsertLab(dev),
     upsertLab(scan)
   ]);
@@ -234,23 +240,61 @@ export async function saveRollAction(formData: FormData) {
   };
 
   const supabase = await createServerSupabaseClient();
-  if (originalCode) {
-    const { owner_user_id: _ownerUserId, id: _id, created_at: _createdAt, ...updateRow } = row;
-    const { error } = await supabase
-      .from("rolls")
-      .update(updateRow satisfies RollUpdate)
-      .eq("owner_user_id", profile.userId)
-      .eq("code", originalCode);
+  const { error } = await supabase.from("rolls").upsert(row, { onConflict: "owner_user_id,code" });
+  if (error) throw error;
+}
 
-    if (error) throw error;
-  } else {
-    const { error } = await supabase.from("rolls").upsert(row, { onConflict: "owner_user_id,code" });
-    if (error) throw error;
-  }
+/**
+ * Guarda solo lo que cambió respecto a lo que el formulario mostró (ver
+ * `roll-edit.ts`). Película, cámara y labs se vuelven a buscar solo si cambió
+ * su texto, y el enlace al lente solo se cambia por texto si se editó el lente.
+ */
+async function updateRoll(profile: ApprovedProfile, originalCode: string, formData: FormData) {
+  const after = readRollForm(formData);
+  const before = parseOriginalValues(formData.get("originalValues")) ?? (await currentFormValues(originalCode));
+  const plan = planRollUpdate(changedRollFields(before, after), after);
+  const row: RollUpdate = { ...plan.row };
 
-  revalidatePath("/dashboard");
-  revalidatePath(`/rolls/${encodeURIComponent(code)}`);
-  redirect(`/rolls/${encodeURIComponent(code)}`);
+  const [filmStockId, cameraId, devLabId, scanLabId] = await Promise.all([
+    plan.film
+      ? resolveFilmStock(nullable(after.manufacturer), nullable(after.filmStock), toInt(nullable(after.iso)), toFilmType(nullable(after.filmType)))
+      : null,
+    plan.camera ? upsertCamera(profile.userId, nullable(after.maker), nullable(after.modelName), plan.cameraDetails) : null,
+    plan.dev ? upsertLab(nullable(after.dev)) : null,
+    plan.scan ? upsertLab(nullable(after.scan)) : null
+  ]);
+  if (plan.film) row.film_stock_id = filmStockId;
+  if (plan.camera) row.camera_id = cameraId;
+  if (plan.dev) row.dev_lab_id = devLabId;
+  if (plan.scan) row.scan_lab_id = scanLabId;
+
+  if (Object.keys(row).length === 0) return;
+
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase
+    .from("rolls")
+    .update(row)
+    .eq("owner_user_id", profile.userId)
+    .eq("code", originalCode)
+    .select("id");
+
+  if (error) throw error;
+  // RLS puede filtrar el update a cero filas sin dar error.
+  if (!data || data.length !== 1) throw new Error("Could not confirm the roll was saved");
+}
+
+/**
+ * Para un formulario sin los valores originales (una página abierta antes de
+ * este cambio): se comparan contra el rollo guardado. Si no se puede leer, se
+ * falla; escribir todo "por si acaso" es justo lo que esto evita.
+ */
+async function currentFormValues(code: string): Promise<RollFormValues> {
+  const supabase = await createServerSupabaseClient();
+  const { data, error } = await supabase.from("rolls_flat").select("*").eq("#", code).maybeSingle();
+  if (error) throw error;
+  const roll = data ? mapRollFlatRow(data) : null;
+  if (!roll) throw new Error("Roll not found");
+  return rollFormDefaults(roll);
 }
 
 export async function deleteRollAction(formData: FormData) {
