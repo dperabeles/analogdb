@@ -113,8 +113,14 @@ begin
   perform pg_temp.como(b);
   assert not exists (select 1 from public.rolls_flat where "#" like 'EQ-R%' and id <> r_b), '6: B sees none of A''s rolls';
   assert (select "MAKER" is null from public.rolls_flat where id = r_b), '6: B sees no name on its roll';
+  -- Without a session the rolls policy cannot even read profiles: a denial
+  -- (as today, before this migration) or zero rows both mean "sees nothing".
   perform pg_temp.como(null);
-  assert not exists (select 1 from public.rolls_flat where "#" like 'EQ-%'), '6: no session sees nothing';
+  begin
+    select count(*) into n from public.rolls_flat where "#" like 'EQ-%';
+    assert n = 0, '6: no session sees nothing';
+  exception when insufficient_privilege then null;
+  end;
   perform pg_temp.como(a);
   assert (select count(*) from public.rolls_flat where "#" like 'EQ-%') = 5, '6: A sees exactly its 5 rolls';
 
