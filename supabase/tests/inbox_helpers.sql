@@ -54,13 +54,16 @@ begin
   return v;
 end $$;
 
+-- Roll codes are unique per account; a counter avoids random collisions.
+create temp sequence buzon_codes start 1000;
+
 create function pg_temp.buzon_roll(p_owner uuid, p_status text, p_camera bigint default null,
                                    p_lens bigint default null)
 returns bigint language plpgsql as $$
 declare v bigint;
 begin
   insert into public.rolls (owner_user_id, code, client_uuid, status, camera_id, lens_id)
-  values (p_owner, 'R' || (100 + floor(random() * 899))::int, gen_random_uuid(), p_status, p_camera, p_lens)
+  values (p_owner, 'R' || nextval('pg_temp.buzon_codes'), gen_random_uuid(), p_status, p_camera, p_lens)
   returning id into v;
   return v;
 end $$;
