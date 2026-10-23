@@ -77,9 +77,16 @@ begin
   insert into public.rolls (owner_user_id, code, camera_id, status) values (a, 'EQ-RF', cam2, 'Archived') returning id into r_frame;
   insert into public.roll_exposures (roll_id, frame_number, lens_id, lens_source, lens_snapshot)
   values (r_frame, 1, zl_frame, 'frame_selected', jsonb_build_object('version', 1, 'display_name', 'Prueba Eq Lente Foto'));
-  -- B's roll forced to point at A's camera (no constraint forbids it; there
-  -- are none in production). A's name must never land on B's roll.
+  -- B's roll forced to point at A's camera. roll_gear_same_owner forbids it;
+  -- its guard is switched off for this insert only, to keep checking the
+  -- second line of defence: A's name must never land on B's roll.
+  if exists (select 1 from pg_trigger where tgrelid = 'public.rolls'::regclass and tgname = 'rolls_gear_same_owner') then
+    alter table public.rolls disable trigger rolls_gear_same_owner;
+  end if;
   insert into public.rolls (owner_user_id, code, camera_id, status) values (b, 'EQ-RB', cam, 'Archived') returning id into r_b;
+  if exists (select 1 from pg_trigger where tgrelid = 'public.rolls'::regclass and tgname = 'rolls_gear_same_owner') then
+    alter table public.rolls enable trigger rolls_gear_same_owner;
+  end if;
 
   -- Old updated_at, to see the key's `set null` move it.
   alter table public.rolls disable trigger rolls_touch;
