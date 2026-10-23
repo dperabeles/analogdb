@@ -176,13 +176,11 @@ begin
   perform pg_temp.yo();
   insert into public.inbox_develop_rings (roll_id, owner_user_id, started_at) values (rz, z, now())
   on conflict do nothing;  -- activation may have created it already
-  insert into public.inbox_suppressions (owner_user_id, roll_id, field) values (z, rz, 'camera');
   perform pg_temp.como(z);
   perform public.delete_my_account();
   perform pg_temp.yo();
   assert not exists (select 1 from public.inbox_accounts where user_id = z)
      and not exists (select 1 from public.inbox_notices where owner_user_id = z)
      and not exists (select 1 from public.inbox_seen_keys where user_id = z)
-     and not exists (select 1 from public.inbox_develop_rings where owner_user_id = z)
-     and not exists (select 1 from public.inbox_suppressions where owner_user_id = z), 'account inbox gone';
+     and not exists (select 1 from public.inbox_develop_rings where owner_user_id = z), 'account inbox gone';
 end $$;

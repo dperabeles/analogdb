@@ -16,7 +16,6 @@ begin
   insert into public.inbox_notices (owner_user_id, kind, roll_id, detected_at)
   values (b, 'missing_lab', rb, now());
   insert into public.inbox_seen_keys (user_id, key) values (b, 'news:x');
-  insert into public.inbox_suppressions (owner_user_id, roll_id, field) values (b, rb, 'camera');
   insert into public.inbox_develop_rings (roll_id, owner_user_id, started_at) values (rb, b, now());
   insert into public.inbox_policy_notices (title_es, title_en, summary_es, summary_en, url, effective_on, published_by)
   values ('t', 't', 's', 's', 'https://analog-archive.com/privacy', current_date + 5, a);
@@ -25,7 +24,6 @@ begin
   assert (select count(*) from public.inbox_accounts) = 1, 'A sees only its own account row';
   assert (select count(*) from public.inbox_notices) = 0, 'A cannot read B notices';
   assert (select count(*) from public.inbox_seen_keys) = 0, 'A cannot read B seen keys';
-  assert (select count(*) from public.inbox_suppressions) = 0, 'A cannot read B suppressions';
   assert (select count(*) from public.inbox_develop_rings) = 0, 'A cannot read B rings';
   assert (select count(*) from public.inbox_policy_notices) = 1, 'approved accounts read policies';
   perform pg_temp.espera_error('insert into public.inbox_seen_keys (user_id, key) values (auth.uid(), ''x'')', '42501');

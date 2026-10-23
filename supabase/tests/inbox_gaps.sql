@@ -109,11 +109,11 @@ begin
   -- Deleted gear is never asked.
   rs0 := pg_temp.buzon_roll(a, 'Developed');
   rs1 := pg_temp.buzon_roll(a, 'Developed');
-  insert into public.inbox_suppressions (owner_user_id, roll_id, field) values (a, rs1, 'camera');
+  update public.rolls set camera_snapshot = '{"version": 1, "display_name": "Old cam"}' where id = rs1;
   assert pg_temp.gap(a, 'missing_camera', rs0) = 1, 'missing camera';
   assert pg_temp.gap(a, 'missing_camera', rs1) = 0, 'deleted camera is not asked';
   rsl := pg_temp.buzon_roll(a, 'Developed', supcam);
-  insert into public.inbox_suppressions (owner_user_id, roll_id, field) values (a, rsl, 'lens');
+  update public.rolls set lens_snapshot = '{"version": 1, "display_name": "Old lens"}' where id = rsl;
   assert pg_temp.gap(a, 'camera_lens_question', null, supcam) = 0, 'deleted lens does not ask about the camera';
 
   -- Old and new rolls.

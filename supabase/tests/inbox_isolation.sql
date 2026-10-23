@@ -22,8 +22,6 @@ begin
     insert into public.inbox_notices (owner_user_id, kind, detected_at, shown_at, rang_at)
     values (who, 'backlog_incomplete', now(), now(), now());
     insert into public.inbox_seen_keys (user_id, key) values (who, 'news:x');
-    insert into public.inbox_suppressions (owner_user_id, roll_id, field)
-    values (who, pg_temp.buzon_roll(who, 'Developed'), 'camera');
     insert into public.inbox_develop_rings (roll_id, owner_user_id, started_at)
     values (pg_temp.buzon_roll(who, 'To Develop'), who, now()) on conflict do nothing;
   end loop;
@@ -34,7 +32,7 @@ begin
 
   -- Direct reads: only your own rows; policies only for approved accounts.
   perform pg_temp.como(a);
-  foreach tbl in array array['inbox_notices', 'inbox_suppressions', 'inbox_develop_rings'] loop
+  foreach tbl in array array['inbox_notices', 'inbox_develop_rings'] loop
     execute format('select count(*) from public.%I where owner_user_id <> %L', tbl, a) into n;
     assert n = 0, format('A reads only its own %s', tbl);
   end loop;
@@ -44,14 +42,14 @@ begin
   assert (select count(*) from public.inbox_notices) = 3, 'A sees its 3 notices';
   foreach who in array array[p, rj] loop
     perform pg_temp.como(who);
-    foreach tbl in array array['inbox_notices', 'inbox_suppressions', 'inbox_develop_rings', 'inbox_accounts',
+    foreach tbl in array array['inbox_notices', 'inbox_develop_rings', 'inbox_accounts',
                                'inbox_seen_keys', 'inbox_policy_notices'] loop
       execute format('select count(*) from public.%I', tbl) into n;
       assert n = 0, format('pending or rejected reads nothing from %s', tbl);
     end loop;
   end loop;
   perform pg_temp.como(null);
-  foreach tbl in array array['inbox_notices', 'inbox_suppressions', 'inbox_develop_rings', 'inbox_accounts',
+  foreach tbl in array array['inbox_notices', 'inbox_develop_rings', 'inbox_accounts',
                              'inbox_seen_keys', 'inbox_policy_notices'] loop
     perform pg_temp.espera_error(format('select count(*) from public.%I', tbl), '42501');
   end loop;

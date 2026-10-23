@@ -27,7 +27,8 @@ begin
   r2 := pg_temp.buzon_roll(a, 'To Develop');
   assert (select marked_to_develop_at from public.rolls where id = r2) >= t0, 'insert stamps';
 
-  -- Deleted gear: the rolls that pointed to it are noted, as the app deletes.
+  -- Deleted gear: the rolls that pointed to it keep its name (gear_delete_freeze),
+  -- as the app deletes.
   r_c1 := pg_temp.buzon_roll(a, 'Developed', cam_a);
   r_c2 := pg_temp.buzon_roll(a, 'Archived', cam_a);
   r_other := pg_temp.buzon_roll(a, 'Developed', cam_b);
@@ -36,11 +37,11 @@ begin
   delete from public.cameras where id = cam_a;
   delete from public.lenses where id = lens_a;
   perform pg_temp.yo();
-  assert (select count(*) from public.inbox_suppressions where field = 'camera' and roll_id in (r_c1, r_c2)) = 2,
-         'both rolls of the deleted camera';
-  assert not exists (select 1 from public.inbox_suppressions where roll_id = r_other), 'other rolls untouched';
-  assert exists (select 1 from public.inbox_suppressions where roll_id = r_lens and field = 'lens'), 'roll of the deleted lens';
-  assert not exists (select 1 from public.inbox_suppressions where roll_id = r_lens and field = 'camera'), 'its camera still exists';
+  assert (select count(*) from public.rolls where camera_snapshot is not null and id in (r_c1, r_c2)) = 2,
+         'both rolls of the deleted camera keep its name';
+  assert (select camera_snapshot is null from public.rolls where id = r_other), 'other rolls untouched';
+  assert (select lens_snapshot is not null from public.rolls where id = r_lens), 'roll of the deleted lens keeps its name';
+  assert (select camera_snapshot is null from public.rolls where id = r_lens), 'its camera still exists';
   assert (select camera_id from public.rolls where id = r_c1) is null, 'the foreign key still clears the roll';
 
   -- Accounts being deleted, from the app and from the dashboard (Review Focus 1).
@@ -56,7 +57,7 @@ begin
   perform set_config('app.borrando_cuenta', '', true);
   delete from auth.users where id = d;
   assert not exists (select 1 from auth.users where id in (c, d)), 'both accounts deleted';
-  assert not exists (select 1 from public.inbox_suppressions where owner_user_id in (c, d)), 'nothing left';
+  assert not exists (select 1 from public.rolls where owner_user_id in (c, d)), 'nothing left';
 
   -- Normal path: create, edit and delete a roll and a camera as today.
   perform pg_temp.como(a);
