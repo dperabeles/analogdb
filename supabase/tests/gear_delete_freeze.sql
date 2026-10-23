@@ -46,7 +46,7 @@ end $$;
 
 do $$
 declare
-  a uuid; b uuid; c uuid;
+  a uuid; b uuid; c uuid; d uuid;
   cam bigint; cam2 bigint; cam_big bigint; cam_blank bigint; cam_plain bigint; cam_costs bigint;
   zl bigint; zl2 bigint; zl_frame bigint;
   r1 bigint; r2 bigint; r3 bigint; r_text bigint; r_frame bigint; r_b bigint; r_blank bigint; r_new bigint;
@@ -236,6 +236,19 @@ begin
     assert n = 1, '10: the purchase still freezes its label';
     assert (select camera_snapshot ->> 'model' = 'Cam Costos' from public.rolls where id = r_costs), '10: and the roll its camera';
   end if;
+
+  -- ── 14. Deleting the account from the dashboard (no flag) ──────────────
+  -- Rows created in this same transaction make Postgres re-check the rolls'
+  -- key to auth.users on any update, so writing to them after the account row
+  -- is gone fails with 23503. Must run before 8, which sets the flag.
+  d := pg_temp.eq_user('gfd');
+  insert into public.cameras (owner_user_id, maker, model) values (d, 'Prueba Eq', 'Cam D') returning id into cam;
+  insert into public.lenses (owner_user_id, maker, model) values (d, 'Prueba Eq', 'Lente D') returning id into zl;
+  insert into public.rolls (owner_user_id, code, camera_id, lens_id, status) values (d, 'EQ-D1', cam, zl, 'Archived');
+  delete from auth.users where id = d;
+  assert not exists (select 1 from public.rolls where owner_user_id = d), '14: no rolls left';
+  assert not exists (select 1 from public.cameras where owner_user_id = d), '14: no cameras left';
+  assert not exists (select 1 from public.lenses where owner_user_id = d), '14: no lenses left';
 
   -- ── 8. Closing the account leaves nothing ──────────────────────────────
   insert into public.cameras (owner_user_id, maker, model) values (c, 'Prueba Eq', 'Cam C') returning id into cam;
