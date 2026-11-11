@@ -49,42 +49,28 @@ async function requireApprovedProfile() {
 type ApprovedProfile = Awaited<ReturnType<typeof requireApprovedProfile>>;
 
 /**
- * Busca la película por fabricante y nombre, y solo la crea si no existe.
+ * La película para un fabricante y nombre: la del catálogo, o la copia propia
+ * de quien guarda, o una copia nueva suya.
  *
- * Antes era un upsert, y el catálogo es compartido: a un admin le reescribía
- * la película de todos (ISO, tipo y `in_catalog = false`, que la saca del
- * catálogo), y a cualquier otra cuenta le fallaba el guardado, porque solo un
- * admin puede actualizar `film_stocks`. El ISO y el tipo solo se usan al crear.
+ * Una película agregada fuera del catálogo es privada de quien la creó hasta
+ * que un admin la aprueba, así que otra cuenta puede tener una con el mismo
+ * nombre: buscar y luego insertar chocaba con la de otra persona sin poder
+ * verla. `ensure_film_stock` resuelve las tres opciones en el servidor,
+ * comparando el nombre sin mayúsculas ni espacios de sobra. El ISO y el tipo
+ * solo se usan al crear.
  */
 async function resolveFilmStock(manufacturerValue: string | null, nameValue: string | null, iso: number | null, type: FilmType) {
   if (!manufacturerValue && !nameValue) return null;
 
-  const manufacturer = manufacturerValue || "";
-  const name = nameValue || "";
   const supabase = await createServerSupabaseClient();
-  const find = () =>
-    supabase.from("film_stocks").select("id").eq("manufacturer", manufacturer).eq("name", name).limit(1);
-
-  const { data: existing, error: findError } = await find();
-  if (findError) throw findError;
-  if (existing && existing.length > 0) return existing[0].id;
-
-  const { data, error } = await supabase
-    .from("film_stocks")
-    .insert({ manufacturer, name, iso, type, in_catalog: false })
-    .select("id")
-    .single();
-
-  if (error) {
-    // Carrera: otro request la creó entre el select y el insert.
-    if (error.code === "23505") {
-      const { data: raced, error: retryError } = await find();
-      if (retryError) throw retryError;
-      if (raced && raced.length > 0) return raced[0].id;
-    }
-    throw error;
-  }
-  return data.id;
+  const { data, error } = await supabase.rpc("ensure_film_stock", {
+    p_manufacturer: manufacturerValue || "",
+    p_name: nameValue || "",
+    p_iso: iso,
+    p_type: type,
+  });
+  if (error) throw error;
+  return data;
 }
 
 /**
