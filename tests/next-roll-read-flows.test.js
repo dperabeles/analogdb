@@ -102,3 +102,16 @@ assertIncludes(database, 'rolls_flat', 'Database type should include the rolls_f
 assertIncludes(database, '"FILM STOCK"', 'rolls_flat type should preserve legacy column names');
 
 console.log('next roll read flow static checks passed');
+
+// The roll number column of rolls_flat is literally named "#". PostgREST only
+// parses it as a filter key when quoted: `?%23=eq.R42` fails with PGRST100
+// "failed to parse tree path (#)", `?%22%23%22=eq.R42` works.
+{
+  const rollQueries = read('src/features/rolls/queries.ts');
+  const rollActions = read('src/features/rolls/actions.ts');
+  for (const [name, source] of [['queries.ts', rollQueries], ['actions.ts', rollActions]]) {
+    assert.ok(!source.includes('.eq("#"'), `${name} must not filter rolls_flat by an unquoted "#"`);
+  }
+  assert.ok(rollQueries.includes(`.filter('"#"', "eq", code)`), 'getRollByCode should filter by the quoted "#" column');
+  assert.ok(rollActions.includes(`.filter('"#"', "eq", code)`), 'the roll action should filter by the quoted "#" column');
+}
