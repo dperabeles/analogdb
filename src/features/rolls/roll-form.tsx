@@ -11,19 +11,21 @@ function Field({
   name,
   defaultValue,
   type = "text",
+  min,
   required = false
 }: {
   label: string;
   name: string;
   defaultValue?: string | number | null;
   type?: string;
+  min?: number;
   required?: boolean;
 }) {
   return (
     <label className="editor-row">
       <span className="editor-key">{label}</span>
       <span className="editor-val">
-        <input name={name} type={type} defaultValue={defaultValue ?? ""} required={required} />
+        <input name={name} type={type} min={min} step={min === undefined ? undefined : 1} defaultValue={defaultValue ?? ""} required={required} />
       </span>
     </label>
   );
@@ -75,9 +77,9 @@ export function RollForm({ roll }: RollFormProps) {
           <SelectField label="Tipo" name="filmType" defaultValue={values.filmType} options={FILM_TYPES} />
           <SelectField label="Formato" name="format" defaultValue={values.format} options={FORMAT_OPTIONS} />
           <SelectField label="Fresh/Expired" name="expFresh" defaultValue={values.expFresh} options={FRESH_OPTIONS} />
-          <Field label="ISO" name="iso" type="number" defaultValue={values.iso} />
-          <Field label="Exposiciones" name="exp" type="number" defaultValue={values.exp} />
-          <Field label="ISO @" name="isoPushed" type="number" defaultValue={values.isoPushed} />
+          <Field label="ISO" name="iso" type="number" min={1} defaultValue={values.iso} />
+          <Field label="Exposiciones" name="exp" type="number" min={1} defaultValue={values.exp} />
+          <Field label="ISO @" name="isoPushed" type="number" min={1} defaultValue={values.isoPushed} />
           <Field label="Push/Pull" name="pushPull" defaultValue={values.pushPull} />
         </section>
 
@@ -98,7 +100,7 @@ export function RollForm({ roll }: RollFormProps) {
           <Field label="Tags" name="tags" defaultValue={values.tags} />
           <Field label="Inicio" name="started" type="date" defaultValue={values.started} />
           <Field label="Fin" name="finished" type="date" defaultValue={values.finished} />
-          <Field label="Exp finales" name="expTaken" type="number" defaultValue={values.expTaken} />
+          <Field label="Exp finales" name="expTaken" type="number" min={0} defaultValue={values.expTaken} />
           <Field label="Lab revelado" name="dev" defaultValue={values.dev} />
           <Field label="Lab scan" name="scan" defaultValue={values.scan} />
           <SelectField label="Status" name="status" defaultValue={values.status} options={Object.keys(STATUS_LABELS)} />

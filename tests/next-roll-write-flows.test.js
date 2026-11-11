@@ -87,3 +87,13 @@ assertIncludes(database, 'labs', 'Database type should include labs for write fl
 assertIncludes(database, 'film_stock_id', 'rolls type should include normalized write fields');
 
 console.log('next roll write flow static checks passed');
+
+// The browser refuses negative counts before the form is sent.
+{
+  const form = read('src/features/rolls/roll-form.tsx');
+  for (const [name, min] of [['iso', 1], ['exp', 1], ['isoPushed', 1], ['expTaken', 0]]) {
+    assert.ok(new RegExp(`name="${name}" type="number" min=\\{${min}\\}`).test(form), `${name} input should have min={${min}}`);
+  }
+  const create = read('src/features/rolls/actions.ts');
+  assert.ok(!/toInt\(text\(formData, "(exp|expTaken|isoPushed|iso)"\)\)/.test(create), 'creating a roll should validate counts with toCount');
+}

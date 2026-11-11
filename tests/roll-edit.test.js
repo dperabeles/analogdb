@@ -30,7 +30,8 @@ const {
   planRollUpdate,
   readRollForm,
   rollFormDefaults,
-  selectOptions
+  selectOptions,
+  toCount
 } = load('src/features/rolls/roll-edit.ts');
 
 // A roll as production stores most of them: 35mm, push "0", no rating, a
@@ -157,5 +158,20 @@ assert.equal(parseOriginalValues(JSON.stringify({ ...defaults, rating: 4 })), nu
 
 // Every field the form submits is covered.
 assert.deepEqual([...ROLL_FORM_FIELDS].sort(), Object.keys(defaults).sort());
+
+// Counts on a roll are whole numbers: exposures and ISO at least 1, frames
+// shot at least 0. A roll was saved with -2 exposures on 2026-11-11.
+assert.equal(toCount('36', 1), 36);
+assert.equal(toCount('', 1), null);
+assert.equal(toCount('-', 1), null);
+assert.equal(toCount('0', 0), 0);
+assert.throws(() => toCount('-2', 1), /invalid count/);
+assert.throws(() => toCount('0', 1), /invalid count/);
+assert.throws(() => toCount('1.5', 1), /invalid count/);
+assert.throws(() => toCount('-1', 0), /invalid count/);
+assert.throws(() => planRollUpdate(['exp'], { ...defaults, exp: '-2' }), /invalid count/);
+assert.throws(() => planRollUpdate(['expTaken'], { ...defaults, expTaken: '-1' }), /invalid count/);
+assert.throws(() => planRollUpdate(['isoPushed'], { ...defaults, isoPushed: '-400' }), /invalid count/);
+assert.deepEqual(plain(planRollUpdate(['exp'], { ...defaults, exp: '15' }).row), { exp_count: 15 });
 
 console.log('roll edit checks passed');
