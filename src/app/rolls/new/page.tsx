@@ -7,7 +7,11 @@ import { RollForm } from "@/features/rolls/roll-form";
 
 export const dynamic = "force-dynamic";
 
-export default async function NewRollPage() {
+type NewRollPageProps = {
+  searchParams?: Promise<{ error?: string }>;
+};
+
+export default async function NewRollPage({ searchParams }: NewRollPageProps) {
   const { state, profile } = await getCurrentAccessProfile();
 
   if (state === "public") {
@@ -48,7 +52,7 @@ export default async function NewRollPage() {
           <div className="ed-page-header-sub">Captura film, cámara, workflow y notas del rollo</div>
         </div>
       </div>
-      <RollForm />
+      <RollForm error={(await searchParams)?.error} />
     </AppShell>
   );
 }

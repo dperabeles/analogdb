@@ -96,4 +96,14 @@ console.log('next roll write flow static checks passed');
   }
   const create = read('src/features/rolls/actions.ts');
   assert.ok(!/toInt\(text\(formData, "(exp|expTaken|isoPushed|iso)"\)\)/.test(create), 'creating a roll should validate counts with toCount');
+  for (const name of ['exp', 'expTaken']) {
+    assert.ok(new RegExp(`name="${name}" type="number" min=\\{\\d\\} max=\\{MAX_FRAMES\\}`).test(form), `${name} input should stop at MAX_FRAMES`);
+  }
+  // No film, camera or lab is created for a roll whose counts are refused.
+  const body = create.slice(create.indexOf('async function createRoll'));
+  assert.ok(body.indexOf('rollCounts(formData)') !== -1, 'createRoll should read its counts with rollCounts');
+  assert.ok(body.indexOf('rollCounts(formData)') < body.indexOf('Promise.all'), 'counts are checked before any write');
+  // A refused count comes back to the form as a message, not the error page.
+  assertIncludes(create, 'isInvalidCount(error)', 'saveRollAction should catch a refused count');
+  assertIncludes(form, 'error === "counts"', 'the form should say why it was refused');
 }

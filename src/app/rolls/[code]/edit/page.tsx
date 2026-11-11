@@ -11,11 +11,12 @@ type EditRollPageProps = {
   params: Promise<{
     code: string;
   }>;
+  searchParams?: Promise<{ error?: string }>;
 };
 
 export const dynamic = "force-dynamic";
 
-export default async function EditRollPage({ params }: EditRollPageProps) {
+export default async function EditRollPage({ params, searchParams }: EditRollPageProps) {
   const { state, profile } = await getCurrentAccessProfile();
   const { code } = await params;
   const decodedCode = decodeURIComponent(code);
@@ -65,7 +66,7 @@ export default async function EditRollPage({ params }: EditRollPageProps) {
         </Link>
       </div>
       {error ? <p className="auth-message auth-message-error">No se pudo cargar el roll: {error}</p> : null}
-      {roll ? <RollForm roll={roll} /> : null}
+      {roll ? <RollForm roll={roll} error={(await searchParams)?.error} /> : null}
     </AppShell>
   );
 }

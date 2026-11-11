@@ -78,15 +78,44 @@ export function toInt(value: string | null) {
 }
 
 /**
- * A count on a roll (exposures, frames shot, ISO): empty is null, anything
- * else must be a whole number of at least `min`. The form already refuses
- * smaller values; this keeps a hand-made request from storing them.
+ * The most frames a roll holds: a typo like 360 exposures is refused, as on
+ * the phone (kMaxFrames) and in the database. The archive's largest is 41.
  */
-export function toCount(value: string | null, min: number) {
+export const MAX_FRAMES = 100;
+
+const INVALID_COUNT = "invalid count";
+
+/**
+ * A count on a roll (exposures, frames shot, ISO): empty is null, anything
+ * else must be a whole number from `min` to `max`. The form already refuses
+ * other values; this keeps a hand-made request from storing them.
+ */
+export function toCount(value: string | null, min: number, max = Number.POSITIVE_INFINITY) {
   const parsed = toInt(value);
   if (parsed === null) return null;
-  if (!Number.isInteger(parsed) || parsed < min) throw new Error(`invalid count: ${value}`);
+  if (!Number.isInteger(parsed) || parsed < min || parsed > max) {
+    throw new Error(`${INVALID_COUNT}: ${value}`);
+  }
   return parsed;
+}
+
+/** A failure from [toCount], told apart from any other. */
+export function isInvalidCount(error: unknown) {
+  return error instanceof Error && error.message.startsWith(`${INVALID_COUNT}:`);
+}
+
+/** Every count a new roll carries, read before anything is written. */
+export function rollCounts(form: { get(name: string): unknown }) {
+  const value = (name: string) => {
+    const raw = form.get(name);
+    return typeof raw === "string" ? raw.trim() || null : null;
+  };
+  return {
+    iso: toCount(value("iso"), 1),
+    isoPushed: toCount(value("isoPushed"), 1),
+    exp: toCount(value("exp"), 1, MAX_FRAMES),
+    expTaken: toCount(value("expTaken"), 0, MAX_FRAMES)
+  };
 }
 
 export function toDate(value: string | null) {
@@ -246,8 +275,8 @@ export function planRollUpdate(changed: readonly RollFormField[], after: RollFor
   }
   if (has("format")) row.format = formatStorageValue(text("format"));
   if (has("expFresh")) row.fresh = toFresh(text("expFresh"));
-  if (has("exp")) row.exp_count = toCount(text("exp"), 1);
-  if (has("expTaken")) row.exp_taken = toCount(text("expTaken"), 0);
+  if (has("exp")) row.exp_count = toCount(text("exp"), 1, MAX_FRAMES);
+  if (has("expTaken")) row.exp_taken = toCount(text("expTaken"), 0, MAX_FRAMES);
   if (has("isoPushed")) row.iso_pushed = toCount(text("isoPushed"), 1);
   if (has("pushPull")) row.push_pull = text("pushPull");
   // La web solo conoce el lente como texto: cambiarlo es lo único que

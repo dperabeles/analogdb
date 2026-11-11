@@ -31,7 +31,10 @@ const {
   readRollForm,
   rollFormDefaults,
   selectOptions,
-  toCount
+  toCount,
+  rollCounts,
+  isInvalidCount,
+  MAX_FRAMES
 } = load('src/features/rolls/roll-edit.ts');
 
 // A roll as production stores most of them: 35mm, push "0", no rating, a
@@ -173,5 +176,32 @@ assert.throws(() => planRollUpdate(['exp'], { ...defaults, exp: '-2' }), /invali
 assert.throws(() => planRollUpdate(['expTaken'], { ...defaults, expTaken: '-1' }), /invalid count/);
 assert.throws(() => planRollUpdate(['isoPushed'], { ...defaults, isoPushed: '-400' }), /invalid count/);
 assert.deepEqual(plain(planRollUpdate(['exp'], { ...defaults, exp: '15' }).row), { exp_count: 15 });
+
+// A typo like 360 exposures is refused, as on the phone (kMaxFrames) and in
+// the database: a roll holds at most 100 frames.
+assert.equal(MAX_FRAMES, 100);
+assert.equal(toCount('100', 1, MAX_FRAMES), 100);
+assert.throws(() => toCount('360', 1, MAX_FRAMES), /invalid count/);
+assert.throws(() => planRollUpdate(['exp'], { ...defaults, exp: '360' }), /invalid count/);
+assert.throws(() => planRollUpdate(['expTaken'], { ...defaults, expTaken: '101' }), /invalid count/);
+// ISO has no such cap.
+assert.deepEqual(plain(planRollUpdate(['isoPushed'], { ...defaults, isoPushed: '6400' }).row), { iso_pushed: 6400 });
+
+// Creating a roll reads every count before anything is written.
+const form = (values) => ({ get: (name) => (name in values ? values[name] : null) });
+assert.deepEqual(plain(rollCounts(form({ iso: '400', isoPushed: '', exp: '36', expTaken: '0' }))), {
+  iso: 400,
+  isoPushed: null,
+  exp: 36,
+  expTaken: 0
+});
+let refused = null;
+try {
+  rollCounts(form({ iso: '400', exp: '-2' }));
+} catch (error) {
+  refused = error;
+}
+assert.ok(refused && isInvalidCount(refused), 'a bad count is told apart from other failures');
+assert.ok(!isInvalidCount(new Error('network down')));
 
 console.log('roll edit checks passed');
