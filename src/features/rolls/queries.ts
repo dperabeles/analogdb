@@ -28,7 +28,7 @@ export async function getRollByCode(code: string): Promise<{ roll: RollListItem 
   const { data, error } = await supabase
     .from("rolls_flat")
     .select("*")
-    .eq("#", code)
+    .filter('"#"', "eq", code)
     .maybeSingle();
 
   if (error) {

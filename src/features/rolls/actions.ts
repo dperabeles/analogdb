@@ -276,7 +276,7 @@ async function updateRoll(profile: ApprovedProfile, originalCode: string, formDa
  */
 async function currentFormValues(code: string): Promise<RollFormValues> {
   const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase.from("rolls_flat").select("*").eq("#", code).maybeSingle();
+  const { data, error } = await supabase.from("rolls_flat").select("*").filter('"#"', "eq", code).maybeSingle();
   if (error) throw error;
   const roll = data ? mapRollFlatRow(data) : null;
   if (!roll) throw new Error("Roll not found");
