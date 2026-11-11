@@ -384,6 +384,15 @@ export type Database = {
         };
         Returns: boolean;
       };
+      ensure_film_stock: {
+        Args: {
+          p_manufacturer: string;
+          p_name: string;
+          p_iso?: number | null;
+          p_type?: Database["public"]["Tables"]["film_stocks"]["Insert"]["type"];
+        };
+        Returns: number;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
