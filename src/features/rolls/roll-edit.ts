@@ -77,6 +77,18 @@ export function toInt(value: string | null) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+/**
+ * A count on a roll (exposures, frames shot, ISO): empty is null, anything
+ * else must be a whole number of at least `min`. The form already refuses
+ * smaller values; this keeps a hand-made request from storing them.
+ */
+export function toCount(value: string | null, min: number) {
+  const parsed = toInt(value);
+  if (parsed === null) return null;
+  if (!Number.isInteger(parsed) || parsed < min) throw new Error(`invalid count: ${value}`);
+  return parsed;
+}
+
 export function toDate(value: string | null) {
   if (!value) return null;
   const clean = value.slice(0, 10);
@@ -234,9 +246,9 @@ export function planRollUpdate(changed: readonly RollFormField[], after: RollFor
   }
   if (has("format")) row.format = formatStorageValue(text("format"));
   if (has("expFresh")) row.fresh = toFresh(text("expFresh"));
-  if (has("exp")) row.exp_count = toInt(text("exp"));
-  if (has("expTaken")) row.exp_taken = toInt(text("expTaken"));
-  if (has("isoPushed")) row.iso_pushed = toInt(text("isoPushed"));
+  if (has("exp")) row.exp_count = toCount(text("exp"), 1);
+  if (has("expTaken")) row.exp_taken = toCount(text("expTaken"), 0);
+  if (has("isoPushed")) row.iso_pushed = toCount(text("isoPushed"), 1);
   if (has("pushPull")) row.push_pull = text("pushPull");
   // La web solo conoce el lente como texto: cambiarlo es lo único que
   // sustituye el enlace al catálogo.

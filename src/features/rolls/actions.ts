@@ -15,6 +15,7 @@ import {
   toDate,
   toFilmType,
   toFresh,
+  toCount,
   toInt,
   type CameraDetails,
   type RollFormValues
@@ -183,7 +184,7 @@ export async function saveRollAction(formData: FormData) {
 async function createRoll(profile: ApprovedProfile, code: string, formData: FormData) {
   const manufacturer = text(formData, "manufacturer");
   const filmStock = text(formData, "filmStock");
-  const iso = toInt(text(formData, "iso"));
+  const iso = toCount(text(formData, "iso"), 1);
   const filmType = toFilmType(text(formData, "filmType"));
   const maker = text(formData, "maker");
   const modelName = text(formData, "modelName");
@@ -204,10 +205,10 @@ async function createRoll(profile: ApprovedProfile, code: string, formData: Form
     owner_user_id: profile.userId,
     code,
     film_stock_id: filmStockId,
-    iso_pushed: toInt(text(formData, "isoPushed")),
+    iso_pushed: toCount(text(formData, "isoPushed"), 1),
     format: formatStorageValue(text(formData, "format")),
-    exp_count: toInt(text(formData, "exp")),
-    exp_taken: toInt(text(formData, "expTaken")),
+    exp_count: toCount(text(formData, "exp"), 1),
+    exp_taken: toCount(text(formData, "expTaken"), 0),
     fresh: toFresh(text(formData, "expFresh")),
     push_pull: text(formData, "pushPull"),
     camera_id: cameraId,
@@ -243,7 +244,7 @@ async function updateRoll(profile: ApprovedProfile, originalCode: string, formDa
 
   const [filmStockId, cameraId, devLabId, scanLabId] = await Promise.all([
     plan.film
-      ? resolveFilmStock(nullable(after.manufacturer), nullable(after.filmStock), toInt(nullable(after.iso)), toFilmType(nullable(after.filmType)))
+      ? resolveFilmStock(nullable(after.manufacturer), nullable(after.filmStock), toCount(nullable(after.iso), 1), toFilmType(nullable(after.filmType)))
       : null,
     plan.camera ? upsertCamera(profile.userId, nullable(after.maker), nullable(after.modelName), plan.cameraDetails) : null,
     plan.dev ? upsertLab(nullable(after.dev)) : null,
