@@ -1,9 +1,11 @@
 import { saveRollAction } from "@/features/rolls/actions";
-import { FILM_TYPES, FORMAT_OPTIONS, FRESH_OPTIONS, rollFormDefaults, selectOptions } from "@/features/rolls/roll-edit";
+import { FILM_TYPES, FORMAT_OPTIONS, FRESH_OPTIONS, MAX_FRAMES, rollFormDefaults, selectOptions } from "@/features/rolls/roll-edit";
 import { STATUS_LABELS, type RollListItem } from "@/features/rolls/roll-types";
 
 type RollFormProps = {
   roll?: RollListItem | null;
+  /** Why the last save came back: "counts" when a count was refused. */
+  error?: string | null;
 };
 
 function Field({
@@ -12,6 +14,7 @@ function Field({
   defaultValue,
   type = "text",
   min,
+  max,
   required = false
 }: {
   label: string;
@@ -19,13 +22,14 @@ function Field({
   defaultValue?: string | number | null;
   type?: string;
   min?: number;
+  max?: number;
   required?: boolean;
 }) {
   return (
     <label className="editor-row">
       <span className="editor-key">{label}</span>
       <span className="editor-val">
-        <input name={name} type={type} min={min} step={min === undefined ? undefined : 1} defaultValue={defaultValue ?? ""} required={required} />
+        <input name={name} type={type} min={min} max={max} step={min === undefined ? undefined : 1} defaultValue={defaultValue ?? ""} required={required} />
       </span>
     </label>
   );
@@ -59,12 +63,17 @@ function SelectField({
   );
 }
 
-export function RollForm({ roll }: RollFormProps) {
+export function RollForm({ roll, error }: RollFormProps) {
   // Lo que se muestra es también contra lo que la acción compara al guardar:
   // solo se escribe lo que cambió (ver roll-edit.ts).
   const values = rollFormDefaults(roll);
   return (
     <form className="roll-form" action={saveRollAction}>
+      {error === "counts" ? (
+        <p className="auth-message auth-message-error" role="alert">
+          Revisa los números: las exposiciones van de 1 a {MAX_FRAMES}, las exposiciones finales de 0 a {MAX_FRAMES} y el ISO desde 1.
+        </p>
+      ) : null}
       <input name="originalCode" type="hidden" value={roll?.code || ""} />
       {roll ? <input name="originalValues" type="hidden" value={JSON.stringify(values)} /> : null}
 
@@ -78,7 +87,7 @@ export function RollForm({ roll }: RollFormProps) {
           <SelectField label="Formato" name="format" defaultValue={values.format} options={FORMAT_OPTIONS} />
           <SelectField label="Fresh/Expired" name="expFresh" defaultValue={values.expFresh} options={FRESH_OPTIONS} />
           <Field label="ISO" name="iso" type="number" min={1} defaultValue={values.iso} />
-          <Field label="Exposiciones" name="exp" type="number" min={1} defaultValue={values.exp} />
+          <Field label="Exposiciones" name="exp" type="number" min={1} max={MAX_FRAMES} defaultValue={values.exp} />
           <Field label="ISO @" name="isoPushed" type="number" min={1} defaultValue={values.isoPushed} />
           <Field label="Push/Pull" name="pushPull" defaultValue={values.pushPull} />
         </section>
@@ -100,7 +109,7 @@ export function RollForm({ roll }: RollFormProps) {
           <Field label="Tags" name="tags" defaultValue={values.tags} />
           <Field label="Inicio" name="started" type="date" defaultValue={values.started} />
           <Field label="Fin" name="finished" type="date" defaultValue={values.finished} />
-          <Field label="Exp finales" name="expTaken" type="number" min={0} defaultValue={values.expTaken} />
+          <Field label="Exp finales" name="expTaken" type="number" min={0} max={MAX_FRAMES} defaultValue={values.expTaken} />
           <Field label="Lab revelado" name="dev" defaultValue={values.dev} />
           <Field label="Lab scan" name="scan" defaultValue={values.scan} />
           <SelectField label="Status" name="status" defaultValue={values.status} options={Object.keys(STATUS_LABELS)} />

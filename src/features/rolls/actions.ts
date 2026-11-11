@@ -6,10 +6,12 @@ import { getCurrentAccessProfile } from "@/features/auth/profile";
 import {
   changedRollFields,
   formatStorageValue,
+  isInvalidCount,
   nullable,
   parseOriginalValues,
   planRollUpdate,
   readRollForm,
+  rollCounts,
   rollFormDefaults,
   toArray,
   toDate,
@@ -170,10 +172,21 @@ export async function saveRollAction(formData: FormData) {
   const code = requiredText(formData, "code");
   const originalCode = text(formData, "originalCode");
 
-  if (originalCode) {
-    await updateRoll(profile, originalCode, formData);
-  } else {
-    await createRoll(profile, code, formData);
+  try {
+    if (originalCode) {
+      await updateRoll(profile, originalCode, formData);
+    } else {
+      await createRoll(profile, code, formData);
+    }
+  } catch (error) {
+    // The form refuses these counts; a request that skips it comes back to
+    // the form with the reason, not to the error page.
+    if (isInvalidCount(error)) {
+      redirect(
+        originalCode ? `/rolls/${encodeURIComponent(originalCode)}/edit?error=counts` : "/rolls/new?error=counts"
+      );
+    }
+    throw error;
   }
 
   revalidatePath("/dashboard");
@@ -182,9 +195,11 @@ export async function saveRollAction(formData: FormData) {
 }
 
 async function createRoll(profile: ApprovedProfile, code: string, formData: FormData) {
+  // Before anything is written: a refused count leaves no film, camera or lab.
+  const counts = rollCounts(formData);
   const manufacturer = text(formData, "manufacturer");
   const filmStock = text(formData, "filmStock");
-  const iso = toCount(text(formData, "iso"), 1);
+  const iso = counts.iso;
   const filmType = toFilmType(text(formData, "filmType"));
   const maker = text(formData, "maker");
   const modelName = text(formData, "modelName");
@@ -205,10 +220,10 @@ async function createRoll(profile: ApprovedProfile, code: string, formData: Form
     owner_user_id: profile.userId,
     code,
     film_stock_id: filmStockId,
-    iso_pushed: toCount(text(formData, "isoPushed"), 1),
+    iso_pushed: counts.isoPushed,
     format: formatStorageValue(text(formData, "format")),
-    exp_count: toCount(text(formData, "exp"), 1),
-    exp_taken: toCount(text(formData, "expTaken"), 0),
+    exp_count: counts.exp,
+    exp_taken: counts.expTaken,
     fresh: toFresh(text(formData, "expFresh")),
     push_pull: text(formData, "pushPull"),
     camera_id: cameraId,
