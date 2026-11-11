@@ -27,7 +27,11 @@ const actions = read('src/features/rolls/actions.ts');
 assertIncludes(actions, '"use server"', 'roll mutations should run as Server Actions');
 assertIncludes(actions, 'saveRollAction', 'roll write flow should expose saveRollAction');
 assertIncludes(actions, 'deleteRollAction', 'roll write flow should expose deleteRollAction');
-assertIncludes(actions, 'from("film_stocks")', 'saving a roll should upsert film stocks like the legacy UI');
+// A film added outside the catalog is private to whoever made it until an
+// admin approves it, so another account may hold one with the same name:
+// the server resolves the film for a name instead of select-then-insert.
+assertIncludes(actions, 'rpc("ensure_film_stock"', 'saving a roll should resolve its film through ensure_film_stock');
+assert.ok(!actions.includes('from("film_stocks")'), 'saving a roll should not read or write film_stocks directly');
 assertIncludes(actions, 'from("cameras")', 'saving a roll should upsert cameras like the legacy UI');
 assertIncludes(actions, 'from("labs")', 'saving a roll should upsert labs like the legacy UI');
 assertIncludes(actions, 'from("rolls")', 'saving a roll should write the normalized rolls table');
@@ -78,6 +82,7 @@ assertIncludes(detail, 'deleteRollAction', 'roll detail should expose delete act
 
 const database = read('src/types/database.ts');
 assertIncludes(database, 'film_stocks', 'Database type should include film_stocks for write flows');
+assertIncludes(database, 'ensure_film_stock', 'Database type should include the ensure_film_stock RPC');
 assertIncludes(database, 'labs', 'Database type should include labs for write flows');
 assertIncludes(database, 'film_stock_id', 'rolls type should include normalized write fields');
 
