@@ -54,23 +54,34 @@ $function$;
 revoke all on function app_private.merge_film_stock(bigint, bigint) from public;
 
 -- The films that exist are all approved; the ones that share a name merge
--- into the catalog's, or else the oldest.
+-- into the catalog's (in_catalog may be null), or else the oldest, and the
+-- winner keeps any ISO or type a loser had.
+-- (Edited after review, before production: staging applied an earlier text
+-- whose ordering let in_catalog null win; staging had one film, so nothing
+-- merged there and the result is the same.)
 do $$
 declare
-  r record;
+  g record;
+  v_loser bigint;
 begin
-  for r in
-    select id, winner from (
-      select id,
-             first_value(id) over (
-               partition by app_private.film_stock_key(manufacturer, name)
-               order by in_catalog desc, id) as winner
+  for g in
+    select array_agg(id order by (in_catalog is true) desc, id) as ids
       from public.film_stocks
-      where status = 'approved'
-    ) ranked
-    where id <> winner
+     where status = 'approved'
+     group by app_private.film_stock_key(manufacturer, name)
+    having count(*) > 1
   loop
-    perform app_private.merge_film_stock(r.id, r.winner);
+    update public.film_stocks w
+       set iso = coalesce(w.iso, (select s.iso from public.film_stocks s
+                                   where s.id = any (g.ids[2:]) and s.iso is not null
+                                   order by s.id limit 1)),
+           type = coalesce(w.type, (select s.type from public.film_stocks s
+                                     where s.id = any (g.ids[2:]) and s.type is not null
+                                     order by s.id limit 1))
+     where w.id = g.ids[1];
+    foreach v_loser in array g.ids[2:] loop
+      perform app_private.merge_film_stock(v_loser, g.ids[1]);
+    end loop;
   end loop;
 end $$;
 
