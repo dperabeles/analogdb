@@ -1,6 +1,6 @@
 # Aviso de Privacidad — Analog Archive
 
-**Última actualización:** 22 de octubre de 2026
+**Última actualización:** 21 de noviembre de 2026
 **Idioma de referencia:** Español (México) — versión en inglés disponible bajo petición.
 
 ---
@@ -37,12 +37,13 @@ Si tienes preguntas sobre este aviso o sobre cómo manejamos tus datos, puedes e
 
 Los datos que ingresas voluntariamente al catalogar tus rollos de fotografía:
 
-- **Rollos:** stock de película, formato físico (35mm, 120, Super 8, 16mm, 110, Large Format), ISO, fechas (cargado, expuesto, enviado a revelar, revelado), push/pull, rating, notas, locaciones (texto libre, no GPS), tipos de fotografía, tags
-- **Cámaras:** fabricante, modelo, formato soportado, fecha de adquisición
+- **Rollos:** stock de película, formato físico (35mm, 120, Super 8, 16mm, 110, Large Format), ISO, fechas (cargado, expuesto, enviado a revelar, revelado), push/pull, rating, notas, locaciones (texto libre, no GPS), tipos de fotografía, tags, y la cuenta de fotogramas que llevas
+- **Cámaras:** fabricante, modelo, formato soportado y, en cámaras de 120, el tamaño del negativo; tipo, montura, si la sigues teniendo y fecha de adquisición
 - **Lentes:** montura, distancia focal, apertura máxima
 - **Inventario y costos (opcional):** si decides usarlos, guardamos el film que compras y aún no usas (película, formato, cantidad y caducidad impresa), el precio por unidad, la moneda y la fecha de cada compra; lo que pagaste por revelar y escanear cada rollo (importe, moneda, fecha y laboratorio); el precio y la fecha de compra de tus cámaras y lentes; y tu moneda predeterminada. Son datos que capturas tú, solo los ves tú y no los compartimos con nadie
-- **Ajustes por fotograma:** apertura, velocidad, indicadores de flash/blanco-y-negro/trípode, notas por frame (hasta 36 por rollo)
-- **Contribuciones a catálogos comunitarios:** entradas que agregues a los catálogos compartidos de stocks de película y laboratorios (`film_stocks`, `labs`)
+- **Ajustes por fotograma:** apertura, velocidad, indicadores de flash/blanco-y-negro/trípode, notas por frame (hasta 100 por rollo)
+- **Contribuciones a catálogos comunitarios:** entradas que agregues a los catálogos compartidos de stocks de película y laboratorios (`film_stocks`, `labs`). Un film que no está en el catálogo queda **privado**: solo tú lo ves y lo usas hasta que un administrador lo revisa. Si lo aprueba, pasa al catálogo compartido y se une con las copias del mismo nombre que hayan creado otras cuentas; tus rollos siguen apuntando a él. Si lo rechaza, sigue siendo solo tuyo
+- **Avisos del buzón:** una vez al día, a partir de las 08:00 de tu zona horaria, el servidor revisa tu archivo para dejarte recordatorios en el buzón de la app, por ejemplo rollos por revelar o datos que le faltan a un rollo o a un equipo. Solo lo hace si ya abriste el buzón alguna vez. Guardamos qué avisos te mostramos y cuáles ya viste. La revisión ocurre dentro de nuestra base de datos y no se envía a nadie
 
 ### 2.4 · Datos del dispositivo (solo app móvil)
 
@@ -55,7 +56,7 @@ Los datos que ingresas voluntariamente al catalogar tus rollos de fotografía:
 
 ### 2.5 · Datos de uso y errores
 
-- **Reportes de errores anonimizados** vía Sentry — stack traces, versión de la app, modelo de dispositivo, idioma. No incluyen tu contenido ni identificadores personales.
+- **Reportes de errores anonimizados** vía Sentry — stack traces, versión de la app y de qué compilación viene, modelo de dispositivo, idioma. No incluyen tu contenido ni identificadores personales.
 - **Logs de autenticación** (intentos de login fallidos, IP de origen) para protección contra ataques de fuerza bruta. Se guardan por un máximo de 30 días.
 - **Identificadores de transacción** (cuando el servicio sea de pago en el futuro: Apple App Store IAP transaction ID, Google Play Order ID. **Nunca recibimos información de tarjeta de crédito** — Apple/Google la manejan internamente.)
 
@@ -116,6 +117,7 @@ Todos estos proveedores tienen **Data Processing Agreements (DPAs)** con Standar
 - **Cuenta activa:** mientras tu cuenta exista
 - **Cuenta eliminada por el usuario:** purgada del sistema en un máximo de **30 días**. Aportes a catálogos compartidos (`film_stocks`, `labs`) se **anonimizan** pero permanecen disponibles para otros usuarios.
 - **Cuenta inactiva por más de 24 meses:** te enviamos un aviso por correo. Si no respondes en 90 días, la cuenta se marca como inactiva y se purga en los siguientes 30 días.
+- **Copia de lo que borras:** cuando borras un rollo, una cámara, un lente u otro registro, guardamos una copia por **[PLAZO POR DECIDIR]** para poder recuperarlo si fue un error. Solo un administrador puede verla, y se borra de inmediato si eliminas tu cuenta.
 - **Logs de autenticación:** 30 días máximo
 - **Reportes de Sentry:** 90 días máximo
 - **Backups:** respaldos diarios por 30 días + respaldos mensuales por 12 meses, en infraestructura cifrada de Supabase
@@ -127,7 +129,7 @@ Todos estos proveedores tienen **Data Processing Agreements (DPAs)** con Standar
 Bajo la **Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)** de México y prácticas internacionales (GDPR, CCPA, etc.), tienes los siguientes derechos:
 
 ### 6.1 · Acceder a tus datos
-Desde la app móvil o web: `Cuenta → Exportar → Descargar JSON`. Recibes un archivo con todos tus rollos, cámaras, lentes, exposiciones y metadata.
+Desde la app móvil o web: `Cuenta → Exportar → Descargar JSON`. Recibes un archivo con todos tus rollos, cámaras, lentes, exposiciones, inventario, costos, avisos del buzón y metadata.
 
 ### 6.2 · Corregir tus datos
 Cualquier campo es editable en cualquier momento desde la app.
@@ -136,6 +138,8 @@ Cualquier campo es editable en cualquier momento desde la app.
 Desde la app móvil o web: `Cuenta → Eliminar cuenta`. La operación es **irreversible**. Se purgan:
 
 - Todos tus rollos, cámaras, lentes, exposiciones, notas, tags
+- Tu inventario, tus costos y tus avisos del buzón
+- Las copias de lo que habías borrado
 - Tu perfil y credenciales
 - Tu vinculación con Apple/Google (no afecta tu cuenta en esos servicios)
 - Tu token FCM (dejas de recibir push)

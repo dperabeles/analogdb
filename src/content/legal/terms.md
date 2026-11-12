@@ -1,6 +1,6 @@
 # Términos de Servicio — Analog Archive
 
-**Última actualización:** 22 de octubre de 2026
+**Última actualización:** 21 de noviembre de 2026
 **Idioma de referencia:** Español (México) — versión en inglés disponible bajo petición.
 
 ---
@@ -18,6 +18,8 @@ Estos Términos constituyen un acuerdo legal vinculante entre tú y el operador.
 ## 2 · Descripción del servicio
 
 Analog Archive es una bitácora digital privada para fotógrafos de película analógica. El servicio te permite catalogar, organizar y referenciar tus registros de fotografía analógica, incluyendo rollos de película, cámaras, lentes, configuraciones de exposición por fotograma, laboratorios fotográficos utilizados y metadatos relacionados como notas, etiquetas, calificaciones y locaciones.
+
+También puedes llevar, si quieres, tu **inventario de película** (el film que compraste y aún no usas) y lo que **gastas** en película, revelado, escaneo y equipo. Esos importes son un registro personal: los capturas tú, no los verificamos ni convertimos entre monedas, y no sirven como comprobante contable ni fiscal.
 
 El servicio se ofrece como aplicación web accesible en `https://analog-archive.com` y como aplicaciones móviles para iOS y Android. **El servicio NO facilita la venta, compra ni intercambio de bienes físicos o digitales entre usuarios**.
 
@@ -152,6 +154,8 @@ Aceptas contribuir únicamente entradas que sean:
 - **No maliciosas** ni diseñadas para engañar a otros usuarios
 
 ### 6.4 · Moderación
+
+Un film que agregas y no está en el catálogo es **privado** hasta que el operador lo revisa: solo tú lo ves y lo usas. Si se aprueba, pasa al catálogo compartido y se une con las copias del mismo nombre de otras cuentas; si se rechaza, sigue siendo solo tuyo.
 
 El operador se reserva el derecho de revisar, modificar, normalizar o eliminar cualquier contribución al catálogo a su sola discreción para mantener la calidad e integridad del mismo. El operador puede suspender o terminar cuentas que repetidamente contribuyan entradas de baja calidad, maliciosas o que violen las reglas.
 
