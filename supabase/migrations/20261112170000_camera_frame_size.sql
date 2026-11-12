@@ -1,15 +1,15 @@
 -- ANA-135: the frame size of a 120 camera is data about the camera, not a
--- format. Some cameras were saved with "6x4.5" (or 6x6, 6x7, 6x9) as their
+-- format. Some cameras were saved with "6x4.5" (or another 120 size) as their
 -- format, so nothing that matches on 120 found them. The format is 120 and
 -- the size lives beside it; nothing depends on it.
 
 alter table public.cameras add column frame_size text;
 
 alter table public.cameras add constraint cameras_frame_size_valid
-  check (frame_size is null or frame_size in ('6x4.5', '6x6', '6x7', '6x9'));
+  check (frame_size is null or frame_size in ('6x4.5', '6x6', '6x7', '6x8', '6x9', '6x12', '6x17'));
 
 comment on column public.cameras.frame_size is
-  'Frame size of a 120 camera (6x4.5, 6x6, 6x7, 6x9). Informative only; '
+  'Frame size of a 120 camera (6x4.5 to 6x17). Informative only; '
   'null for any other format.';
 
 -- Only a 120 camera has one: changing the format away from 120 drops it
@@ -22,7 +22,7 @@ language plpgsql
 set search_path = ''
 as $$
 begin
-  if new.format in ('6x4.5', '6x6', '6x7', '6x9') then
+  if new.format in ('6x4.5', '6x6', '6x7', '6x8', '6x9', '6x12', '6x17') then
     new.frame_size := new.format;
     new.format := '120';
   elsif new.format is distinct from '120' then
@@ -40,4 +40,4 @@ create trigger cameras_frame_size_only_120
 -- (the trigger above does the move).
 update public.cameras
    set format = format
- where format in ('6x4.5', '6x6', '6x7', '6x9');
+ where format in ('6x4.5', '6x6', '6x7', '6x8', '6x9', '6x12', '6x17');

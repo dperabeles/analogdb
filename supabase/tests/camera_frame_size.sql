@@ -56,7 +56,14 @@ begin
     res := res || 'FALLA el formato 6x9 no pasó a 120 + 6x9; ';
   end if;
 
-  -- Only the four sizes.
+  -- Panoramic 120 sizes are sizes too.
+  insert into public.cameras (owner_user_id, maker, model, format, frame_size)
+    values (z.a, 'Fuji', 'ZZ GX617', '120', '6x17');
+  if (select frame_size from public.cameras where model = 'ZZ GX617') is distinct from '6x17' then
+    res := res || 'FALLA 120 perdió 6x17; ';
+  end if;
+
+  -- Only the 120 sizes.
   begin
     insert into public.cameras (owner_user_id, maker, model, format, frame_size)
       values (z.a, 'Linhof', 'ZZ 4x5', '120', '4x5');
@@ -76,5 +83,5 @@ begin
 
   execute 'reset role';
   assert res = '', res;
-  raise exception 'ENSAYO FRAME SIZE OK: 120 conserva el tamaño, un tamaño como formato pasa a 120, otros formatos no lo llevan, solo 4 tamaños, otra cuenta no ve ni edita';
+  raise exception 'ENSAYO FRAME SIZE OK: 120 conserva el tamaño, un tamaño como formato pasa a 120, otros formatos no lo llevan, solo tamaños de 120, otra cuenta no ve ni edita';
 end $$;

@@ -85,7 +85,7 @@ function CameraForm({ camera, mode = "add" }: { camera?: CameraItem; mode?: "add
         </select>
       </label>
       <label className="cam-modal-field">
-        <span className="cam-modal-label">Negativo (120)</span>
+        <span className="cam-modal-label">Tamaño negativo</span>
         <select className="cam-modal-select" name="frameSize" defaultValue={camera?.frame_size || ""}>
           <option value="">—</option>
           {CAMERA_FRAME_SIZES.map((size) => (
