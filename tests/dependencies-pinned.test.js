@@ -20,4 +20,9 @@ for (const section of ['dependencies', 'devDependencies']) {
   }
 }
 
+// Node is pinned too, to the major Vercel production builds with (24.x on
+// 11-nov-2026), so a project-setting change cannot move it silently.
+assert.equal(pkg.engines?.node, '24.x', 'package.json must pin engines.node to 24.x');
+assert.equal(lock.packages['']?.engines?.node, '24.x', 'the lockfile root must carry the same engines.node');
+
 console.log('dependency pinning checks passed');
