@@ -1,6 +1,6 @@
 # Términos de Servicio — Analog Archive
 
-**Última actualización:** 21 de noviembre de 2026
+**Última actualización:** 12 de noviembre de 2026 · en vigor desde el 21 de noviembre de 2026
 **Idioma de referencia:** Español (México) — versión en inglés disponible bajo petición.
 
 ---
