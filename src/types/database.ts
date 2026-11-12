@@ -123,6 +123,7 @@ export type Database = {
           maker: string | null;
           model: string | null;
           format: string | null;
+          frame_size: string | null;
           type: string | null;
           mount: string | null;
           supports_interchangeable_lenses: boolean;
@@ -136,6 +137,7 @@ export type Database = {
           maker?: string | null;
           model?: string | null;
           format?: string | null;
+          frame_size?: string | null;
           type?: string | null;
           mount?: string | null;
           supports_interchangeable_lenses?: boolean;
@@ -148,6 +150,7 @@ export type Database = {
           maker?: string | null;
           model?: string | null;
           format?: string | null;
+          frame_size?: string | null;
           type?: string | null;
           mount?: string | null;
           supports_interchangeable_lenses?: boolean;

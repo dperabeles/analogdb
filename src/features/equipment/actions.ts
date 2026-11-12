@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getCurrentAccessProfile } from "@/features/auth/profile";
+import { cameraFrameSize } from "@/features/equipment/frame-size";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 
@@ -76,11 +77,13 @@ async function equipmentUsage(ownerUserId: string, column: "camera_id" | "lens_i
 export async function saveCameraAction(formData: FormData) {
   const profile = await requireApprovedProfile();
   const id = idValue(formData, "cameraId");
+  const format = requiredText(formData, "format");
   const row: CameraInsert = {
     owner_user_id: profile.userId,
     maker: normalizeMaker(requiredText(formData, "maker")),
     model: requiredText(formData, "model"),
-    format: requiredText(formData, "format"),
+    format,
+    frame_size: cameraFrameSize(format, text(formData, "frameSize")),
     type: text(formData, "type"),
     mount: text(formData, "mount"),
     supports_interchangeable_lenses: checked(formData, "supportsInterchangeableLenses"),
@@ -93,6 +96,7 @@ export async function saveCameraAction(formData: FormData) {
       maker: row.maker,
       model: row.model,
       format: row.format,
+      frame_size: row.frame_size,
       type: row.type,
       mount: row.mount,
       supports_interchangeable_lenses: row.supports_interchangeable_lenses,

@@ -4,6 +4,7 @@ import {
   saveCameraAction,
   saveLensAction
 } from "@/features/equipment/actions";
+import { CAMERA_FRAME_SIZES } from "@/features/equipment/frame-size";
 import type { CameraItem, EquipmentOverview, LensItem } from "@/features/equipment/queries";
 
 type EquipmentPanelProps = {
@@ -76,15 +77,22 @@ function CameraForm({ camera, mode = "add" }: { camera?: CameraItem; mode?: "add
           <option value="">Seleccionar</option>
           <option value="35mm">35mm</option>
           <option value="120">120</option>
-          <option value="6x4.5">6x4.5</option>
-          <option value="6x6">6x6</option>
-          <option value="6x7">6x7</option>
-          <option value="6x9">6x9</option>
           <option value="4x5">4x5</option>
           <option value="Super8">Super 8</option>
           <option value="16mm">16mm</option>
           <option value="110">110</option>
           <option value="Otro">Otro</option>
+        </select>
+      </label>
+      <label className="cam-modal-field">
+        <span className="cam-modal-label">Tamaño negativo</span>
+        <select className="cam-modal-select" name="frameSize" defaultValue={camera?.frame_size || ""}>
+          <option value="">—</option>
+          {CAMERA_FRAME_SIZES.map((size) => (
+            <option key={size} value={size}>
+              {size}
+            </option>
+          ))}
         </select>
       </label>
       <label className="cam-modal-field">
@@ -152,6 +160,7 @@ function CameraCard({ camera }: { camera: CameraItem }) {
           <span className="cam-badge-swatch" style={{ background: formatSwatch(camera.format) }} />
           {camera.format || "Formato pendiente"}
         </span>
+        {camera.frame_size ? <span className="cam-badge">{camera.frame_size}</span> : null}
         {camera.type ? <span className="cam-badge">{camera.type}</span> : null}
         <span className={camera.mount ? "cam-badge" : "cam-badge muted"}>{camera.mount || "Montura pendiente"}</span>
         <span className={camera.supports_interchangeable_lenses ? "cam-badge" : "cam-badge muted"}>
