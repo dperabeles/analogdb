@@ -317,7 +317,7 @@ El servicio se proporciona "tal cual" y "según disponibilidad". No garantizamos
 
 Nos reservamos el derecho de modificar, suspender o discontinuar cualquier parte del servicio en cualquier momento. Para cambios materiales:
 
-- Te avisaremos por correo y con un banner en la app
+- Te avisaremos en el buzón de la app
 - Tendrás la oportunidad de exportar tus datos antes de la fecha efectiva
 
 ---
@@ -475,7 +475,7 @@ Ninguna renuncia a hacer cumplir un derecho bajo estos Términos constituirá re
 
 ## 22 · Cambios a estos Términos
 
-Si modificamos materialmente estos Términos, te notificaremos **con un aviso destacado en la aplicación y en el sitio web al menos 5 días antes** de su entrada en vigor.
+Si modificamos materialmente estos Términos, te notificaremos **con un aviso en el buzón de la app al menos 5 días antes** de su entrada en vigor.
 
 Elegimos el aviso en la app en lugar del correo a propósito: es donde de verdad lo vas a ver. No te enviaremos correos por este motivo.
 

@@ -117,7 +117,7 @@ Todos estos proveedores tienen **Data Processing Agreements (DPAs)** con Standar
 - **Cuenta activa:** mientras tu cuenta exista
 - **Cuenta eliminada por el usuario:** purgada del sistema en un máximo de **30 días**. Aportes a catálogos compartidos (`film_stocks`, `labs`) se **anonimizan** pero permanecen disponibles para otros usuarios.
 - **Cuenta inactiva por más de 24 meses:** te enviamos un aviso por correo. Si no respondes en 90 días, la cuenta se marca como inactiva y se purga en los siguientes 30 días.
-- **Copia de lo que borras:** cuando borras un rollo, una cámara, un lente u otro registro, guardamos una copia por **[PLAZO POR DECIDIR]** para poder recuperarlo si fue un error. Solo un administrador puede verla, y se borra de inmediato si eliminas tu cuenta.
+- **Copia de lo que borras:** cuando borras un rollo, una cámara, un lente u otro registro, guardamos una copia por **30 días** para poder recuperarlo si fue un error. Solo un administrador puede verla, y se borra de inmediato si eliminas tu cuenta.
 - **Logs de autenticación:** 30 días máximo
 - **Reportes de Sentry:** 90 días máximo
 - **Backups:** respaldos diarios por 30 días + respaldos mensuales por 12 meses, en infraestructura cifrada de Supabase
@@ -437,7 +437,7 @@ Los cambios a este Aviso de Privacidad se notifican como se describe en la secci
 
 ## 16 · Cambios a este aviso
 
-Si modificamos este aviso de manera material, te notificaremos **con un aviso destacado dentro de la app y en el sitio web al menos 5 días** antes de la fecha efectiva del cambio.
+Si modificamos este aviso de manera material, te notificaremos **con un aviso en el buzón de la app al menos 5 días** antes de la fecha efectiva del cambio.
 
 Elegimos el aviso en la app en lugar del correo a propósito: es donde de verdad lo vas a ver. No te enviaremos correos por este motivo.
 
