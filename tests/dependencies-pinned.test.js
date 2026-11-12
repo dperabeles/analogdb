@@ -15,7 +15,8 @@ for (const section of ['dependencies', 'devDependencies']) {
     const locked = lock.packages[`node_modules/${name}`];
     assert.ok(locked, `${name} is missing from package-lock.json`);
     assert.equal(locked.version, spec, `${name}: package.json and package-lock.json disagree`);
-    assert.equal(lock.packages[''][section][name], spec, `${name}: the lockfile root still says something else`);
+    const rootSection = lock.packages['']?.[section] ?? {};
+    assert.equal(rootSection[name], spec, `${name}: the lockfile root ${section} still says something else`);
   }
 }
 
