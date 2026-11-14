@@ -1,0 +1,51 @@
+<!doctype html>
+{{ if and .Data.locale (eq .Data.locale "en") }}<html lang="en">{{ else }}<html lang="es">{{ end }}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {{ if and .Data.locale (eq .Data.locale "en") }}<title>Confirm your Analog Archive account</title>{{ else }}<title>Confirma tu cuenta de Analog Archive</title>{{ end }}
+</head>
+<body style="margin:0;padding:0;background:#14110d;color:#f3eadb;font-family:Inter,Arial,sans-serif;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#14110d;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:640px;border:1px solid rgba(244,237,226,0.12);background:linear-gradient(180deg,rgba(32,24,19,0.98),rgba(24,19,15,0.98));">
+          <tr>
+            <td style="padding:36px 32px 18px 32px;font-family:'DM Mono',monospace,Arial,sans-serif;font-size:11px;letter-spacing:0.26em;text-transform:uppercase;color:rgba(232,223,209,0.55);">
+              Analog Archive
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 32px 12px 32px;font-family:Inter,Arial,sans-serif;font-size:42px;line-height:0.98;font-weight:700;letter-spacing:-0.04em;color:#f3eadb;">
+              {{ if and .Data.locale (eq .Data.locale "en") }}Confirm your account and start your archive.{{ else }}Confirma tu cuenta y empieza tu archivo.{{ end }}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 32px 0 32px;font-family:Inter,Arial,sans-serif;font-size:16px;line-height:1.7;color:rgba(232,223,209,0.72);">
+              {{ if and .Data.locale (eq .Data.locale "en") }}You created an Analog Archive account. Confirm your email with the button below and you&rsquo;ll be able to sign in to the app.{{ else }}Creaste una cuenta en Analog Archive. Confirma tu correo con el botón de abajo y podrás iniciar sesión en la app.{{ end }}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px 32px 8px 32px;">
+              <a href="https://analog-archive.com/confirm?token_hash={{ .TokenHash }}&type=email" style="display:inline-block;background:#d94a2a;color:#140f0c;text-decoration:none;padding:14px 22px;font-family:Inter,Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">
+                {{ if and .Data.locale (eq .Data.locale "en") }}Confirm account{{ else }}Confirmar cuenta{{ end }}
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 32px 24px 32px;font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.7;color:rgba(232,223,209,0.58);">
+              {{ if and .Data.locale (eq .Data.locale "en") }}If the button doesn&rsquo;t open, copy and paste this link into your browser:{{ else }}Si el botón no abre, copia y pega este enlace en tu navegador:{{ end }}<br>
+              <span style="word-break:break-all;color:#d7b69a;">https://analog-archive.com/confirm?token_hash={{ .TokenHash }}&type=email</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 32px 32px 32px;border-top:1px solid rgba(244,237,226,0.08);font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.7;color:rgba(232,223,209,0.52);">
+              <div style="padding-top:18px;">{{ if and .Data.locale (eq .Data.locale "en") }}If you didn&rsquo;t create this account, you can ignore this email.{{ else }}Si no creaste esta cuenta, puedes ignorar este correo.{{ end }}</div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
