@@ -52,8 +52,17 @@ enroll_enabled = false
 verify_enabled = false
 
 
+# Correos de acceso en el idioma de la cuenta: la app guarda `locale` en
+# user_metadata ("es" o "en") y cada plantilla elige con
+# `{{ if and .Data.locale (eq .Data.locale "en") }}`. El `and` va primero
+# para que una cuenta sin `locale` (todas las anteriores) caiga en español
+# en vez de romper el render. Producción usa estas mismas plantillas.
+[auth.email.template.confirmation]
+subject = "{{ if and .Data.locale (eq .Data.locale \"en\") }}Confirm your Analog Archive account{{ else }}Confirma tu cuenta de Analog Archive{{ end }}"
+content_path = "./supabase/templates/confirmation.html"
+
 [auth.email.template.recovery]
-subject = "Restablece tu acceso a Analogdb"
+subject = "{{ if and .Data.locale (eq .Data.locale \"en\") }}Reset your Analog Archive password{{ else }}Restablece tu acceso a Analog Archive{{ end }}"
 content_path = "./supabase/templates/recovery.html"
 
 # ── Edge Functions ───────────────────────────────────────────────────────
