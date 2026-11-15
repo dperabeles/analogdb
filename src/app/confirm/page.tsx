@@ -1,21 +1,15 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 import { ConfirmAccount } from "@/features/auth/confirm-account";
+import { AccessShell } from "@/features/auth/contacto-access";
+
+export const metadata: Metadata = {
+  title: "Confirmar cuenta · Analog Archive",
+};
 
 export default function ConfirmPage() {
   return (
-    <main className="app-shell">
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand-name">Analog Archive</span>
-          <span className="brand-stage">Confirm account</span>
-        </div>
-        <Link className="nav-link" href="/dashboard">
-          Login
-        </Link>
-      </header>
-      <section className="workspace auth-workspace">
-        <ConfirmAccount />
-      </section>
-    </main>
+    <AccessShell>
+      <ConfirmAccount />
+    </AccessShell>
   );
 }
