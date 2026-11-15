@@ -1,7 +1,24 @@
 "use client";
 
 import { type FormEvent, useEffect, useRef, useState } from "react";
+import {
+  AccessField,
+  AccessHeading,
+  AccessState,
+  AccessSubmit,
+  accessStyles,
+} from "@/features/auth/contacto-access";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
+
+/// Opens the iPhone app by its URL scheme (Info.plist: analogarchive).
+const OPEN_APP = { label: "Abrir Analog Archive", href: "analogarchive://" };
+
+/// Supabase answers in English; the person reads Spanish.
+function passwordError(code: string | undefined): string {
+  if (code === "same_password") return "Usa una contraseña distinta a la anterior.";
+  if (code === "weak_password") return "Esa contraseña es muy débil. Prueba con una más larga.";
+  return "No pudimos guardar la contraseña. Inténtalo de nuevo.";
+}
 
 type RecoveryState = "checking" | "ready" | "invalid";
 
@@ -20,7 +37,7 @@ type RecoveryState = "checking" | "ready" | "invalid";
  */
 export function UpdatePasswordForm() {
   const [recovery, setRecovery] = useState<RecoveryState>("checking");
-  const [message, setMessage] = useState("");
+  const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const supabaseRef =
@@ -109,7 +126,6 @@ export function UpdatePasswordForm() {
 
     setBusy(true);
     setError("");
-    setMessage("");
 
     const { error: updateError } = await getSupabase().auth.updateUser({
       password,
@@ -118,66 +134,84 @@ export function UpdatePasswordForm() {
     setBusy(false);
 
     if (updateError) {
-      setError(updateError.message);
+      setError(passwordError(updateError.code));
       return;
     }
 
-    setMessage("Contraseña actualizada. Ya puedes iniciar sesión.");
+    setSaved(true);
   }
 
   if (recovery === "invalid") {
     return (
-      <div className="auth-card">
-        <div className="status-label">Enlace no válido</div>
-        <p className="auth-message auth-message-error">
-          El enlace de recuperación no es válido o ya expiró. Pide uno nuevo
-          para continuar.
-        </p>
-        <a className="primary-action" href="/forgot-password">
-          Pedir nuevo enlace
-        </a>
-      </div>
+      <AccessState
+        eyebrow="Acceso / Recuperación"
+        title={"Este enlace\nya no sirve."}
+        copy="Venció o ya se usó. Pide otro y te llegará un correo nuevo."
+        plateTitle="¿Sigues sin poder entrar?"
+        plateNote={
+          <>
+            Escríbenos a <a href="mailto:hello@analog-archive.com">hello@analog-archive.com</a>
+          </>
+        }
+        primary={{ label: "Pedir otro enlace", href: "/forgot-password" }}
+        live
+      />
+    );
+  }
+
+  if (recovery === "checking") {
+    return (
+      <AccessState
+        eyebrow="Acceso / Recuperación"
+        title={"Validando\ntu enlace."}
+        plateTitle="Un momento."
+        plateNote="Revisamos que el enlace siga vigente."
+        progress
+        live
+      />
+    );
+  }
+
+  if (saved) {
+    return (
+      <AccessState
+        eyebrow="Acceso / Recuperación"
+        title={"Contraseña\nlista."}
+        copy="Ya puedes entrar con tu contraseña nueva."
+        plateTitle="Contraseña actualizada"
+        plateNote="Úsala en la app y en la web."
+        primary={OPEN_APP}
+        secondary={{ label: "Entrar en la web", href: "/dashboard" }}
+        live
+      />
     );
   }
 
   return (
-    <form className="auth-card" onSubmit={handleSubmit}>
-      <div className="status-label">Nueva contraseña</div>
-      <label>
-        Password
-        <input
+    <section className={accessStyles.state}>
+      <AccessHeading eyebrow="Acceso / Recuperación" title={"Nueva\ncontraseña."} />
+      <form className={accessStyles.form} onSubmit={handleSubmit} noValidate>
+        <AccessField
+          label="Contraseña nueva"
           name="password"
           type="password"
           autoComplete="new-password"
-          disabled={recovery !== "ready"}
           required
         />
-      </label>
-      <label>
-        Confirmar password
-        <input
+        <AccessField
+          label="Repítela"
           name="confirm"
           type="password"
           autoComplete="new-password"
-          disabled={recovery !== "ready"}
           required
         />
-      </label>
-      <button
-        className="primary-action"
-        type="submit"
-        disabled={busy || recovery !== "ready"}
-      >
-        {recovery === "checking"
-          ? "Verificando enlace..."
-          : busy
-            ? "Guardando..."
-            : "Actualizar contraseña"}
-      </button>
-      {message ? (
-        <p className="auth-message auth-message-success">{message}</p>
-      ) : null}
-      {error ? <p className="auth-message auth-message-error">{error}</p> : null}
-    </form>
+        <AccessSubmit label={busy ? "Guardando…" : "Guardar contraseña"} disabled={busy} />
+        {error ? (
+          <p className={accessStyles.error} role="alert">
+            {error}
+          </p>
+        ) : null}
+      </form>
+    </section>
   );
 }
