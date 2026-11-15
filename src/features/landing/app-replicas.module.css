@@ -1,10 +1,22 @@
 /* App pieces rebuilt for the home page, with the app's measures. Colours
    come from the .landing tokens, so they follow the page's theme. */
 
+/* Each piece sits on its own sheet of the app's page colour, so the dot
+   field of the home page stops at its edge. */
 .card {
+  position: relative;
   width: 100%;
   max-width: 430px;
+  padding: 22px 20px 24px;
+  background: var(--bg);
+  border: 1px solid var(--line);
   font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 420px) {
+  .card {
+    padding: 18px 14px 20px;
+  }
 }
 
 .label {
