@@ -8,16 +8,18 @@ import {
   AccessSubmit,
   accessStyles,
 } from "@/features/auth/contacto-access";
+import { type AccessCopy, ACCESS_COPY } from "@/features/auth/access-copy";
+import { type AccessLang, withLang } from "@/features/auth/access-lang";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 /// Opens the iPhone app by its URL scheme (Info.plist: analogarchive).
-const OPEN_APP = { label: "Abrir Analog Archive", href: "analogarchive://" };
+const APP_URL = "analogarchive://";
 
-/// Supabase answers in English; the person reads Spanish.
-function passwordError(code: string | undefined): string {
-  if (code === "same_password") return "Usa una contraseña distinta a la anterior.";
-  if (code === "weak_password") return "Esa contraseña es muy débil. Prueba con una más larga.";
-  return "No pudimos guardar la contraseña. Inténtalo de nuevo.";
+/// Supabase answers in English; the person reads their own language.
+function passwordError(code: string | undefined, r: AccessCopy["reset"]): string {
+  if (code === "same_password") return r.samePassword;
+  if (code === "weak_password") return r.weakPassword;
+  return r.failed;
 }
 
 type RecoveryState = "checking" | "ready" | "invalid";
@@ -35,7 +37,9 @@ type RecoveryState = "checking" | "ready" | "invalid";
  * supabase-js los procesa solo vía detectSessionInUrl y lo detectamos con
  * getSession/onAuthStateChange.
  */
-export function UpdatePasswordForm() {
+export function UpdatePasswordForm({ lang }: { lang: AccessLang }) {
+  const t = ACCESS_COPY[lang];
+  const r = t.reset;
   const [recovery, setRecovery] = useState<RecoveryState>("checking");
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
@@ -75,7 +79,7 @@ export function UpdatePasswordForm() {
         });
         if (cancelled) return;
         // El token es de un solo uso: fuera de la URL/historial.
-        window.history.replaceState(null, "", window.location.pathname);
+        window.history.replaceState(null, "", withLang(window.location.pathname, lang));
         setRecovery(verifyError ? "invalid" : "ready");
         return;
       }
@@ -115,12 +119,12 @@ export function UpdatePasswordForm() {
     const confirm = String(form.get("confirm") || "");
 
     if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
+      setError(r.tooShort);
       return;
     }
 
     if (password !== confirm) {
-      setError("Las contraseñas no coinciden.");
+      setError(r.mismatch);
       return;
     }
 
@@ -134,7 +138,7 @@ export function UpdatePasswordForm() {
     setBusy(false);
 
     if (updateError) {
-      setError(passwordError(updateError.code));
+      setError(passwordError(updateError.code, r));
       return;
     }
 
@@ -144,16 +148,16 @@ export function UpdatePasswordForm() {
   if (recovery === "invalid") {
     return (
       <AccessState
-        eyebrow="Acceso / Recuperación"
-        title={"Este enlace\nya no sirve."}
-        copy="Venció o ya se usó. Pide otro y te llegará un correo nuevo."
-        plateTitle="¿Sigues sin poder entrar?"
+        eyebrow={r.eyebrow}
+        title={r.invalidTitle}
+        copy={r.invalidCopy}
+        plateTitle={t.stillStuck}
         plateNote={
           <>
-            Escríbenos a <a href="mailto:hello@analog-archive.com">hello@analog-archive.com</a>
+            {t.support} <a href="mailto:hello@analog-archive.com">hello@analog-archive.com</a>
           </>
         }
-        primary={{ label: "Pedir otro enlace", href: "/forgot-password" }}
+        primary={{ label: r.askAgain, href: withLang("/forgot-password", lang) }}
         live
       />
     );
@@ -162,10 +166,10 @@ export function UpdatePasswordForm() {
   if (recovery === "checking") {
     return (
       <AccessState
-        eyebrow="Acceso / Recuperación"
-        title={"Validando\ntu enlace."}
-        plateTitle="Un momento."
-        plateNote="Revisamos que el enlace siga vigente."
+        eyebrow={r.eyebrow}
+        title={r.checkingTitle}
+        plateTitle={t.oneMoment}
+        plateNote={r.checkingNote}
         progress
         live
       />
@@ -175,13 +179,13 @@ export function UpdatePasswordForm() {
   if (saved) {
     return (
       <AccessState
-        eyebrow="Acceso / Recuperación"
-        title={"Contraseña\nlista."}
-        copy="Ya puedes entrar con tu contraseña nueva."
-        plateTitle="Contraseña actualizada"
-        plateNote="Úsala en la app y en la web."
-        primary={OPEN_APP}
-        secondary={{ label: "Entrar en la web", href: "/dashboard" }}
+        eyebrow={r.eyebrow}
+        title={r.savedTitle}
+        copy={r.savedCopy}
+        plateTitle={r.savedPlate}
+        plateNote={r.savedNote}
+        primary={{ label: t.openApp, href: APP_URL }}
+        secondary={{ label: t.web, href: "/dashboard" }}
         live
       />
     );
@@ -189,23 +193,23 @@ export function UpdatePasswordForm() {
 
   return (
     <section className={accessStyles.state}>
-      <AccessHeading eyebrow="Acceso / Recuperación" title={"Nueva\ncontraseña."} />
+      <AccessHeading eyebrow={r.eyebrow} title={r.formTitle} />
       <form className={accessStyles.form} onSubmit={handleSubmit} noValidate>
         <AccessField
-          label="Contraseña nueva"
+          label={r.password}
           name="password"
           type="password"
           autoComplete="new-password"
           required
         />
         <AccessField
-          label="Repítela"
+          label={r.repeat}
           name="confirm"
           type="password"
           autoComplete="new-password"
           required
         />
-        <AccessSubmit label={busy ? "Guardando…" : "Guardar contraseña"} disabled={busy} />
+        <AccessSubmit label={busy ? r.saving : r.save} disabled={busy} />
         {error ? (
           <p className={accessStyles.error} role="alert">
             {error}

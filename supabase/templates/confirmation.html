@@ -75,14 +75,14 @@
   <!-- primary action -->
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:25px 0 0 0;">
     <tr><td style="background:#d94a2a;">
-      <a href="https://analog-archive.com/confirm?token_hash={{ .TokenHash }}&type=email" style="display:block;padding:12px 16px;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:16px;line-height:24px;font-weight:600;letter-spacing:-0.02em;color:#080604;text-decoration:none;"><span style="float:right;font-size:24px;line-height:24px;font-weight:400;">&rarr;</span>{{ if and .Data.locale (eq .Data.locale "en") }}Confirm email{{ else }}Confirmar correo{{ end }}</a>
+      <a href="https://analog-archive.com/confirm?token_hash={{ .TokenHash }}&type=email{{ if and .Data.locale (eq .Data.locale "en") }}&lang=en{{ end }}" style="display:block;padding:12px 16px;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:16px;line-height:24px;font-weight:600;letter-spacing:-0.02em;color:#080604;text-decoration:none;"><span style="float:right;font-size:24px;line-height:24px;font-weight:400;">&rarr;</span>{{ if and .Data.locale (eq .Data.locale "en") }}Confirm email{{ else }}Confirmar correo{{ end }}</a>
     </td></tr>
   </table>
 
   <!-- the same link, written out -->
   <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:22px 0 0 0;">
     <tr><td class="bgc mu" style="background:#E8E6DE;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;font-weight:500;color:#625e55;">{{ if and .Data.locale (eq .Data.locale "en") }}Button not opening? Copy this link:{{ else }}¿No abre el botón? Copia este enlace:{{ end }}</td></tr>
-    <tr><td class="bgc" style="background:#E8E6DE;padding-top:4px;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;font-weight:500;word-break:break-all;"><a class="at" href="https://analog-archive.com/confirm?token_hash={{ .TokenHash }}&type=email" style="color:#a82602;text-decoration:none;">https://analog-archive.com/confirm?token_hash={{ .TokenHash }}&type=email</a></td></tr>
+    <tr><td class="bgc" style="background:#E8E6DE;padding-top:4px;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;font-weight:500;word-break:break-all;"><a class="at" href="https://analog-archive.com/confirm?token_hash={{ .TokenHash }}&type=email{{ if and .Data.locale (eq .Data.locale "en") }}&lang=en{{ end }}" style="color:#a82602;text-decoration:none;">https://analog-archive.com/confirm?token_hash={{ .TokenHash }}&type=email{{ if and .Data.locale (eq .Data.locale "en") }}&lang=en{{ end }}</a></td></tr>
   </table>
 
   <!-- footer -->

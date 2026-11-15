@@ -9,22 +9,24 @@ import {
   AccessSubmit,
   accessStyles,
 } from "@/features/auth/contacto-access";
+import { type AccessCopy, ACCESS_COPY } from "@/features/auth/access-copy";
+import { type AccessLang, withLang } from "@/features/auth/access-lang";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
-const BACK = { label: "Volver a entrar", href: "/dashboard" };
-
-/// Supabase answers in English; the person reads Spanish.
-function recoveryError(status: number | undefined, code: string | undefined): string {
-  if (status === 429 || code === "over_email_send_rate_limit") {
-    return "Espera un minuto antes de pedir otro correo.";
-  }
-  if (code === "validation_failed" || code === "email_address_invalid") {
-    return "Revisa el correo; parece incompleto.";
-  }
-  return "No pudimos enviar el correo. Inténtalo de nuevo.";
+/// Supabase answers in English; the person reads their own language.
+function recoveryError(
+  status: number | undefined,
+  code: string | undefined,
+  f: AccessCopy["forgot"],
+): string {
+  if (status === 429 || code === "over_email_send_rate_limit") return f.wait;
+  if (code === "validation_failed" || code === "email_address_invalid") return f.incomplete;
+  return f.failed;
 }
 
-export function PasswordRecoveryForm() {
+export function PasswordRecoveryForm({ lang }: { lang: AccessLang }) {
+  const f = ACCESS_COPY[lang].forgot;
+  const back = { label: f.back, href: "/dashboard" };
   const [sentTo, setSentTo] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -35,14 +37,14 @@ export function PasswordRecoveryForm() {
     const email = String(form.get("email") || "").trim();
 
     if (!email.includes("@")) {
-      setError("Revisa el correo; parece incompleto.");
+      setError(f.incomplete);
       return;
     }
 
     setBusy(true);
     setError("");
 
-    const redirectTo = `${window.location.origin}/reset-password`;
+    const redirectTo = `${window.location.origin}${withLang("/reset-password", lang)}`;
     const supabase = createBrowserSupabaseClient();
     const { error: sendError } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo,
@@ -51,7 +53,7 @@ export function PasswordRecoveryForm() {
     setBusy(false);
 
     if (sendError) {
-      setError(recoveryError(sendError.status, sendError.code));
+      setError(recoveryError(sendError.status, sendError.code, f));
       return;
     }
 
@@ -62,12 +64,12 @@ export function PasswordRecoveryForm() {
     // Same answer whether or not the address has an account.
     return (
       <AccessState
-        eyebrow="Acceso / Recuperación"
-        title={"Revisa\ntu correo."}
-        copy="Si hay una cuenta con ese correo, te llegará un enlace para elegir una contraseña nueva."
+        eyebrow={f.eyebrow}
+        title={f.sentTitle}
+        copy={f.sentCopy}
         plateTitle={sentTo}
-        plateNote="El enlace vence en una hora. Si no aparece, revisa el correo no deseado."
-        secondary={BACK}
+        plateNote={f.sentNote}
+        secondary={back}
         live
       />
     );
@@ -75,24 +77,24 @@ export function PasswordRecoveryForm() {
 
   return (
     <section className={accessStyles.state}>
-      <AccessHeading eyebrow="Acceso / Recuperación" title={"Recupera\ntu acceso."} />
+      <AccessHeading eyebrow={f.eyebrow} title={f.formTitle} />
       <form className={accessStyles.form} onSubmit={handleSubmit} noValidate>
         <AccessField
-          label="Correo"
+          label={f.email}
           name="email"
           type="email"
           autoComplete="email"
           inputMode="email"
-          placeholder="tu@correo.com"
+          placeholder={f.emailHint}
           required
         />
-        <AccessSubmit label={busy ? "Enviando…" : "Enviar enlace"} disabled={busy} />
+        <AccessSubmit label={busy ? f.sending : f.send} disabled={busy} />
         {error ? (
           <p className={accessStyles.error} role="alert">
             {error}
           </p>
         ) : null}
-        <AccessLink {...BACK} />
+        <AccessLink {...back} />
       </form>
     </section>
   );
