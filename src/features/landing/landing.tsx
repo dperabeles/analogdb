@@ -1,10 +1,9 @@
 import type { AccessLang } from "@/features/auth/access-lang";
 import { Mark, instrument } from "@/features/auth/contacto-access";
-import { ContactSheet } from "./contact-sheet";
+import { AppView } from "./app-view";
 import { LandingAccess } from "./landing-access";
 import type { LandingCopy } from "./landing-copy";
 import { Reveal, RollingNumber } from "./motion";
-import { RollStatus } from "./roll-status";
 import styles from "./landing.module.css";
 
 export type LandingMetrics = {
@@ -32,8 +31,6 @@ function SectionHead({ index, section, title }: { index: string; section: string
 /// tab rule, rolling numbers, growing bars) and plays once.
 export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang; metrics: LandingMetrics | null }) {
   const other = lang === "es" ? "en" : "es";
-  const costTotal = t.inventory.costs.reduce((sum, c) => sum + c.value, 0);
-  const maxCost = Math.max(...t.inventory.costs.map((c) => c.value));
 
   return (
     <div className={`${styles.landing} ${instrument.variable}`} lang={lang}>
@@ -92,7 +89,7 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
               </div>
             </div>
           </div>
-          <ContactSheet label={t.hero.sheetLabel} caption="R024 · KODAK GOLD 200" />
+          <AppView screen="film-detail-inCamera" lang={lang} caption={t.hero.view} eager />
         </section>
 
         {/* 01 process */}
@@ -101,9 +98,7 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
             <SectionHead index={t.process.index} section={t.process.section} title={t.process.title} />
             <p className={styles.copy}>{t.process.copy}</p>
           </Reveal>
-          <Reveal delay={60}>
-            <RollStatus states={t.process.states} code="R024" />
-          </Reveal>
+          <AppView screen="film-process" lang={lang} caption={t.process.view} />
         </section>
 
         {/* 02 frames */}
@@ -112,22 +107,7 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
             <SectionHead index={t.frames.index} section={t.frames.section} title={t.frames.title} />
             <p className={styles.copy}>{t.frames.copy}</p>
           </Reveal>
-          <ol className={styles.frameRows}>
-            {t.frames.rows.map((row, i) => (
-              <li key={row.n}>
-                <Reveal delay={i * 60} className={styles.frameRow}>
-                  <span className={styles.frameRowNo} aria-hidden="true">
-                    {row.n}
-                  </span>
-                  <span className={styles.frameRowData}>{row.data}</span>
-                  <span className={styles.frameRowNote}>{row.note}</span>
-                  <span className={styles.frameRowArrow} aria-hidden="true">
-                    &#8599;
-                  </span>
-                </Reveal>
-              </li>
-            ))}
-          </ol>
+          <AppView screen="film-frames" lang={lang} caption={t.frames.view} />
         </section>
 
         {/* 03 inventory and costs */}
@@ -136,46 +116,7 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
             <SectionHead index={t.inventory.index} section={t.inventory.section} title={t.inventory.title} />
             <p className={styles.copy}>{t.inventory.copy}</p>
           </Reveal>
-          <div className={styles.inventory}>
-            <Reveal className={styles.stockCard}>
-              <div className={styles.stockHead}>
-                <span className={styles.stockSwatch} aria-hidden="true" />
-                <div>
-                  <div className={styles.stockName}>{t.inventory.stock}</div>
-                  <div className={styles.plateNote}>{t.inventory.format}</div>
-                </div>
-              </div>
-              <div className={styles.stockSplit}>
-                <div>
-                  <RollingNumber value={3} className={styles.stockCount} />
-                  <span className={styles.stockLabel}>{t.inventory.fresh}</span>
-                </div>
-                <div>
-                  <RollingNumber value={1} className={styles.stockCount} />
-                  <span className={styles.stockLabel}>{t.inventory.expired}</span>
-                </div>
-              </div>
-            </Reveal>
-            <Reveal delay={80} className={styles.costs}>
-              {t.inventory.costs.map((c, i) => (
-                <div className={styles.costRow} key={c.label}>
-                  <span className={styles.costLabel}>{c.label}</span>
-                  <span className={styles.costBar} aria-hidden="true">
-                    <span style={{ ["--w" as string]: `${(c.value / maxCost) * 100}%`, transitionDelay: `${i * 30}ms` }} />
-                  </span>
-                  <span className={styles.costValue}>
-                    $<RollingNumber value={c.value} />
-                  </span>
-                </div>
-              ))}
-              <div className={styles.costTotal}>
-                <span>{t.inventory.costTotal}</span>
-                <span>
-                  $<RollingNumber value={costTotal} /> <small>{t.inventory.currency}</small>
-                </span>
-              </div>
-            </Reveal>
-          </div>
+          <AppView screen="inventory-film" lang={lang} caption={t.inventory.view} />
         </section>
 
         {/* 04 numbers */}
@@ -184,6 +125,8 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
             <SectionHead index={t.numbers.index} section={t.numbers.section} title={t.numbers.title} />
             <p className={styles.copy}>{t.numbers.copy}</p>
           </Reveal>
+          <div className={styles.numbersSide}>
+          <AppView screen="stats-activity" lang={lang} caption={t.numbers.view} />
           <div className={styles.metrics}>
             <Reveal className={styles.metric}>
               <RollingNumber value={metrics?.totalRolls ?? 0} className={styles.metricValue} />
@@ -208,6 +151,7 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
               </span>
             </Reveal>
           </div>
+          </div>
         </section>
 
         {/* 05 privacy */}
@@ -230,7 +174,7 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
         </section>
 
         {/* 06 access */}
-        <section className={`${styles.section} ${styles.accessSection}`} id="acceso">
+        <section className={styles.section} id="acceso">
           <Reveal>
             <SectionHead index={t.access.index} section={t.access.section} title={t.access.title} />
           </Reveal>
