@@ -1,0 +1,33 @@
+# CI for the web: types and the node tests on every PR and push to main.
+# Before this the tests under tests/ ran only by hand, and one stayed red on
+# main after a merge (14-nov-2026) without anyone seeing it. Vercel only
+# builds; it never ran them.
+name: Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      # The Node major Vercel builds production with (package.json engines).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install (lockfile, exact versions)
+        run: npm ci
+
+      - name: Types
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test
