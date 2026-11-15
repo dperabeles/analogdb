@@ -3,7 +3,7 @@ import { Instrument_Sans } from "next/font/google";
 import styles from "./contacto-access.module.css";
 
 /// Contacto's only typeface (weights 400–600 are the ones used here).
-const instrument = Instrument_Sans({
+export const instrument = Instrument_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-instrument",
@@ -11,7 +11,7 @@ const instrument = Instrument_Sans({
 });
 
 /// The film-strip mark, the same SVG as the app's header.
-function Mark() {
+export function Mark() {
   return (
     <svg width="28" height="33" viewBox="1.8 10.6 106.4 111.7" fill="#d94a2a" aria-hidden="true">
       <path d="M95.3,10.6H14.7c-7.1,0-12.9,5.8-12.9,12.9v85.9c0,7.1,5.8,12.9,12.9,12.9h80.6c7.1,0,12.9-5.8,12.9-12.9V23.5C108.2,16.4,102.4,10.6,95.3,10.6z M23.3,113.7h-8.6c-2.4,0-4.3-1.9-4.3-4.3V103h12.9L23.3,113.7z M23.3,94.4H10.4V81.5h12.9V94.4z M23.3,72.9H10.4V60h12.9V72.9z M23.3,51.4H10.4V38.5h12.9V51.4z M23.3,29.9H10.4v-6.4c0-2.4,1.9-4.3,4.3-4.3h8.6L23.3,29.9z M99.6,109.4c0,2.4-1.9,4.3-4.3,4.3h-8.6V103h12.9L99.6,109.4z M99.6,94.4H86.7V81.5h12.9V94.4z M99.6,72.9H86.7V60h12.9V72.9z M99.6,51.4H86.7V38.5h12.9V51.4z M99.6,29.9H86.7V19.2h8.6c2.4,0,4.3,1.9,4.3,4.3L99.6,29.9z" />
