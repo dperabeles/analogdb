@@ -616,17 +616,9 @@
   border-top: 1px solid var(--line);
 }
 
-.edge {
-  overflow: hidden;
-  white-space: nowrap;
-  font-size: 9px;
-  letter-spacing: 0.22em;
-  color: var(--pending);
-  opacity: 0.8;
-}
 
 .footerNav {
-  margin-top: 22px;
+  margin-top: 0;
   display: flex;
   flex-wrap: wrap;
   gap: 10px 22px;

@@ -191,9 +191,6 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
       </main>
 
       <footer className={styles.footer}>
-        <div className={styles.edge} aria-hidden="true">
-          ANALOG ARCHIVE 200 &nbsp;&#9656; 36 &nbsp;&#9656; 36A &nbsp;&nbsp; ANALOG ARCHIVE 200 &nbsp;&#9656; 1 &nbsp;&#9656; 1A
-        </div>
         <nav className={styles.footerNav}>
           <a href="/privacy">{t.footer.privacy}</a>
           <a href="/terms">{t.footer.terms}</a>
