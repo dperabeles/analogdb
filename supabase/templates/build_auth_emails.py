@@ -148,7 +148,17 @@ def mark() -> str:
     )
 
 
+def with_lang(link: str, lang: str | None) -> str:
+    """The web pages read `lang` from the link to speak the account's language."""
+    if lang == "es":
+        return link
+    if lang == "en":
+        return link + "&amp;lang=en"
+    return link + f"{EN}&lang=en{{{{ end }}}}"
+
+
 def build(kind: str, lang: str | None, link: str, email: str) -> str:
+    link = with_lang(link, lang)
     c = COPY[kind]
     L, D = LIGHT, DARK
     t = lambda key: pick(c[key], lang)  # noqa: E731

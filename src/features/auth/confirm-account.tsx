@@ -2,13 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { EmailOtpType } from "@supabase/supabase-js";
+import { ACCESS_COPY } from "@/features/auth/access-copy";
+import { type AccessLang, withLang } from "@/features/auth/access-lang";
 import { AccessState } from "@/features/auth/contacto-access";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 type ConfirmState = "checking" | "confirmed" | "invalid" | "nothing";
 
 /// Opens the iPhone app by its URL scheme (Info.plist: analogarchive).
-const OPEN_APP = { label: "Abrir Analog Archive", href: "analogarchive://" };
+const APP_URL = "analogarchive://";
 
 const ALLOWED_TYPES: EmailOtpType[] = [
   "email",
@@ -24,7 +26,10 @@ const ALLOWED_TYPES: EmailOtpType[] = [
  * cliente se hizo el signup (app móvil, otro navegador) — el flujo PKCE por
  * default fallaría al abrir el enlace fuera del cliente que lo originó.
  */
-export function ConfirmAccount() {
+export function ConfirmAccount({ lang }: { lang: AccessLang }) {
+  const t = ACCESS_COPY[lang];
+  const c = t.confirm;
+  const openApp = { label: t.openApp, href: APP_URL };
   const [state, setState] = useState<ConfirmState>("checking");
   const ran = useRef(false);
 
@@ -50,7 +55,7 @@ export function ConfirmAccount() {
       .verifyOtp({ type, token_hash: tokenHash })
       .then(({ error }) => {
         // token fuera de la URL/historial en cuanto se canjea
-        window.history.replaceState(null, "", window.location.pathname);
+        window.history.replaceState(null, "", withLang(window.location.pathname, lang));
         setState(error ? "invalid" : "confirmed");
       });
   }, []);
@@ -58,10 +63,10 @@ export function ConfirmAccount() {
   if (state === "checking") {
     return (
       <AccessState
-        eyebrow="Acceso / Confirmación"
-        title={"Confirmando\ntu correo."}
-        plateTitle="Un momento."
-        plateNote="Estamos validando el enlace."
+        eyebrow={c.checkingEyebrow}
+        title={c.checkingTitle}
+        plateTitle={t.oneMoment}
+        plateNote={c.checkingNote}
         progress
         live
       />
@@ -71,13 +76,13 @@ export function ConfirmAccount() {
   if (state === "confirmed") {
     return (
       <AccessState
-        eyebrow="Acceso / Confirmada"
-        title={"Tu cuenta\nestá lista."}
-        copy="Tu correo quedó confirmado. Vuelve a la app e inicia sesión."
-        plateTitle="Correo confirmado"
-        plateNote="Entra con tu correo y tu contraseña."
-        primary={OPEN_APP}
-        secondary={{ label: "Entrar en la web", href: "/dashboard" }}
+        eyebrow={c.doneEyebrow}
+        title={c.doneTitle}
+        copy={c.doneCopy}
+        plateTitle={c.donePlate}
+        plateNote={c.doneNote}
+        primary={openApp}
+        secondary={{ label: t.web, href: "/dashboard" }}
         live
       />
     );
@@ -86,16 +91,16 @@ export function ConfirmAccount() {
   if (state === "invalid") {
     return (
       <AccessState
-        eyebrow="Acceso / Enlace"
-        title={"Este enlace\nya no sirve."}
-        copy="Venció o ya se usó. Entra a la app: si tu correo ya quedó confirmado, pasas; si no, ahí pides otro enlace."
-        plateTitle="¿Sigues sin poder entrar?"
+        eyebrow={c.invalidEyebrow}
+        title={c.invalidTitle}
+        copy={c.invalidCopy}
+        plateTitle={t.stillStuck}
         plateNote={
           <>
-            Escríbenos a <a href="mailto:hello@analog-archive.com">hello@analog-archive.com</a>
+            {t.support} <a href="mailto:hello@analog-archive.com">hello@analog-archive.com</a>
           </>
         }
-        primary={OPEN_APP}
+        primary={openApp}
         live
       />
     );
@@ -103,10 +108,10 @@ export function ConfirmAccount() {
 
   return (
     <AccessState
-      eyebrow="Acceso / Confirmación"
-      title={"Nada que\nconfirmar."}
-      copy="Esta página abre el enlace del correo de registro. Si ya tienes cuenta, inicia sesión en la app."
-      primary={OPEN_APP}
+      eyebrow={c.checkingEyebrow}
+      title={c.nothingTitle}
+      copy={c.nothingCopy}
+      primary={openApp}
     />
   );
 }

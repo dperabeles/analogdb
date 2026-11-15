@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
-import { ConfirmAccount } from "@/features/auth/confirm-account";
+import { ACCESS_COPY } from "@/features/auth/access-copy";
+import { type AccessPageProps, accessLangFor } from "@/features/auth/access-lang-server";
 import { AccessShell } from "@/features/auth/contacto-access";
+import { ConfirmAccount } from "@/features/auth/confirm-account";
 
-export const metadata: Metadata = {
-  title: "Confirmar cuenta · Analog Archive",
-};
+export async function generateMetadata(props: AccessPageProps): Promise<Metadata> {
+  const lang = await accessLangFor(props);
+  return { title: `${ACCESS_COPY[lang].confirm.meta} · Analog Archive` };
+}
 
-export default function ConfirmPage() {
+export default async function Page(props: AccessPageProps) {
+  const lang = await accessLangFor(props);
   return (
-    <AccessShell>
-      <ConfirmAccount />
+    <AccessShell lang={lang}>
+      <ConfirmAccount lang={lang} />
     </AccessShell>
   );
 }
