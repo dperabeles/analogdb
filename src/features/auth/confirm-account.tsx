@@ -2,10 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { EmailOtpType } from "@supabase/supabase-js";
-import Link from "next/link";
+import { AccessState } from "@/features/auth/contacto-access";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 type ConfirmState = "checking" | "confirmed" | "invalid" | "nothing";
+
+/// Opens the iPhone app by its URL scheme (Info.plist: analogarchive).
+const OPEN_APP = { label: "Abrir Analog Archive", href: "analogarchive://" };
 
 const ALLOWED_TYPES: EmailOtpType[] = [
   "email",
@@ -54,47 +57,56 @@ export function ConfirmAccount() {
 
   if (state === "checking") {
     return (
-      <div className="auth-card">
-        <div className="status-label">Confirmando tu cuenta...</div>
-      </div>
+      <AccessState
+        eyebrow="Acceso / Confirmación"
+        title={"Confirmando\ntu correo."}
+        plateTitle="Un momento."
+        plateNote="Estamos validando el enlace."
+        progress
+        live
+      />
     );
   }
 
   if (state === "confirmed") {
     return (
-      <div className="auth-card">
-        <div className="status-label">Cuenta confirmada</div>
-        <p className="auth-message auth-message-success">
-          Tu cuenta de Analog Archive está lista. Vuelve a la app e inicia
-          sesión, o entra directo aquí en la web.
-        </p>
-        <Link className="primary-action" href="/dashboard">
-          Ir al dashboard
-        </Link>
-      </div>
+      <AccessState
+        eyebrow="Acceso / Confirmada"
+        title={"Tu cuenta\nestá lista."}
+        copy="Tu correo quedó confirmado. Vuelve a la app e inicia sesión."
+        plateTitle="Correo confirmado"
+        plateNote="Entra con tu correo y tu contraseña."
+        primary={OPEN_APP}
+        secondary={{ label: "Entrar en la web", href: "/dashboard" }}
+        live
+      />
     );
   }
 
   if (state === "invalid") {
     return (
-      <div className="auth-card">
-        <div className="status-label">Enlace no válido</div>
-        <p className="auth-message auth-message-error">
-          El enlace de confirmación no es válido o ya expiró. Intenta iniciar
-          sesión — si tu cuenta ya estaba confirmada entrarás normal. Si no
-          puedes entrar, escríbenos a hello@analog-archive.com.
-        </p>
-      </div>
+      <AccessState
+        eyebrow="Acceso / Enlace"
+        title={"Este enlace\nya no sirve."}
+        copy="Venció o ya se usó. Entra a la app: si tu correo ya quedó confirmado, pasas; si no, ahí pides otro enlace."
+        plateTitle="¿Sigues sin poder entrar?"
+        plateNote={
+          <>
+            Escríbenos a <a href="mailto:hello@analog-archive.com">hello@analog-archive.com</a>
+          </>
+        }
+        primary={OPEN_APP}
+        live
+      />
     );
   }
 
   return (
-    <div className="auth-card">
-      <div className="status-label">Nada que confirmar</div>
-      <p className="auth-message">
-        Esta página confirma cuentas nuevas desde el enlace del correo de
-        registro. Si ya tienes cuenta, inicia sesión normalmente.
-      </p>
-    </div>
+    <AccessState
+      eyebrow="Acceso / Confirmación"
+      title={"Nada que\nconfirmar."}
+      copy="Esta página abre el enlace del correo de registro. Si ya tienes cuenta, inicia sesión en la app."
+      primary={OPEN_APP}
+    />
   );
 }
