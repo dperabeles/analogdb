@@ -185,7 +185,7 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
             <SectionHead index={t.access.index} section={t.access.section} title={t.access.title} />
           </Reveal>
           <Reveal delay={60}>
-            <LandingAccess copy={t.access} lang={lang} />
+            <LandingAccess copy={t.access} platform={t.hero.platePlatform} platformNote={t.hero.plateNote} lang={lang} />
           </Reveal>
         </section>
       </main>

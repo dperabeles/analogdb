@@ -32,19 +32,26 @@ function assertIncludes(source, needle, message) {
 const dashboard = read('src/app/dashboard/page.tsx');
 assertIncludes(dashboard, 'export const dynamic = "force-dynamic"', 'dashboard should stay runtime-rendered for session cookies');
 assertIncludes(dashboard, 'getCurrentAccessProfile', 'dashboard should resolve access state server-side');
-assertIncludes(dashboard, '<AccessGate', 'dashboard should render login/signup gate when there is no session');
+assertIncludes(dashboard, '<AccessGate', 'dashboard should send a reader without a session to the sign-in');
 assertIncludes(dashboard, '<AccessStatus', 'dashboard should render pending/rejected/invalid states');
 
 const appShell = read('src/features/navigation/app-shell.tsx');
 assertIncludes(appShell, '<SignOutButton', 'approved shell should expose logout');
 
+// DEC-013: the web is the home page and accounts are created in the app.
+// Without a session the old pages go to the home page's sign-in, and no
+// page on the web offers a sign-up form.
 const gate = read('src/features/auth/access-gate.tsx');
-assertIncludes(gate, 'signInWithPassword', 'gate should support email/password login');
-assertIncludes(gate, 'router.replace("/dashboard")', 'successful login should leave the public gate and enter the dashboard');
-assertIncludes(gate, 'signUp', 'gate should support beta access request');
-assertIncludes(gate, 'signUp(signup.request)', 'signup should use the validated identity request');
-const signupIdentity = read('src/features/auth/signup-identity.ts');
-assertIncludes(signupIdentity, "data: { display_name: displayName, username }", 'signup should preserve display_name metadata and add username for the existing trigger');
+assertIncludes(gate, 'redirect("/#acceso")', 'without a session the old pages should go to the home page sign-in');
+
+const access = read('src/features/landing/landing-access.tsx');
+assertIncludes(access, 'signInWithPassword', 'the home page should keep email/password sign-in');
+assertIncludes(access, 'router.replace("/dashboard")', 'a successful sign-in should enter the dashboard');
+assert.ok(!/auth\.signUp\b/.test(access), 'the home page should not create accounts');
+assert.ok(!/auth\.signUp\b/.test(gate), 'the old gate should not create accounts');
+
+const home = read('src/app/page.tsx');
+assertIncludes(home, 'landing_metrics', 'the home page should show the public landing metrics');
 
 const recovery = read('src/features/auth/password-recovery-form.tsx');
 assertIncludes(recovery, 'resetPasswordForEmail', 'forgot-password route should send Supabase recovery email');
