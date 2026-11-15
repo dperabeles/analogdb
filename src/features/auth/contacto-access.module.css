@@ -197,6 +197,7 @@
 .plateNote a {
   color: var(--accent-text);
   text-decoration: none;
+  white-space: nowrap;
 }
 
 /* Indeterminate line while the link is exchanged. */
@@ -377,4 +378,9 @@ button.primary:disabled {
   line-height: 1.5;
   font-weight: 500;
   color: var(--accent-text);
+}
+
+.input::placeholder {
+  color: var(--muted);
+  opacity: 1;
 }

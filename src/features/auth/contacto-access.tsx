@@ -138,4 +138,13 @@ export function AccessSubmit({ label, disabled }: { label: string; disabled?: bo
   );
 }
 
+/// A quiet text action under the primary one, with its underline.
+export function AccessLink({ label, href }: Action) {
+  return (
+    <a className={styles.link} href={href}>
+      {label}
+    </a>
+  );
+}
+
 export const accessStyles = { form: styles.form, error: styles.error, state: styles.state };
