@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { InputHTMLAttributes, ReactNode } from "react";
 import { Instrument_Sans } from "next/font/google";
 import styles from "./contacto-access.module.css";
 
@@ -102,3 +102,40 @@ export function AccessState({
     </section>
   );
 }
+
+/// Eyebrow and two-line title, for states that bring their own body (a form).
+export function AccessHeading({ eyebrow, title }: { eyebrow: string; title: string }) {
+  return (
+    <>
+      <span className={styles.eyebrow}>{eyebrow}</span>
+      <h1 className={styles.title}>{title}</h1>
+    </>
+  );
+}
+
+/// The app's access field: uppercase label over an underlined input.
+export function AccessField({
+  label,
+  ...input
+}: { label: string } & InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <label className={styles.field}>
+      <span className={styles.label}>{label}</span>
+      <input className={styles.input} {...input} />
+    </label>
+  );
+}
+
+/// The orange primary action as a submit button.
+export function AccessSubmit({ label, disabled }: { label: string; disabled?: boolean }) {
+  return (
+    <button className={styles.primary} type="submit" disabled={disabled}>
+      {label}
+      <span className={styles.arrow} aria-hidden="true">
+        &rarr;
+      </span>
+    </button>
+  );
+}
+
+export const accessStyles = { form: styles.form, error: styles.error, state: styles.state };
