@@ -1,51 +1,99 @@
 <!doctype html>
-{{ if and .Data.locale (eq .Data.locale "en") }}<html lang="en">{{ else }}<html lang="es">{{ end }}
+<html lang="{{ if and .Data.locale (eq .Data.locale "en") }}en{{ else }}es{{ end }}">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  {{ if and .Data.locale (eq .Data.locale "en") }}<title>Reset your Analog Archive password</title>{{ else }}<title>Restablece tu acceso a Analog Archive</title>{{ end }}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+<meta name="supported-color-schemes" content="light dark">
+<title>{{ if and .Data.locale (eq .Data.locale "en") }}Reset your Analog Archive password{{ else }}Restablece tu acceso a Analog Archive{{ end }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: light dark; supported-color-schemes: light dark; }
+  body { margin:0; padding:0; }
+  a { text-decoration:none; }
+  @media (prefers-color-scheme: dark) {
+    .page { background-color:#14110d !important; background-image:radial-gradient(circle,#625b50 1px,transparent 1.3px) !important; }
+    .bgc { background:#14110d !important; }
+    .tx { color:#f3eadb !important; }
+    .mu { color:#afa89d !important; }
+    .at { color:#eb5b3b !important; }
+    .ln { border-color:#49443b !important; }
+    .ls { border-color:#332d25 !important; }
+  }
+  @media (max-width: 480px) {
+    .pad { padding:28px 18px 24px 18px !important; }
+    .title { font-size:35px !important; }
+    .copy { font-size:13px !important; }
+  }
+</style>
 </head>
-<body style="margin:0;padding:0;background:#14110d;color:#f3eadb;font-family:Inter,Arial,sans-serif;">
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#14110d;padding:32px 16px;">
+<body class="page" style="margin:0;padding:0;background-color:#E8E6DE;background-image:radial-gradient(circle,#b5afa3 1px,transparent 1.3px);background-size:17px 17px;">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;font-size:1px;line-height:1px;color:#E8E6DE;">{{ if and .Data.locale (eq .Data.locale "en") }}Choose a new password for Analog Archive.{{ else }}Elige una contraseña nueva para Analog Archive.{{ end }}</div>
+<table role="presentation" class="page" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#E8E6DE;background-image:radial-gradient(circle,#b5afa3 1px,transparent 1.3px);background-size:17px 17px;">
+<tr><td align="center">
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:480px;">
+<tr><td class="pad" style="padding:36px 34px 28px 34px;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <!-- brand: mark and wordmark on the page colour, so the dots stop around them -->
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 30px 0;">
     <tr>
-      <td align="center">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:640px;border:1px solid rgba(244,237,226,0.12);background:linear-gradient(180deg,rgba(32,24,19,0.98),rgba(24,19,15,0.98));">
-          <tr>
-            <td style="padding:36px 32px 18px 32px;font-family:'DM Mono',monospace,Arial,sans-serif;font-size:11px;letter-spacing:0.26em;text-transform:uppercase;color:rgba(232,223,209,0.55);">
-              Analog Archive Recovery
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 32px 12px 32px;font-family:Inter,Arial,sans-serif;font-size:42px;line-height:0.98;font-weight:700;letter-spacing:-0.04em;color:#f3eadb;">
-              {{ if and .Data.locale (eq .Data.locale "en") }}Reset your password and get back to your archive.{{ else }}Restablece tu contraseña y vuelve a tu archivo.{{ end }}
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 32px 0 32px;font-family:Inter,Arial,sans-serif;font-size:16px;line-height:1.7;color:rgba(232,223,209,0.72);">
-              {{ if and .Data.locale (eq .Data.locale "en") }}We received a request to change the password for your Analog Archive account. If it was you, use the button below to open the secure page and set a new password.{{ else }}Recibimos una solicitud para cambiar la contraseña de tu cuenta en Analog Archive. Si fuiste tú, usa el botón de abajo para abrir la pantalla segura y definir una contraseña nueva.{{ end }}
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:28px 32px 8px 32px;">
-              <a href="https://analog-archive.com/reset-password?token_hash={{ .TokenHash }}&type=recovery" style="display:inline-block;background:#d94a2a;color:#140f0c;text-decoration:none;padding:14px 22px;font-family:Inter,Arial,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;">
-                {{ if and .Data.locale (eq .Data.locale "en") }}Reset password{{ else }}Restablecer contraseña{{ end }}
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 32px 24px 32px;font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.7;color:rgba(232,223,209,0.58);">
-              {{ if and .Data.locale (eq .Data.locale "en") }}If the button doesn&rsquo;t open, copy and paste this link into your browser:{{ else }}Si el botón no abre, copia y pega este enlace en tu navegador:{{ end }}<br>
-              <span style="word-break:break-all;color:#d7b69a;">https://analog-archive.com/reset-password?token_hash={{ .TokenHash }}&type=recovery</span>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:0 32px 32px 32px;border-top:1px solid rgba(244,237,226,0.08);font-family:Inter,Arial,sans-serif;font-size:12px;line-height:1.7;color:rgba(232,223,209,0.52);">
-              <div style="padding-top:18px;">{{ if and .Data.locale (eq .Data.locale "en") }}If you didn&rsquo;t request this change, you can ignore this email. Your current password stays active until you finish the process.{{ else }}Si no solicitaste este cambio, puedes ignorar este correo. Tu contraseña actual seguirá activa hasta que completes el proceso.{{ end }}</div>
-            </td>
-          </tr>
-        </table>
+      <td class="bgc" valign="middle" style="background:#E8E6DE;padding:5px;"><table role="presentation" cellpadding="0" cellspacing="0" border="0" width="30" style="width:30px;border-collapse:separate;background:#d94a2a;border-radius:4px;"><tr><td colspan="5" height="3" style="height:3px;font-size:0;line-height:0;">&nbsp;</td></tr><tr><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td><td class="bgc" width="4" height="4" style="width:4px;height:4px;background:#E8E6DE;font-size:0;line-height:0;">&nbsp;</td><td width="16" style="width:16px;font-size:0;line-height:0;">&nbsp;</td><td class="bgc" width="4" height="4" style="width:4px;height:4px;background:#E8E6DE;font-size:0;line-height:0;">&nbsp;</td><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td></tr><tr><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td><td width="4" height="4" style="font-size:0;line-height:0;">&nbsp;</td><td width="16" style="width:16px;font-size:0;line-height:0;">&nbsp;</td><td width="4" height="4" style="font-size:0;line-height:0;">&nbsp;</td><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td></tr><tr><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td><td class="bgc" width="4" height="4" style="width:4px;height:4px;background:#E8E6DE;font-size:0;line-height:0;">&nbsp;</td><td width="16" style="width:16px;font-size:0;line-height:0;">&nbsp;</td><td class="bgc" width="4" height="4" style="width:4px;height:4px;background:#E8E6DE;font-size:0;line-height:0;">&nbsp;</td><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td></tr><tr><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td><td width="4" height="4" style="font-size:0;line-height:0;">&nbsp;</td><td width="16" style="width:16px;font-size:0;line-height:0;">&nbsp;</td><td width="4" height="4" style="font-size:0;line-height:0;">&nbsp;</td><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td></tr><tr><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td><td class="bgc" width="4" height="4" style="width:4px;height:4px;background:#E8E6DE;font-size:0;line-height:0;">&nbsp;</td><td width="16" style="width:16px;font-size:0;line-height:0;">&nbsp;</td><td class="bgc" width="4" height="4" style="width:4px;height:4px;background:#E8E6DE;font-size:0;line-height:0;">&nbsp;</td><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td></tr><tr><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td><td width="4" height="4" style="font-size:0;line-height:0;">&nbsp;</td><td width="16" style="width:16px;font-size:0;line-height:0;">&nbsp;</td><td width="4" height="4" style="font-size:0;line-height:0;">&nbsp;</td><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td></tr><tr><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td><td class="bgc" width="4" height="4" style="width:4px;height:4px;background:#E8E6DE;font-size:0;line-height:0;">&nbsp;</td><td width="16" style="width:16px;font-size:0;line-height:0;">&nbsp;</td><td class="bgc" width="4" height="4" style="width:4px;height:4px;background:#E8E6DE;font-size:0;line-height:0;">&nbsp;</td><td width="3" style="width:3px;font-size:0;line-height:0;">&nbsp;</td></tr><tr><td colspan="5" height="3" style="height:3px;font-size:0;line-height:0;">&nbsp;</td></tr></table></td>
+      <td class="bgc" valign="middle" style="background:#E8E6DE;padding:5px 7px;">
+        <div class="tx" style="font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:29px;line-height:26px;font-weight:600;letter-spacing:-0.07em;color:#14110d;">analog<br>archive</div>
       </td>
     </tr>
   </table>
+
+  <!-- eyebrow -->
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+    <td class="bgc mu" style="background:#E8E6DE;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10.5px;line-height:14px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:#625e55;">{{ if and .Data.locale (eq .Data.locale "en") }}Access / Recovery{{ else }}Acceso / Recuperación{{ end }}</td>
+  </tr></table>
+
+  <!-- title -->
+  <h1 class="title tx" style="margin:13px 0 0 0;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:39px;line-height:1.04;font-weight:500;letter-spacing:-0.055em;color:#14110d;">{{ if and .Data.locale (eq .Data.locale "en") }}A new<br>password.{{ else }}Nueva<br>contraseña.{{ end }}</h1>
+
+  <!-- copy -->
+  <p class="copy mu" style="margin:18px 0 0 0;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:1.5;font-weight:500;color:#625e55;">{{ if and .Data.locale (eq .Data.locale "en") }}You asked to change your account password. Open the link to choose a new one.{{ else }}Pediste cambiar la contraseña de tu cuenta. Abre el enlace para elegir una nueva.{{ end }}</p>
+
+  <!-- registration plate: «01», the address it went to, and the one thing to know -->
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:22px 0 0 0;">
+    <tr><td class="mu" style="font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:9px;height:9px;color:#625e55;padding:0 0 0 0;">+</td></tr>
+    <tr><td>
+      <table role="presentation" class="ln" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-top:1px solid #aaa69a;border-bottom:1px solid #aaa69a;">
+        <tr>
+          <td class="bgc tx" width="48" valign="middle" style="width:48px;background:#E8E6DE;padding:18px 0 18px 16px;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:40px;line-height:40px;font-weight:400;letter-spacing:-0.06em;color:#14110d;">01</td>
+          <td class="bgc" valign="middle" style="background:#E8E6DE;padding:18px 16px 18px 16px;">
+            <div class="tx" style="font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;font-weight:500;color:#14110d;word-break:break-all;">{{ .Email }}</div>
+            <div class="mu" style="margin-top:3px;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;font-weight:500;color:#625e55;">{{ if and .Data.locale (eq .Data.locale "en") }}The link expires in an hour. Your current password works until you set a new one.{{ else }}El enlace vence en una hora. Tu contraseña actual sigue activa hasta que pongas otra.{{ end }}</div>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+    <tr><td align="right" class="mu" style="font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:9px;height:9px;color:#625e55;">+</td></tr>
+  </table>
+
+  <!-- primary action -->
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:25px 0 0 0;">
+    <tr><td style="background:#d94a2a;">
+      <a href="https://analog-archive.com/reset-password?token_hash={{ .TokenHash }}&type=recovery" style="display:block;padding:12px 16px;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:16px;line-height:24px;font-weight:600;letter-spacing:-0.02em;color:#080604;text-decoration:none;"><span style="float:right;font-size:24px;line-height:24px;font-weight:400;">&rarr;</span>{{ if and .Data.locale (eq .Data.locale "en") }}Choose a new password{{ else }}Elegir contraseña nueva{{ end }}</a>
+    </td></tr>
+  </table>
+
+  <!-- the same link, written out -->
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:22px 0 0 0;">
+    <tr><td class="bgc mu" style="background:#E8E6DE;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;font-weight:500;color:#625e55;">{{ if and .Data.locale (eq .Data.locale "en") }}Button not opening? Copy this link:{{ else }}¿No abre el botón? Copia este enlace:{{ end }}</td></tr>
+    <tr><td class="bgc" style="background:#E8E6DE;padding-top:4px;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;font-weight:500;word-break:break-all;"><a class="at" href="https://analog-archive.com/reset-password?token_hash={{ .TokenHash }}&type=recovery" style="color:#a82602;text-decoration:none;">https://analog-archive.com/reset-password?token_hash={{ .TokenHash }}&type=recovery</a></td></tr>
+  </table>
+
+  <!-- footer -->
+  <table role="presentation" class="ls" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:28px 0 0 0;border-top:1px solid #c8c4b8;">
+    <tr><td class="bgc mu" style="background:#E8E6DE;padding:16px 0 0 0;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.5;font-weight:500;color:#625e55;">{{ if and .Data.locale (eq .Data.locale "en") }}If you didn&rsquo;t ask for this, ignore this email.{{ else }}Si no lo pediste tú, ignora este correo.{{ end }}</td></tr>
+    <tr><td class="bgc mu" style="background:#E8E6DE;padding:14px 0 0 0;font-family:'Instrument Sans',-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:10.5px;line-height:14px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:#625e55;"><a class="mu" href="https://analog-archive.com" style="color:#625e55;text-decoration:none;">analog-archive.com &#8599;</a></td></tr>
+  </table>
+
+</td></tr>
+</table>
+</td></tr>
+</table>
 </body>
 </html>
