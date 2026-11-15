@@ -1,6 +1,6 @@
 import type { AccessLang } from "@/features/auth/access-lang";
 import { Mark, instrument } from "@/features/auth/contacto-access";
-import { FilmCard, FramesCard, InventoryCard, ProcessCard, StatsCard } from "./app-replicas";
+import { CamerasCard, FilmCard, FramesCard, InventoryCard, ProcessCard, StatsCard } from "./app-replicas";
 import { LandingAccess } from "./landing-access";
 import type { LandingCopy } from "./landing-copy";
 import { Reveal, RollingNumber } from "./motion";
@@ -119,13 +119,21 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
           <InventoryCard a={t.app} />
         </section>
 
-        {/* 04 numbers: the live counts beside the app's own numbers */}
+        {/* gear: the Cámaras tab of the inventory */}
         <section className={styles.section}>
-          <div className={styles.numbersSide}>
-            <Reveal>
-              <SectionHead index={t.numbers.index} section={t.numbers.section} title={t.numbers.title} />
-              <p className={styles.copy}>{t.numbers.copy}</p>
-            </Reveal>
+          <Reveal>
+            <SectionHead index={t.gear.index} section={t.gear.section} title={t.gear.title} />
+            <p className={styles.copy}>{t.gear.copy}</p>
+          </Reveal>
+          <CamerasCard a={t.app} />
+        </section>
+
+        {/* numbers: the app's own numbers, then the live counts across */}
+        <section className={styles.section}>
+          <Reveal>
+            <SectionHead index={t.numbers.index} section={t.numbers.section} title={t.numbers.title} />
+          </Reveal>
+          <StatsCard a={t.app} />
           <div className={styles.metrics}>
             <Reveal className={styles.metric}>
               <RollingNumber value={metrics?.totalRolls ?? 0} className={styles.metricValue} />
@@ -150,8 +158,6 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
               </span>
             </Reveal>
           </div>
-          </div>
-          <StatsCard a={t.app} />
         </section>
 
         {/* 05 privacy */}

@@ -486,16 +486,16 @@
 
 /* ---------- right column ---------- */
 
-.numbersSide {
-  display: grid;
-  gap: 28px;
-}
 
 /* ---------- 04 numbers ---------- */
 
+/* The live counts run across the whole section, under the head and the
+   app piece, on the same outer edges. */
 .metrics {
+  grid-column: 1 / -1;
+  margin-top: 40px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
 }
@@ -675,6 +675,13 @@
   .footer {
     padding-left: 22px;
     padding-right: 22px;
+  }
+}
+
+@media (max-width: 860px) {
+  .metrics {
+    grid-template-columns: 1fr 1fr;
+    margin-top: 18px;
   }
 }
 

@@ -267,18 +267,24 @@ export function FramesCard({ a }: { a: App }) {
 
 const INV_COLORS = ["accent", "camera", "pending", "lab"] as const;
 
+function InvTabs({ a, selected }: { a: App; selected: number }) {
+  return (
+    <div className={r.invTabs}>
+      {a.invTabs.map((tab, i) => (
+        <span key={tab} className={r.invTab} data-color={INV_COLORS[i]} data-on={i === selected}>
+          {tab}
+          <span className={r.invCount}>{["08", "02", "03", "01"][i]}</span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export function InventoryCard({ a }: { a: App }) {
   const [ref, seen] = useInView<HTMLDivElement>(0.3);
   return (
     <div className={r.card} ref={ref} data-in={seen}>
-      <div className={r.invTabs}>
-        {a.invTabs.map((tab, i) => (
-          <span key={tab} className={r.invTab} data-color={INV_COLORS[i]} data-on={i === 0}>
-            {tab}
-            <span className={r.invCount}>{["08", "02", "03", "01"][i]}</span>
-          </span>
-        ))}
-      </div>
+      <InvTabs a={a} selected={0} />
       <div className={r.filter}>
         <span data-on="true">{a.all}</span>
         <span>35 mm</span>
@@ -317,6 +323,101 @@ export function InventoryCard({ a }: { a: App }) {
           <div className={r.perforation} aria-hidden="true" />
         </div>
       ))}
+    </div>
+  );
+}
+
+/* ---------- Equipo: the Cámaras tab, cards that open on tap ---------- */
+
+const CAMERAS = [
+  { brand: "Nikon", model: "F3", uses: 12, type: "SLR", format: "35 mm", mount: "Nikon F", price: "MXN 6,500.00" },
+  { brand: "Mamiya", model: "645 Super", uses: 6, type: "SLR", format: "120", mount: "Mamiya 645", price: "MXN 9,800.00" },
+];
+
+export function CamerasCard({ a }: { a: App }) {
+  const [ref, seen] = useInView<HTMLDivElement>(0.3);
+  // The first camera opens by itself once seen, like a row the reader
+  // tapped; after that every card opens and closes on tap.
+  const [open, setOpen] = useState<number | null>(null);
+  const [touched, setTouched] = useState(false);
+  useEffect(() => {
+    if (!seen || touched) return;
+    const t = window.setTimeout(() => setOpen(0), 500);
+    return () => window.clearTimeout(t);
+  }, [seen, touched]);
+
+  return (
+    <div className={r.card} ref={ref} data-in={seen}>
+      <InvTabs a={a} selected={1} />
+      <div className={r.addRow}>
+        <span>{a.addCamera}</span>
+        <span className={r.addPlus} aria-hidden="true">
+          +
+        </span>
+      </div>
+      <div className={r.stockHead}>
+        <span>{a.cameras}</span>
+        <span>{a.page}</span>
+      </div>
+      {CAMERAS.map((cam, i) => {
+        const isOpen = open === i;
+        return (
+          <div className={r.stock} key={cam.model} style={{ transitionDelay: `${i * 60}ms` }} data-open={isOpen}>
+            <div className={r.stockBand} data-color="camera">
+              <span>{cam.brand}</span>
+              <span className={r.stockUses}>
+                {cam.uses} {a.uses}
+              </span>
+            </div>
+            <button
+              type="button"
+              className={r.cameraBody}
+              aria-expanded={isOpen}
+              onClick={() => {
+                setTouched(true);
+                setOpen(isOpen ? null : i);
+              }}
+            >
+              <span className={r.stockName} data-color="camera">
+                {cam.model}
+              </span>
+              <span className={r.stockUnits}>
+                <span className={r.cameraToggle} data-open={isOpen} aria-hidden="true">
+                  <span>&#8599;</span>
+                  <span>&mdash;</span>
+                </span>
+                <span className={r.cameraMeta}>
+                  {cam.type}
+                  <br />
+                  {a.active}
+                </span>
+              </span>
+            </button>
+            <div className={r.stockFoot}>
+              <span>{cam.format}</span>
+              <span>{cam.mount}</span>
+            </div>
+            <div className={r.perforation} aria-hidden="true" />
+            {/* the app's AnalogDisclosure: the details open in place */}
+            <div className={r.details} data-open={isOpen}>
+              <div className={r.detailsInner}>
+                {[
+                  [a.mount, cam.mount],
+                  [a.format, cam.format],
+                  [a.type, cam.type],
+                  [a.state, a.active],
+                  [a.price, cam.price],
+                ].map(([label, value]) => (
+                  <div className={r.detailRow} key={label}>
+                    <span className={r.label}>{label}</span>
+                    <span>{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

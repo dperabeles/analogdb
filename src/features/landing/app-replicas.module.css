@@ -697,6 +697,128 @@
   opacity: 0.7;
 }
 
+/* ---------- Equipo ---------- */
+
+.addRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding: 13px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.addPlus {
+  font-size: 20px;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.stockUses {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.cameraBody {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 10px 14px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--fast) var(--ease);
+}
+
+.stock[data-open="true"] .cameraBody {
+  background: color-mix(in srgb, var(--surface) 70%, var(--line) 30%);
+}
+
+.cameraBody:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: -2px;
+}
+
+.cameraToggle {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.cameraToggle span {
+  position: absolute;
+  inset: 0;
+  text-align: right;
+  transition:
+    opacity var(--fast) var(--ease),
+    transform var(--standard) var(--ease);
+}
+
+.cameraToggle span:last-child {
+  opacity: 0;
+  transform: rotate(-45deg);
+}
+
+.cameraToggle[data-open="true"] span:first-child {
+  opacity: 0;
+  transform: rotate(45deg);
+}
+
+.cameraToggle[data-open="true"] span:last-child {
+  opacity: 1;
+  transform: none;
+}
+
+.cameraMeta {
+  font-size: 11px;
+  line-height: 1.35;
+  text-align: right;
+}
+
+.details {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--standard) var(--ease);
+}
+
+.details[data-open="true"] {
+  grid-template-rows: 1fr;
+}
+
+.detailsInner {
+  overflow: hidden;
+  padding: 0 10px;
+}
+
+.detailRow {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  align-items: baseline;
+  padding: 11px 0;
+  border-bottom: 1px dotted var(--line);
+  font-size: 14px;
+}
+
+.detailRow:first-child {
+  margin-top: 4px;
+}
+
+.detailRow:last-child {
+  border-bottom: 0;
+  margin-bottom: 4px;
+}
+
 /* ---------- Cifras ---------- */
 
 .summary {
@@ -851,7 +973,9 @@
     transition: opacity 120ms linear;
   }
 
-  .stageFill {
+  .stageFill,
+  .details,
+  .cameraToggle span {
     transition: none;
   }
 }
