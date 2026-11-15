@@ -231,7 +231,7 @@
   margin: 0 auto;
   padding: 72px 34px 96px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 430px);
   gap: 64px;
   align-items: center;
 }
@@ -381,7 +381,7 @@
   padding: 88px 34px;
   border-top: 1px solid var(--line);
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 430px);
   gap: 24px 64px;
   align-items: start;
 }
@@ -484,64 +484,7 @@
 .tabRule[data-state="developed"] { background: var(--developed); }
 .tabRule[data-state="archived"] { background: var(--archived); }
 
-/* ---------- real app views ---------- */
-
-.appView {
-  margin: 0;
-  justify-self: center;
-  width: 100%;
-  max-width: 380px;
-}
-
-.appViewFrame {
-  position: relative;
-  border: 1px solid var(--line);
-  background: var(--bg);
-  overflow: hidden;
-}
-
-.appViewFrame::before,
-.appViewFrame::after {
-  content: "+";
-  position: absolute;
-  z-index: 1;
-  font-size: 12px;
-  line-height: 1;
-  color: var(--muted);
-}
-
-.appViewFrame::before {
-  left: 4px;
-  top: 3px;
-}
-
-.appViewFrame::after {
-  right: 4px;
-  bottom: 3px;
-}
-
-/* The screen opens from the top, like the app's wipe, the first time. */
-.appView img {
-  display: block;
-  width: 100%;
-  height: auto;
-  clip-path: inset(0 0 100% 0);
-  transition: clip-path 600ms var(--ease);
-}
-
-.appView[data-in="true"] img {
-  clip-path: inset(0 0 0 0);
-}
-
-.appViewCaption {
-  margin-top: 10px;
-  font-size: 10.5px;
-  line-height: 1.4;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
+/* ---------- right column ---------- */
 
 .numbersSide {
   display: grid;
@@ -761,8 +704,7 @@
     animation: fade 120ms linear both;
   }
 
-  .reveal,
-  .appView img {
+  .reveal {
     transform: none;
     transition: opacity 120ms linear;
   }

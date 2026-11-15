@@ -1,6 +1,6 @@
 import type { AccessLang } from "@/features/auth/access-lang";
 import { Mark, instrument } from "@/features/auth/contacto-access";
-import { AppView } from "./app-view";
+import { FilmCard, FramesCard, InventoryCard, ProcessCard, StatsCard } from "./app-replicas";
 import { LandingAccess } from "./landing-access";
 import type { LandingCopy } from "./landing-copy";
 import { Reveal, RollingNumber } from "./motion";
@@ -89,7 +89,7 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
               </div>
             </div>
           </div>
-          <AppView screen="film-detail-inCamera" lang={lang} caption={t.hero.view} eager />
+          <FilmCard a={t.app} />
         </section>
 
         {/* 01 process */}
@@ -98,7 +98,7 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
             <SectionHead index={t.process.index} section={t.process.section} title={t.process.title} />
             <p className={styles.copy}>{t.process.copy}</p>
           </Reveal>
-          <AppView screen="film-process" lang={lang} caption={t.process.view} />
+          <ProcessCard a={t.app} />
         </section>
 
         {/* 02 frames */}
@@ -107,7 +107,7 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
             <SectionHead index={t.frames.index} section={t.frames.section} title={t.frames.title} />
             <p className={styles.copy}>{t.frames.copy}</p>
           </Reveal>
-          <AppView screen="film-frames" lang={lang} caption={t.frames.view} />
+          <FramesCard a={t.app} />
         </section>
 
         {/* 03 inventory and costs */}
@@ -116,17 +116,16 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
             <SectionHead index={t.inventory.index} section={t.inventory.section} title={t.inventory.title} />
             <p className={styles.copy}>{t.inventory.copy}</p>
           </Reveal>
-          <AppView screen="inventory-film" lang={lang} caption={t.inventory.view} />
+          <InventoryCard a={t.app} />
         </section>
 
-        {/* 04 numbers */}
+        {/* 04 numbers: the live counts beside the app's own numbers */}
         <section className={styles.section}>
-          <Reveal>
-            <SectionHead index={t.numbers.index} section={t.numbers.section} title={t.numbers.title} />
-            <p className={styles.copy}>{t.numbers.copy}</p>
-          </Reveal>
           <div className={styles.numbersSide}>
-          <AppView screen="stats-activity" lang={lang} caption={t.numbers.view} />
+            <Reveal>
+              <SectionHead index={t.numbers.index} section={t.numbers.section} title={t.numbers.title} />
+              <p className={styles.copy}>{t.numbers.copy}</p>
+            </Reveal>
           <div className={styles.metrics}>
             <Reveal className={styles.metric}>
               <RollingNumber value={metrics?.totalRolls ?? 0} className={styles.metricValue} />
@@ -152,6 +151,7 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
             </Reveal>
           </div>
           </div>
+          <StatsCard a={t.app} />
         </section>
 
         {/* 05 privacy */}

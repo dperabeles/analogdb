@@ -1,0 +1,845 @@
+/* App pieces rebuilt for the home page, with the app's measures. Colours
+   come from the .landing tokens, so they follow the page's theme. */
+
+.card {
+  width: 100%;
+  max-width: 430px;
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  font-size: 10.5px;
+  line-height: 1.3;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- roll hero (ContactoFilmHero) ---------- */
+
+.hero {
+  position: relative;
+  padding: 11px 0 16px;
+  border-top: 1px solid var(--line);
+}
+
+.hero::before {
+  content: "+";
+  position: absolute;
+  left: -5px;
+  top: -8px;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.heroTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.crumb {
+  font-size: 8px;
+  letter-spacing: 0.09em;
+  color: var(--muted);
+}
+
+.tag {
+  padding: 5px 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+
+.tag[data-state="camera"],
+.stageBox[data-state="camera"] { --state: var(--camera); }
+.stageBox[data-state="pending"] { --state: var(--pending); }
+.stageBox[data-state="lab"] { --state: var(--lab); }
+.stageBox[data-state="developed"] { --state: var(--developed); }
+.stageBox[data-state="archived"] { --state: var(--archived); }
+
+.tag {
+  background: var(--state);
+}
+
+.codeRow {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin: 12px 0 10px;
+  background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.3px);
+  background-size: 15px 15px;
+  background-position: 0 4px;
+}
+
+.code {
+  flex: 1;
+  font-size: clamp(64px, 18vw, 83px);
+  line-height: 0.92;
+  font-weight: 500;
+  letter-spacing: -0.075em;
+  color: var(--accent);
+}
+
+.started {
+  background: var(--bg);
+}
+
+.started {
+  padding: 5px 0 2px 6px;
+  font-size: 10.5px;
+  line-height: 1.5;
+  font-weight: 500;
+  text-align: right;
+  text-transform: none;
+  color: var(--muted);
+}
+
+.started span {
+  display: block;
+}
+
+.startedLabel {
+  text-transform: uppercase;
+}
+
+.filmName {
+  max-width: 290px;
+  font-size: clamp(34px, 9vw, 39px);
+  line-height: 0.98;
+  font-weight: 500;
+  letter-spacing: -0.055em;
+}
+
+.gear {
+  margin-top: 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* ---------- readings (ContactoFilmReadings) ---------- */
+
+.readings {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.reading {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 11px 10px 12px;
+}
+
+.reading + .reading {
+  border-left: 1px solid var(--line);
+}
+
+.readingValue {
+  font-size: 29px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+}
+
+/* ---------- frame progress and matrix (ContactoFilmProgress) ---------- */
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 17px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.progress > div:first-child {
+  flex: 1;
+}
+
+.count {
+  display: flex;
+  align-items: baseline;
+  font-size: 44px;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.countOf {
+  font-size: 21px;
+  letter-spacing: -0.035em;
+  color: var(--muted);
+}
+
+.countNote {
+  margin-top: 7px;
+  font-size: 10.5px;
+  line-height: 1.5;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.matrix {
+  width: 128px;
+  padding: 5px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  justify-items: center;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid var(--dot);
+}
+
+.dot[data-filled="true"] {
+  background: var(--soft);
+  border-color: var(--soft);
+  opacity: 0;
+  transform: scale(0.2);
+  transition:
+    opacity var(--entrance) var(--ease),
+    transform var(--entrance) var(--ease);
+}
+
+.dot[data-current="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.card[data-in="true"] .dot[data-filled="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- Ficha / Proceso / Fotogramas (ContactoTabRule) ---------- */
+
+.filmTabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.filmTab {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 8px 14px;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  border-bottom: 2px solid var(--tab);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.filmTab:last-of-type {
+  border-right: 1px solid var(--line);
+}
+
+.filmTab[data-on="true"] {
+  font-weight: 600;
+}
+
+.filmTab[data-tab="0"],
+.filmTabRule[data-tab="0"] { --tab: var(--camera); }
+.filmTab[data-tab="1"],
+.filmTabRule[data-tab="1"] { --tab: var(--pending); }
+.filmTab[data-tab="2"],
+.filmTabRule[data-tab="2"] { --tab: var(--lab); }
+
+.filmTabRule {
+  position: absolute;
+  bottom: 0;
+  left: calc(100% / 3 * var(--i));
+  width: calc(100% / 3);
+  height: 4px;
+  background: var(--tab);
+}
+
+/* ---------- Proceso (ContactoFilmProcess) ---------- */
+
+.stages {
+  display: flex;
+  flex-direction: column;
+}
+
+.stage {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--line);
+}
+
+.stageBox {
+  position: relative;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-right: 6px;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  transition: box-shadow var(--standard) var(--ease);
+}
+
+/* B: a reached stage fills with a sweep in its colour */
+.stageFill {
+  position: absolute;
+  inset: 0;
+  background: var(--state);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path var(--standard) var(--ease);
+}
+
+.stageBox[data-reached="true"] .stageFill {
+  clip-path: inset(0 0 0 0);
+}
+
+.stageBox[data-current="true"] {
+  border-color: var(--text);
+  box-shadow:
+    0 0 0 3px var(--bg),
+    0 0 0 4px var(--state);
+}
+
+.stageNo {
+  position: relative;
+  font-size: 9px;
+  color: var(--text);
+  transition: color var(--fast) var(--ease);
+}
+
+.stageBox[data-reached="true"] .stageNo {
+  color: var(--bg);
+}
+
+.stageLabel {
+  flex: 1;
+  font-size: 14px;
+}
+
+.stageMeta {
+  font-size: 10.5px;
+}
+
+.labs {
+  margin-top: 15px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ---------- Fotogramas (ContactoExposureRow) ---------- */
+
+.frames {
+  display: flex;
+  flex-direction: column;
+}
+
+.frameOpen {
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+}
+
+.frameClosed {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--line);
+  border-left: 3px solid transparent;
+}
+
+.frames > :last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.frameHead {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+}
+
+.frameNo {
+  flex: none;
+  min-width: 34px;
+  min-height: 31px;
+  display: grid;
+  place-items: center;
+  margin-right: 6px;
+  background: var(--accent);
+  color: #100c08;
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 500;
+}
+
+.frameTitle {
+  flex: 1;
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.closedAperture {
+  flex: 1;
+  font-size: 21px;
+  font-weight: 600;
+}
+
+.closedShutter {
+  flex: 1;
+  font-size: 17px;
+}
+
+.frameArrow {
+  width: 21px;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.frameArrow[data-open="true"] {
+  transform: rotate(180deg);
+  text-align: right;
+}
+
+.frameBody {
+  padding: 0 12px 14px;
+}
+
+.lensRow {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: start;
+  gap: 10px;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.lensValue {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.fromRoll {
+  align-self: flex-end;
+  margin-top: 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.chevron {
+  font-size: 13px;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.dials {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.dial {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 72px;
+  padding: 11px 10px 9px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.dialValue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 27px;
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.same {
+  padding-top: 10px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.flags {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding-top: 10px;
+}
+
+.flag {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 8px 4px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-size: 11px;
+}
+
+.flag svg {
+  color: var(--muted);
+}
+
+.flag[data-on="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #100c08;
+}
+
+.flag[data-on="true"] svg {
+  color: var(--bg);
+}
+
+/* ---------- Inventario ---------- */
+
+.invTabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.invTab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 10px 8px 12px;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  border-bottom: 2px solid var(--tab);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.invTab:last-child {
+  border-right: 1px solid var(--line);
+}
+
+.invTab[data-on="true"] {
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--tab);
+}
+
+.invTab[data-color="accent"] { --tab: var(--accent); }
+.invTab[data-color="camera"] { --tab: var(--camera); }
+.invTab[data-color="pending"] { --tab: var(--pending); }
+.invTab[data-color="lab"] { --tab: var(--lab); }
+
+.invCount {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.filter {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 14px;
+  border: 1px solid var(--line);
+}
+
+.filter span {
+  padding: 9px 4px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.filter span + span {
+  border-left: 1px solid var(--line);
+}
+
+.filter span[data-on="true"] {
+  background: var(--text);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.stockHead {
+  display: flex;
+  justify-content: space-between;
+  margin: 18px 0 8px;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.stock {
+  margin-bottom: 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--entrance) var(--ease),
+    transform var(--entrance) var(--ease);
+}
+
+.card[data-in="true"] .stock {
+  opacity: 1;
+  transform: none;
+}
+
+.stockBand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+
+.stockBand[data-color="accent"],
+.stockName[data-color="accent"] { background: var(--accent); }
+.stockBand[data-color="camera"],
+.stockName[data-color="camera"] { background: var(--camera); }
+
+.stockFormat {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+
+.stockBody {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 10px 18px;
+}
+
+.stockName {
+  padding: 6px 8px;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  color: var(--accent-ink);
+}
+
+.stockUnits {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.stockUnits b {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.stockArrow {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.stockFoot {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-top: 1px dashed var(--line);
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+.perforation {
+  height: 5px;
+  margin: 0 10px 8px;
+  background-image: linear-gradient(90deg, var(--muted) 0 7px, transparent 7px);
+  background-size: 11px 5px;
+  opacity: 0.7;
+}
+
+/* ---------- Cifras ---------- */
+
+.summary {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.summary::before,
+.summary::after {
+  content: "+";
+  position: absolute;
+  font-size: 12px;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.summary::before {
+  left: -5px;
+  top: -8px;
+}
+
+.summary::after {
+  right: -5px;
+  bottom: -8px;
+}
+
+.summaryMain {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 12px 14px 0;
+  border-right: 1px solid var(--line);
+}
+
+.summaryBig {
+  font-size: 80px;
+  line-height: 0.9;
+  font-weight: 500;
+  letter-spacing: -0.06em;
+}
+
+.summarySide {
+  display: flex;
+  flex-direction: column;
+}
+
+.summaryRow {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0 8px 12px;
+}
+
+.summaryRow + .summaryRow {
+  border-top: 1px dotted var(--line);
+}
+
+.summaryRow .label {
+  text-align: right;
+}
+
+.summaryValue {
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.04em;
+}
+
+.chartHead,
+.chartSub {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.chartHead {
+  margin-top: 22px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.chartIndex {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.chartSub {
+  margin-top: 10px;
+  font-size: 10.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.chartSub span + span {
+  color: var(--text);
+}
+
+.chart {
+  margin-top: 24px;
+  height: 110px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 5px;
+  align-items: end;
+  border-bottom: 1px solid var(--line);
+  background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.3px);
+  background-size: 18px 18px;
+}
+
+/* D: bars grow from their base */
+.bar {
+  display: block;
+  min-height: 2px;
+  background: var(--text);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform var(--entrance) var(--ease);
+}
+
+.bar[data-last="true"] {
+  background: var(--accent);
+}
+
+.card[data-in="true"] .bar {
+  transform: none;
+}
+
+.months {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 5px;
+  padding-top: 8px;
+  text-align: center;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot[data-filled="true"],
+  .stock,
+  .bar {
+    transform: none;
+    transition: opacity 120ms linear;
+  }
+
+  .stageFill {
+    transition: none;
+  }
+}
