@@ -1,21 +1,15 @@
-import Link from "next/link";
+import type { Metadata } from "next";
+import { AccessShell } from "@/features/auth/contacto-access";
 import { PasswordRecoveryForm } from "@/features/auth/password-recovery-form";
+
+export const metadata: Metadata = {
+  title: "Recuperar acceso · Analog Archive",
+};
 
 export default function ForgotPasswordPage() {
   return (
-    <main className="app-shell">
-      <header className="topbar">
-        <div className="brand">
-          <span className="brand-name">Analog Archive</span>
-          <span className="brand-stage">Recovery</span>
-        </div>
-        <Link className="nav-link" href="/dashboard">
-          Volver
-        </Link>
-      </header>
-      <section className="workspace auth-workspace">
-        <PasswordRecoveryForm />
-      </section>
-    </main>
+    <AccessShell>
+      <PasswordRecoveryForm />
+    </AccessShell>
   );
 }
