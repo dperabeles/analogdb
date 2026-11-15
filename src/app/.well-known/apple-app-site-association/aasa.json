@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["3487WMAVUP.com.analogarchive.analogArchive"],
+        "components": [
+          { "/": "/app/*", "comment": "Paginas de la app (ANA-71)" }
+        ]
+      }
+    ]
+  }
+}
