@@ -4,6 +4,7 @@
       {
         "appIDs": ["3487WMAVUP.com.analogarchive.analogArchive"],
         "components": [
+          { "/": "/app", "comment": "Entrada a la app" },
           { "/": "/app/*", "comment": "Paginas de la app (ANA-71)" }
         ]
       }

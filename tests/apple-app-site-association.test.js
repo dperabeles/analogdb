@@ -18,7 +18,12 @@ assert.equal(aasa.applinks.details.length, 1);
 
 const [detail] = aasa.applinks.details;
 assert.deepEqual(detail.appIDs, ['3487WMAVUP.com.analogarchive.analogArchive'], 'Team ID + bundle de la app real');
-assert.deepEqual(detail.components, [{ '/': '/app/*', comment: 'Paginas de la app (ANA-71)' }]);
+// Apple toma la diagonal de '/app/*' como literal: '/app' solo necesita su
+// propia regla o abre Safari (lo vio Diego en el iPhone el 15-nov).
+assert.deepEqual(detail.components, [
+  { '/': '/app', comment: 'Entrada a la app' },
+  { '/': '/app/*', comment: 'Paginas de la app (ANA-71)' },
+]);
 
 const json = JSON.stringify(aasa);
 for (const authPath of ['/confirm', '/reset-password', '/forgot-password', '/dashboard']) {
