@@ -1,6 +1,6 @@
 # Aviso de Privacidad — Analog Archive
 
-**Última actualización:** 12 de noviembre de 2026 · en vigor desde el 21 de noviembre de 2026
+**Última actualización:** 15 de noviembre de 2026 · en vigor desde el 21 de noviembre de 2026
 **Idioma de referencia:** Español (México) — versión en inglés disponible bajo petición.
 
 ---
@@ -149,7 +149,7 @@ Lo que **NO se borra automáticamente** y debes contactarnos para gestionar:
 - Aportes a catálogos compartidos (`film_stocks` y `labs` que creaste y otros usuarios usan) — se anonimizan pero se mantienen disponibles. Si quieres eliminar también esos aportes, escríbenos a `legal@analog-archive.com`.
 
 ### 6.4 · Limitar el uso de tus datos
-Las notificaciones push todavía no están disponibles en la app. Cuando lo estén, podrás desactivarlas desde la configuración del sistema (iOS/Android) y desde la app. Mientras tanto no enviamos ninguna, y no se genera ningún token de Firebase.
+Las notificaciones push son opcionales. La app te pide permiso antes de enviarte la primera, y solo si aceptas se genera un token de Firebase para tu dispositivo. Las usamos únicamente para avisos del servicio, como cuando un rollo lleva tiempo sin avanzar o cuando cambia este aviso, nunca para publicidad. Puedes desactivarlas cuando quieras desde la configuración de tu teléfono. Al cerrar sesión o eliminar tu cuenta, el token se borra.
 
 ### 6.5 · Portabilidad
 La exportación JSON está diseñada como estructura legible (no propietaria) para que puedas migrar a otra herramienta si así lo decides.
