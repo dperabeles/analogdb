@@ -1,10 +1,11 @@
 -- Deleting read inbox notices. A notice is hidden with dismissed_at, which
--- already existed for the old-rolls notice. Only read notices go (a policy
+-- already existed for the old-rolls notice. Only read or resolved notices go
+-- (resolved ones read as done in the app; a policy
 -- notice also has to have been opened, and its row is kept as proof). A
 -- deleted notice comes back only when there is something new: the develop
 -- reminder rings again, or a fixed gap goes missing again.
 
-create function public.inbox_dismiss(p_ids uuid[])
+create or replace function public.inbox_dismiss(p_ids uuid[])
 returns integer
 language plpgsql
 security definer
@@ -20,14 +21,14 @@ begin
   update public.inbox_notices n
      set dismissed_at = now()
    where n.owner_user_id = v_uid and n.id = any (p_ids)
-     and n.dismissed_at is null and n.read_at is not null
+     and n.dismissed_at is null and (n.read_at is not null or n.resolved_at is not null)
      and (n.kind <> 'policy_change' or n.first_opened_at is not null);
   get diagnostics v_count = row_count;
   return v_count;
 end;
 $$;
 
-create function public.inbox_dismiss_read()
+create or replace function public.inbox_dismiss_read()
 returns integer
 language plpgsql
 security definer
@@ -40,7 +41,8 @@ begin
   update public.inbox_notices n
      set dismissed_at = now()
    where n.owner_user_id = v_uid
-     and n.dismissed_at is null and n.read_at is not null and n.shown_at is not null
+     and n.dismissed_at is null and (n.read_at is not null or n.resolved_at is not null)
+     and n.shown_at is not null
      and (n.kind <> 'policy_change' or n.first_opened_at is not null);
   get diagnostics v_count = row_count;
   return v_count;

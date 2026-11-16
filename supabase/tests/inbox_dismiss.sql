@@ -52,6 +52,11 @@ begin
   assert (select dismissed_at is not null from public.inbox_notices where id = n1), 'only_read: read one gone';
   assert (select dismissed_at is null from public.inbox_notices where id = n3), 'only_read: unread one stays';
 
+  -- A resolved notice reads as done in the app even if never opened: it can go.
+  insert into public.inbox_notices (owner_user_id, kind, roll_id, detected_at, shown_at, rang_at, resolved_at)
+  values (b, 'missing_lab', pg_temp.buzon_roll(b, 'Developed'), now(), now(), now(), now()) returning id into nd;
+  assert pg_temp.dismiss(b, array[nd]) = 1, 'resolved but unread can go';
+
   -- dismiss_read: the remaining read one goes, the unread stays.
   perform pg_temp.como(a);
   v := public.inbox_dismiss_read();
