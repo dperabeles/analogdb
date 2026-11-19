@@ -1,7 +1,6 @@
 import type { AccessLang } from "@/features/auth/access-lang";
 import { Mark, instrument } from "@/features/auth/contacto-access";
 import { CamerasCard, FilmCard, FramesCard, InventoryCard, ProcessCard, StatsCard } from "./app-replicas";
-import { LandingAccess } from "./landing-access";
 import type { LandingCopy } from "./landing-copy";
 import { Reveal, RollingNumber } from "./motion";
 import styles from "./landing.module.css";
@@ -13,6 +12,11 @@ export type LandingMetrics = {
   uniqueLocations: number;
   supportedFormats: number;
 };
+
+/// A check drawn in CSS, never a font glyph or an emoji; read as «Incluido».
+function Check({ label }: { label: string }) {
+  return <span className={styles.check} role="img" aria-label={label} />;
+}
 
 function SectionHead({ index, section, title }: { index: string; section: string; title: string }) {
   return (
@@ -51,9 +55,10 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
           <a href={`/?lang=${other}`} hrefLang={other} aria-label={t.nav.switchLabel} className={styles.lang}>
             {t.nav.switchLang}
           </a>
-          <a href="#acceso" className={styles.enter}>
-            {t.nav.enter} <span aria-hidden="true">&#8599;</span>
-          </a>
+          {/* The web app is paused (Diego, 17-nov): «Entrar» stays, inactive. */}
+          <span className={styles.soon} aria-disabled="true">
+            {t.nav.webapp}
+          </span>
         </nav>
       </header>
 
@@ -179,14 +184,58 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
           </ul>
         </section>
 
-        {/* 06 access */}
-        <section className={styles.section} id="acceso">
+        {/* 07 pricing: free and Pro, no price until the store has one */}
+        <section className={styles.section} id="precios">
           <Reveal>
-            <SectionHead index={t.access.index} section={t.access.section} title={t.access.title} />
+            <SectionHead index={t.pricing.index} section={t.pricing.section} title={t.pricing.title} />
           </Reveal>
           <Reveal delay={60}>
-            <LandingAccess copy={t.access} platform={t.hero.platePlatform} platformNote={t.hero.plateNote} lang={lang} />
+            <table className={styles.priceTable}>
+              <thead>
+                <tr>
+                  <th scope="col">
+                    <span className={styles.srOnly}>{t.pricing.section}</span>
+                  </th>
+                  <th scope="col">{t.pricing.free}</th>
+                  <th scope="col" className={styles.priceHeadPro}>
+                    {t.pricing.pro}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {t.pricing.rows.map((row) => (
+                  <tr key={row.label}>
+                    <th scope="row">{row.label}</th>
+                    <td>{row.free ? <Check label={t.pricing.included} /> : null}</td>
+                    <td>
+                      <Check label={t.pricing.included} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className={styles.sectionNote}>{t.pricing.note}</p>
           </Reveal>
+        </section>
+
+        {/* 08 on the way: intentions, without dates */}
+        <section className={styles.section} id="en-camino">
+          <Reveal>
+            <SectionHead index={t.roadmap.index} section={t.roadmap.section} title={t.roadmap.title} />
+          </Reveal>
+          <div>
+            <ul className={styles.privacyList}>
+              {t.roadmap.items.map((item, i) => (
+                <li key={item.name}>
+                  <Reveal delay={i * 60} className={styles.roadmapRow}>
+                    <span className={styles.roadmapName}>{item.name}</span>
+                    <span className={styles.roadmapCopy}>{item.copy}</span>
+                  </Reveal>
+                </li>
+              ))}
+            </ul>
+            <p className={styles.sectionNote}>{t.roadmap.note}</p>
+          </div>
         </section>
       </main>
 

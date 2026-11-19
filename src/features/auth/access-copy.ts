@@ -58,7 +58,7 @@ const es = {
     emailHint: "tu@correo.com",
     send: "Enviar enlace",
     sending: "Enviando…",
-    back: "Volver a entrar",
+    back: "Volver al inicio",
     sentTitle: "Revisa\ntu correo.",
     sentCopy:
       "Si hay una cuenta con ese correo, te llegará un enlace para elegir una contraseña nueva.",
@@ -126,7 +126,7 @@ const en: AccessCopy = {
     emailHint: "you@email.com",
     send: "Send link",
     sending: "Sending…",
-    back: "Back to sign in",
+    back: "Back to the home page",
     sentTitle: "Check\nyour email.",
     sentCopy: "If there's an account with that email, you'll get a link to choose a new password.",
     sentNote: "The link expires in an hour. If you don't see it, check your junk folder.",

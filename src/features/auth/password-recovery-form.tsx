@@ -26,7 +26,8 @@ function recoveryError(
 
 export function PasswordRecoveryForm({ lang }: { lang: AccessLang }) {
   const f = ACCESS_COPY[lang].forgot;
-  const back = { label: f.back, href: "/dashboard" };
+  // The web app is paused: «back» is the home page.
+  const back = { label: f.back, href: lang === "en" ? "/?lang=en" : "/" };
   const [sentTo, setSentTo] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);

@@ -8,7 +8,7 @@ const es = {
     description:
       "Registra tus rollos y cada fotograma, sigue el revelado y guarda tu archivo. Privado y sin conexión.",
   },
-  nav: { enter: "Entrar", switchLang: "EN", switchLabel: "English" },
+  nav: { enter: "Entrar", webapp: "Webapp · Próximamente", switchLang: "EN", switchLabel: "English" },
   hero: {
     eyebrow: "Bitácora de fotografía analógica",
     title: ["Cada rollo,", "de la cámara", "al "],
@@ -62,6 +62,35 @@ const es = {
       "Funciona sin señal y se sincroniza al volver.",
       "Exportas todo cuando quieras.",
     ],
+  },
+  pricing: {
+    index: "07",
+    section: "Precios",
+    title: "Gratis para empezar.\nPro para ir más lejos.",
+    free: "Gratis",
+    pro: "PRO · Próximamente",
+    included: "Incluido",
+    rows: [
+      { label: "Rollos ilimitados, del cargado al revelado", free: true },
+      { label: "Cámaras, lentes y laboratorios", free: true },
+      { label: "Inventario de film y costos", free: true },
+      { label: "Funciona sin conexión", free: true },
+      { label: "Recordatorios de revelado", free: true },
+      { label: "Registro por fotograma: apertura, velocidad, lente y notas", free: false },
+      { label: "Webapp, cuando llegue, sin costo extra", free: false },
+    ],
+    note: "Pro será un pago único, sin suscripción.",
+  },
+  roadmap: {
+    index: "08",
+    section: "En camino",
+    title: "Lo que\nviene.",
+    items: [
+      { name: "Webapp", copy: "Tu archivo completo en la computadora, igual que en la app." },
+      { name: "Widgets y Actividades en vivo", copy: "El rollo que tienes en cámara, a la vista sin abrir la app." },
+      { name: "Apple Watch", copy: "Sumar un fotograma desde la muñeca." },
+    ],
+    note: "Sin fechas: llegan cuando estén bien hechos.",
   },
   access: {
     index: "07",
@@ -150,7 +179,7 @@ const en: LandingCopy = {
     description:
       "Log your rolls and every frame, follow development and keep your archive. Private, and it works offline.",
   },
-  nav: { enter: "Sign in", switchLang: "ES", switchLabel: "Español" },
+  nav: { enter: "Sign in", webapp: "Web app · Coming soon", switchLang: "ES", switchLabel: "Español" },
   hero: {
     eyebrow: "A logbook for film photography",
     title: ["Every roll,", "from camera", "to "],
@@ -204,6 +233,35 @@ const en: LandingCopy = {
       "Works without signal and syncs when you're back.",
       "Export everything whenever you want.",
     ],
+  },
+  pricing: {
+    index: "07",
+    section: "Pricing",
+    title: "Free to start.\nPro to go further.",
+    free: "Free",
+    pro: "PRO · Coming soon",
+    included: "Included",
+    rows: [
+      { label: "Unlimited rolls, from loading to development", free: true },
+      { label: "Cameras, lenses and labs", free: true },
+      { label: "Film inventory and costs", free: true },
+      { label: "Works offline", free: true },
+      { label: "Development reminders", free: true },
+      { label: "Per-frame log: aperture, shutter, lens and notes", free: false },
+      { label: "The web app, when it arrives, at no extra cost", free: false },
+    ],
+    note: "Pro will be a one-time payment, no subscription.",
+  },
+  roadmap: {
+    index: "08",
+    section: "On the way",
+    title: "What's\nnext.",
+    items: [
+      { name: "Web app", copy: "Your whole archive on the computer, just like in the app." },
+      { name: "Widgets and Live Activities", copy: "The roll in your camera, in sight without opening the app." },
+      { name: "Apple Watch", copy: "Log a frame from your wrist." },
+    ],
+    note: "No dates: they arrive when they're done right.",
   },
   access: {
     index: "07",

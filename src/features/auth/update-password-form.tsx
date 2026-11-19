@@ -185,7 +185,6 @@ export function UpdatePasswordForm({ lang }: { lang: AccessLang }) {
         plateTitle={r.savedPlate}
         plateNote={r.savedNote}
         primary={{ label: t.openApp, href: APP_URL }}
-        secondary={{ label: t.web, href: "/dashboard" }}
         live
       />
     );
