@@ -14,8 +14,8 @@ begin
   b := pg_temp.inv_user('cxb');
   perform pg_temp.inv_member(a, 'costs');
   perform pg_temp.inv_member(b, 'costs');
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Cost', 'Portra Edit', 400, 'COLOR', false) returning id into portra;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Cost', 'Portra Edit', 400, 'COLOR', false, 'approved') returning id into portra;
   insert into public.labs (name, status) values ('Lab Costos Edit', 'approved') returning id into l1;
   insert into public.cameras (owner_user_id, maker, model, format) values (a, 'Prueba Cost', 'Cam Edit', '35mm') returning id into cam;
   insert into public.cameras (owner_user_id, maker, model, format) values (a, 'Prueba Cost', 'Cam Edit Dos', '35mm') returning id into cam2;

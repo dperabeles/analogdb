@@ -12,10 +12,10 @@ declare
 begin
   a := pg_temp.inv_user('csa');
   b := pg_temp.inv_user('csb');
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Cost', 'Portra Sum', 400, 'COLOR', false) returning id into p;
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Cost', 'Gold Sum', 200, 'COLOR', false) returning id into g;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Cost', 'Portra Sum', 400, 'COLOR', false, 'approved') returning id into p;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Cost', 'Gold Sum', 200, 'COLOR', false, 'approved') returning id into g;
   insert into public.labs (name, status) values ('Lab Costos Sum Uno', 'approved') returning id into l1;
   insert into public.labs (name, status) values ('Lab Costos Sum Dos', 'approved') returning id into l2;
   insert into public.cameras (owner_user_id, maker, model, format) values (a, 'Prueba Cost', 'Cam Sum', '35mm') returning id into c1;

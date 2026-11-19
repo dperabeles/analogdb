@@ -17,10 +17,10 @@ begin
   perform pg_temp.inv_member(a);
   perform pg_temp.inv_member(b, 'costs');
   perform pg_temp.inv_member(c);
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Cost', 'Portra Cost', 400, 'COLOR', false) returning id into portra;
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Cost', 'Gold Cost', 200, 'COLOR', false) returning id into gold;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Cost', 'Portra Cost', 400, 'COLOR', false, 'approved') returning id into portra;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Cost', 'Gold Cost', 200, 'COLOR', false, 'approved') returning id into gold;
 
   -- Rolls created the usual way, by direct insert.
   insert into public.rolls (owner_user_id, code, client_uuid, film_stock_id, format, status)
