@@ -82,7 +82,6 @@ export function ConfirmAccount({ lang }: { lang: AccessLang }) {
         plateTitle={c.donePlate}
         plateNote={c.doneNote}
         primary={openApp}
-        secondary={{ label: t.web, href: "/dashboard" }}
         live
       />
     );
