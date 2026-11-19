@@ -20,10 +20,10 @@ begin
   b := pg_temp.inv_user('loadb');
   perform pg_temp.inv_member(a);
   perform pg_temp.inv_member(b);
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Inv', 'Portra Inv', 400, 'COLOR', false) returning id into portra;
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Inv', 'Gold Inv', 200, 'COLOR', false) returning id into gold;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Inv', 'Portra Inv', 400, 'COLOR', false, 'approved') returning id into portra;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Inv', 'Gold Inv', 200, 'COLOR', false, 'approved') returning id into gold;
   insert into public.cameras (owner_user_id, maker, model, format) values (a, 'Prueba Inv', 'Cam 35', '35mm') returning id into cam35;
   insert into public.cameras (owner_user_id, maker, model, format) values (a, 'Prueba Inv', 'Cam 645', '6x4.5') returning id into cam645;
   insert into public.cameras (owner_user_id, maker, model, format) values (a, 'Prueba Inv', 'Cam sin formato', null) returning id into camnull;
