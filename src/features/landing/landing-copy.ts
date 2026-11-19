@@ -90,7 +90,6 @@ const es = {
       { name: "Widgets y Actividades en vivo", copy: "El rollo que tienes en cámara, a la vista sin abrir la app." },
       { name: "Apple Watch", copy: "Sumar un fotograma desde la muñeca." },
     ],
-    note: "Sin fechas: llegan cuando estén bien hechos.",
   },
   access: {
     index: "07",
@@ -261,7 +260,6 @@ const en: LandingCopy = {
       { name: "Widgets and Live Activities", copy: "The roll in your camera, in sight without opening the app." },
       { name: "Apple Watch", copy: "Log a frame from your wrist." },
     ],
-    note: "No dates: they arrive when they're done right.",
   },
   access: {
     index: "07",

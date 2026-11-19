@@ -234,7 +234,6 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
                 </li>
               ))}
             </ul>
-            <p className={styles.sectionNote}>{t.roadmap.note}</p>
           </div>
         </section>
       </main>
