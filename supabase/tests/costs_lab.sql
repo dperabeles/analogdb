@@ -20,8 +20,8 @@ begin
   nn := pg_temp.inv_user('cln');
   perform pg_temp.inv_member(a, 'costs');
   perform pg_temp.inv_member(b, 'costs');
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Cost', 'Portra Lab', 400, 'COLOR', false) returning id into portra;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Cost', 'Portra Lab', 400, 'COLOR', false, 'approved') returning id into portra;
   insert into public.labs (name, status) values ('Lab Costos Uno', 'approved') returning id into l1;
   insert into public.labs (name, status) values ('Lab Costos Dos', 'approved') returning id into l2;
   insert into public.labs (name, status) values ('Lab Costos Tres', 'approved') returning id into l3;

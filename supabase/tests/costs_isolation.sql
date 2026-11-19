@@ -27,8 +27,8 @@ begin
   perform pg_temp.inv_member(c);
   perform pg_temp.inv_member(p, 'costs');
   perform pg_temp.inv_member(r, 'costs');
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Cost', 'Portra Iso', 400, 'COLOR', false) returning id into portra;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Cost', 'Portra Iso', 400, 'COLOR', false, 'approved') returning id into portra;
   insert into public.rolls (owner_user_id, code, client_uuid, film_stock_id, format, status)
   values (a, 'R941', gen_random_uuid(), portra, 35, 'Developed') returning id into ra;
   insert into public.rolls (owner_user_id, code, client_uuid, film_stock_id, format, status)

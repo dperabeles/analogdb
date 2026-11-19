@@ -9,8 +9,8 @@ declare
   d uuid := pg_temp.inv_user('cgd');
   who uuid; cam bigint; lens bigint; r bigint; portra bigint;
 begin
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Cost', 'Portra Guard', 400, 'COLOR', false) returning id into portra;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Cost', 'Portra Guard', 400, 'COLOR', false, 'approved') returning id into portra;
   foreach who in array array[c, d] loop
     insert into public.cameras (owner_user_id, maker, model, format)
     values (who, 'Prueba Cost', 'Cam Guard', '35mm') returning id into cam;
