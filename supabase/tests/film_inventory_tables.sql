@@ -42,10 +42,10 @@ begin
   b := pg_temp.inv_user('tabb');
   p := pg_temp.inv_user('tabp', 'pending');
   r := pg_temp.inv_user('tabr', 'rejected');
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Inv', 'Portra Inv', 400, 'COLOR', false) returning id into portra;
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Inv', 'Gold Inv', 200, 'COLOR', false) returning id into gold;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Inv', 'Portra Inv', 400, 'COLOR', false, 'approved') returning id into portra;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Inv', 'Gold Inv', 200, 'COLOR', false, 'approved') returning id into gold;
 
   -- A: two priced purchases and one without price, same Portra line.
   insert into public.film_purchases (owner_user_id, film_stock_id, format, quantity, unit_price_minor, currency, purchased_on)
@@ -75,7 +75,7 @@ begin
 
   -- Price and currency go together; the format is a physical roll.
   perform pg_temp.espera_error(format('insert into public.film_purchases (owner_user_id, film_stock_id, format, quantity, unit_price_minor) values (%L, %s, 35, 1, 100)', a, portra), '23514');
-  perform pg_temp.espera_error(format('insert into public.film_purchases (owner_user_id, film_stock_id, format, quantity) values (%L, %s, 8, 1)', a, portra), '23514');
+  perform pg_temp.espera_error(format('insert into public.film_purchases (owner_user_id, film_stock_id, format, quantity) values (%L, %s, 99, 1)', a, portra), '23514');
   perform pg_temp.espera_error(format('insert into public.film_units (owner_user_id, purchase_id, film_stock_id, format, status) values (%L, %L, %s, 35, %L)', a, pa1, portra, 'loaded'), '23514');
 
   -- A line is film + format + date, and without a date, the declaration.

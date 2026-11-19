@@ -24,8 +24,8 @@ begin
   perform pg_temp.inv_member(b);
   perform pg_temp.inv_member(p);
   perform pg_temp.inv_member(r);
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Inv', 'Portra Inv', 400, 'COLOR', false) returning id into portra;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Inv', 'Portra Inv', 400, 'COLOR', false, 'approved') returning id into portra;
   insert into public.cameras (owner_user_id, maker, model, format) values (a, 'Prueba Inv', 'Cam A', '35mm') returning id into cam_a;
   insert into public.cameras (owner_user_id, maker, model, format) values (b, 'Prueba Inv', 'Cam B', '35mm') returning id into cam_b;
 
@@ -65,7 +65,8 @@ begin
     format('select public.inventory_void_purchase(gen_random_uuid(), %L, 1)', pur_a),
     format('select public.inventory_load(gen_random_uuid(), %s, 35, %L, null, current_date, %s, null, 36, null)', portra, y2027, cam_a),
     format('select public.inventory_swap(gen_random_uuid(), %s, %s, 35, null, null)', roll_a, portra),
-    format('select public.inventory_delete_roll(gen_random_uuid(), %s, true)', roll_a)
+    format('select public.inventory_delete_roll(gen_random_uuid(), %s, true)', roll_a),
+    format('select public.inventory_edit_line(gen_random_uuid(), %s, 35, %L, null, false, false, 2, %s, null, true, true, true)', portra, y2027, portra)
   ];
   foreach actor in array array[c, p, r] loop
     perform pg_temp.como(actor);
@@ -97,6 +98,9 @@ begin
   perform public.inventory_adjust(gen_random_uuid(), portra, 35, y2027, null, 1, 0);
   perform pg_temp.espera_error(format('select public.inventory_load(gen_random_uuid(), %s, 35, %L, null, current_date, %s, null, 36, null)',
     portra, y2027, cam_b), 'P1104');
+  -- A's line has 2 available units; B's matching line has none: a conflict,
+  -- never an edit of A's units.
+  perform pg_temp.espera_error(calls[9], 'P1105');
   -- B keeps one unit in stock so its read checks below are meaningful.
   perform public.inventory_receive(gen_random_uuid(), portra, 35, null, null, null, '[{"quantity":1}]');
   perform pg_temp.yo();

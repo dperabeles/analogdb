@@ -18,8 +18,8 @@ begin
   c := pg_temp.inv_user('recc');
   perform pg_temp.inv_member(a);
   perform pg_temp.inv_member(b);
-  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog)
-  values ('Prueba Inv', 'Portra Inv', 400, 'COLOR', false) returning id into portra;
+  insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
+  values ('Prueba Inv', 'Portra Inv', 400, 'COLOR', false, 'approved') returning id into portra;
 
   perform pg_temp.como(a);
   -- One add with two expirations: one purchase, two lines.
@@ -59,7 +59,7 @@ begin
     gen_random_uuid(), portra, 'MXN', '[{"quantity":1}]'), 'P1103');
   perform pg_temp.espera_error(format('select public.inventory_receive(%L, %s, 35, 100, %L, null, %L)',
     gen_random_uuid(), portra, 'ZZZ', '[{"quantity":1}]'), 'P1103');
-  perform pg_temp.espera_error(format('select public.inventory_receive(%L, %s, 8, null, null, null, %L)',
+  perform pg_temp.espera_error(format('select public.inventory_receive(%L, %s, 99, null, null, null, %L)',
     gen_random_uuid(), portra, '[{"quantity":1}]'), 'P1103');
   perform pg_temp.espera_error(format('select public.inventory_receive(%L, %s, 35, null, null, null, %L)',
     gen_random_uuid(), portra, '[]'), 'P1103');
