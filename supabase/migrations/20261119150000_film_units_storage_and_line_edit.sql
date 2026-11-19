@@ -622,88 +622,25 @@ group by l.owner_user_id, l.film_stock_id, l.format, l.expiration_date, l.line_d
          l.refrigerated, l.respooled;
 
 -- La ficha del rollo lee rolls_flat: las dos casillas van al final, como
--- pide create or replace view. El resto es la definición vigente, sin cambios.
-create or replace view public.rolls_flat with (security_invoker = true) as
- SELECT r.id,
-    r.code AS "#",
-    fs.type AS "FILM TYPE",
-    r.format AS "FORMAT",
-        CASE
-            WHEN r.fresh IS NULL THEN NULL::text
-            WHEN r.fresh THEN 'FRESH'::text
-            ELSE 'EXPIRED'::text
-        END AS "EXP/FRESH",
-    fs.name AS "FILM STOCK",
-    fs.manufacturer AS "MANUFACTURER",
-    fs.iso AS "ISO",
-    r.exp_count AS "EXP",
-        CASE
-            WHEN c.id IS NULL THEN r.camera_snapshot ->> 'maker'::text
-            ELSE c.maker
-        END AS "MAKER",
-        CASE
-            WHEN c.id IS NULL THEN r.camera_snapshot ->> 'model'::text
-            ELSE c.model
-        END AS "MODEL NAME",
-        CASE
-            WHEN c.id IS NULL THEN r.camera_snapshot ->> 'format'::text
-            ELSE c.format
-        END AS "C. FORMAT",
-        CASE
-            WHEN c.id IS NULL THEN r.camera_snapshot ->> 'type'::text
-            ELSE c.type
-        END AS "C. TYPE",
-        CASE
-            WHEN c.id IS NULL THEN r.camera_snapshot ->> 'mount'::text
-            ELSE c.mount
-        END AS "C. MOUNT",
-    COALESCE(NULLIF(TRIM(BOTH FROM concat_ws(' '::text, l.maker, l.model)), ''::text),
-        CASE
-            WHEN l.id IS NULL THEN r.lens_snapshot ->> 'display_name'::text
-            ELSE NULL::text
-        END, r.lens) AS "LENS",
-        CASE
-            WHEN l.id IS NULL THEN r.lens_snapshot ->> 'mount'::text
-            ELSE l.mount
-        END AS "LENS MOUNT",
-    array_to_string(r.locations, ', '::text) AS "LOCATIONS",
-    array_to_string(r.photo_types, ', '::text) AS "PHOTO TYPE",
-    array_to_string(r.tags, ', '::text) AS "TAGS",
-    r.iso_pushed AS "ISO @",
-    to_char(r.started::timestamp with time zone, 'YYYY-MM-DD'::text) AS "STARTED",
-    to_char(r.finished::timestamp with time zone, 'YYYY-MM-DD'::text) AS "FINISHED",
-    r.exp_taken AS "# EXP",
-    r.push_pull AS "PUSH/PULL",
-    dl.name AS "DEV",
-    sl.name AS "SCAN",
-    r.status AS "STATUS",
-    r.rating AS "RATING",
-    r.notes AS "NOTES",
-    r.updated_at,
-    COALESCE(re_stats.frame_settings_count, 0::bigint)::integer AS "FRAME SETTINGS",
-    r.dev_lab_id AS "DEV LAB ID",
-    r.scan_lab_id AS "SCAN LAB ID",
-    r.camera_id AS "CAMERA ID",
-    r.lens_id AS "LENS ID",
-        CASE
-            WHEN c.id IS NULL THEN (r.camera_snapshot ->> 'interchangeable'::text)::boolean
-            ELSE c.supports_interchangeable_lenses
-        END AS "CAMERA INTERCHANGEABLE",
-    r.expiration_year AS "EXPIRATION YEAR",
-    r.expiration_date::jsonb AS "EXPIRATION DATE",
-    r.camera_id IS NULL AND r.camera_snapshot IS NOT NULL AS "CAMERA DELETED",
-    r.lens_id IS NULL AND r.lens_snapshot IS NOT NULL AS "LENS DELETED",
+-- pide create or replace view. Se parte de la definición viva de cada base
+-- (staging y producción difieren en otras columnas), como en
+-- 20261023125408_gear_delete_freeze: el ancla debe aparecer una sola vez.
+do $migration$
+declare
+  v_def text := pg_get_viewdef('public.rolls_flat'::regclass, true);
+  v_anchor text := $a$r.lens_id IS NULL AND r.lens_snapshot IS NOT NULL AS "LENS DELETED"$a$;
+  v_count int;
+begin
+  v_count := (length(v_def) - length(replace(v_def, v_anchor, ''))) / length(v_anchor);
+  if v_count <> 1 then
+    raise exception 'rolls_flat inesperada: el ancla aparece % veces', v_count;
+  end if;
+  v_def := replace(v_def, v_anchor, v_anchor || $b$,
     r.film_refrigerated AS "FILM REFRIGERATED",
-    r.film_respooled AS "FILM RESPOOLED"
-   FROM rolls r
-     LEFT JOIN film_stocks fs ON fs.id = r.film_stock_id
-     LEFT JOIN cameras c ON c.id = r.camera_id
-     LEFT JOIN lenses l ON l.id = r.lens_id
-     LEFT JOIN labs dl ON dl.id = r.dev_lab_id
-     LEFT JOIN labs sl ON sl.id = r.scan_lab_id
-     LEFT JOIN LATERAL ( SELECT count(*) FILTER (WHERE re.lens_source IS NOT NULL OR COALESCE(re.luz_natural, false) OR re.apertura IS NOT NULL OR re.shutter_speed IS NOT NULL OR COALESCE(re.tripie, false) OR COALESCE(re.filtros, false) OR COALESCE(re.flash, false) OR COALESCE(re.luz_natural, false) OR COALESCE(re.multiple_exposures, false) OR re.notes IS NOT NULL) AS frame_settings_count
-           FROM roll_exposures re
-          WHERE re.roll_id = r.id) re_stats ON true;
+    r.film_respooled AS "FILM RESPOOLED"$b$);
+  execute 'create or replace view public.rolls_flat with (security_invoker = true) as ' || v_def;
+end
+$migration$;
 
 -- ── Permisos: solo cuentas con sesión, como el resto de los comandos ──────
 
@@ -723,3 +660,5 @@ grant execute on function public.inventory_swap(uuid, bigint, bigint, integer, j
   to authenticated;
 grant execute on function public.inventory_edit_line(uuid, bigint, integer, jsonb, boolean, boolean, boolean, integer, bigint, jsonb, boolean, boolean, boolean)
   to authenticated;
+
+notify pgrst, 'reload schema';

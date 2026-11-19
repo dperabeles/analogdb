@@ -3,6 +3,13 @@
 -- Everything here lives in pg_temp and disappears with the transaction.
 -- Synthetic accounts use @inventario.invalid so a leftover is easy to count.
 
+-- The tests start from the features closed, as in staging. Production
+-- opened them to every approved account on 11-nov
+-- (20261111190000_open_inventory_costs_for_everyone); film_inventory_base.sql
+-- covers the open case. Undone with the transaction.
+update app_private.feature_flags set enabled_for_everyone = false
+ where feature in ('film_inventory', 'costs');
+
 -- New profiles would queue signup/approval e-mails through pg_net.
 alter table public.profiles disable trigger profiles_notify_approved;
 alter table public.profiles disable trigger profiles_notify_pending_signup;
