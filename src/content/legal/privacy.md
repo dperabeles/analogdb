@@ -1,6 +1,6 @@
 # Aviso de Privacidad — Analog Archive
 
-**Última actualización:** 15 de noviembre de 2026 · en vigor desde el 21 de noviembre de 2026
+**Última actualización:** 20 de noviembre de 2026 · en vigor desde el 21 de noviembre de 2026; el número de serie del equipo (§2.3), desde el 25 de noviembre de 2026
 **Idioma de referencia:** Español (México) — versión en inglés disponible bajo petición.
 
 ---
@@ -38,8 +38,8 @@ Si tienes preguntas sobre este aviso o sobre cómo manejamos tus datos, puedes e
 Los datos que ingresas voluntariamente al catalogar tus rollos de fotografía:
 
 - **Rollos:** stock de película, formato físico (35mm, 120, Super 8, 16mm, 110, Large Format), ISO, fechas (cargado, expuesto, enviado a revelar, revelado), push/pull, rating, notas, locaciones (texto libre, no GPS), tipos de fotografía, tags, y la cuenta de fotogramas que llevas
-- **Cámaras:** fabricante, modelo, formato soportado y, en cámaras de 120, el tamaño del negativo; tipo, montura, si la sigues teniendo y fecha de adquisición
-- **Lentes:** montura, distancia focal, apertura máxima
+- **Cámaras:** fabricante, modelo, formato soportado y, en cámaras de 120, el tamaño del negativo; tipo, montura, si la sigues teniendo, fecha de adquisición y, si quieres, su número de serie
+- **Lentes:** montura, distancia focal, apertura máxima y, si quieres, su número de serie
 - **Inventario y costos (opcional):** si decides usarlos, guardamos el film que compras y aún no usas (película, formato, cantidad y caducidad impresa), el precio por unidad, la moneda y la fecha de cada compra; lo que pagaste por revelar y escanear cada rollo (importe, moneda, fecha y laboratorio); el precio y la fecha de compra de tus cámaras y lentes; y tu moneda predeterminada. Son datos que capturas tú, solo los ves tú y no los compartimos con nadie
 - **Ajustes por fotograma:** apertura, velocidad, indicadores de flash/blanco-y-negro/trípode, notas por frame (hasta 100 por rollo)
 - **Contribuciones a catálogos comunitarios:** entradas que agregues a los catálogos compartidos de stocks de película y laboratorios (`film_stocks`, `labs`). Un film que no está en el catálogo queda **privado**: solo tú lo ves y lo usas hasta que un administrador lo revisa. Si lo aprueba, pasa al catálogo compartido y se une con las copias del mismo nombre que hayan creado otras cuentas; tus rollos siguen apuntando a él. Si lo rechaza, sigue siendo solo tuyo
