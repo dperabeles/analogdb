@@ -15,7 +15,7 @@ begin
              and c.source in ('curada', 'wikidata', 'canon')) = 10, 'LOMO';
   assert (select count(*) from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Fujica') and c.status = 'approved'
-             and c.source in ('curada', 'wikidata', 'canon')) = 13, 'Fujica';
+             and c.source in ('curada', 'wikidata', 'canon')) = 14, 'Fujica';  -- 13 + the V2 of 20261121230000
   assert (select count(*) from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Agfa') and c.status = 'approved'
              and c.source in ('curada', 'wikidata', 'canon')) = 8, 'Agfa';

@@ -1,7 +1,8 @@
 -- Camera catalog, batch 4 (20261121150000): 374 models of 19 other
 -- brands Diego approved. Run after the migration (twice in the rehearsal, to
 -- show it never duplicates), inside BEGIN / ROLLBACK. Since 20261121180000 the
--- 27 instant cameras (13 Fujifilm Instax, 14 Polaroid) are out of the catalogue.
+-- 27 instant cameras (13 Fujifilm Instax, 14 Polaroid) are out of the catalogue,
+-- and since 20261121230000 two more Yashica (FX-2, EZS Zoom 105) are in.
 do $$
 begin
   assert (select count(*) from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
@@ -24,7 +25,7 @@ begin
              and c.status = 'approved' and c.source in ('curada', 'wikidata')) = 29, 'Contax';
   assert (select count(*) from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Yashica')
-             and c.status = 'approved' and c.source in ('curada', 'wikidata')) = 34, 'Yashica';
+             and c.status = 'approved' and c.source in ('curada', 'wikidata')) = 36, 'Yashica';
   assert (select count(*) from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Rollei')
              and c.status = 'approved' and c.source in ('curada', 'wikidata')) = 25, 'Rollei';
