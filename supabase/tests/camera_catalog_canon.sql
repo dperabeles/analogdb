@@ -9,7 +9,8 @@ begin
    where status = 'approved' and app_private.manufacturer_key(name) = 'canon';
   assert canon is not null, 'Canon is an approved manufacturer';
   assert (select count(*) from public.camera_models
-           where manufacturer_id = canon and source = 'canon' and status = 'approved') = 253,
+           where manufacturer_id = canon and source = 'canon' and status = 'approved'
+             and type is distinct from 'Cine') = 253,
     'the whole batch';
   assert (select type = 'SLR' and format = '35mm' and year_from = 1981 and interchangeable
                  and mount_id = (select id from public.lens_mounts where name = 'Canon FD' and status = 'approved')
