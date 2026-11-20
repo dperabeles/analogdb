@@ -1,6 +1,6 @@
 # Aviso de Privacidad — Analog Archive
 
-**Última actualización:** 20 de noviembre de 2026 · en vigor desde el 21 de noviembre de 2026; el número de serie del equipo (§2.3), desde el 25 de noviembre de 2026
+**Última actualización:** 20 de noviembre de 2026 · en vigor desde el 20 de noviembre de 2026
 **Idioma de referencia:** Español (México) — versión en inglés disponible bajo petición.
 
 ---
@@ -438,6 +438,8 @@ Los cambios a este Aviso de Privacidad se notifican como se describe en la secci
 ## 16 · Cambios a este aviso
 
 Si modificamos este aviso de manera material, te notificaremos **con un aviso en el buzón de la app al menos 5 días** antes de la fecha efectiva del cambio.
+
+**Mientras Analog Archive esté en beta (TestFlight)**, el cambio aplica desde que publicamos el aviso: te avisamos en el buzón de la app y, cuando el cambio llega con una versión nueva, también en sus notas de TestFlight («Qué probar»). Desde el lanzamiento en la App Store vuelve el plazo de al menos 5 días.
 
 Elegimos el aviso en la app en lugar del correo a propósito: es donde de verdad lo vas a ver. No te enviaremos correos por este motivo.
 

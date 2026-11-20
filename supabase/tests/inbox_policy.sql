@@ -22,7 +22,8 @@ begin
   perform pg_temp.como(a);
   perform pg_temp.espera_error('select pg_temp.publish(5)', 'P1205');
   perform pg_temp.como(adm);
-  perform pg_temp.espera_error('select pg_temp.publish(4)', 'P1206');
+  -- During the beta a notice may take effect the day it is published, never before.
+  perform pg_temp.espera_error('select pg_temp.publish(-1)', 'P1206');
   perform pg_temp.espera_error($q$select pg_temp.publish(5, 'http://analog-archive.com/privacy')$q$, 'P1203');
   perform pg_temp.espera_error($q$select pg_temp.publish(5, 'https://analog-archive.com/privacy', ' ')$q$, 'P1203');
   pol := pg_temp.publish(5);
