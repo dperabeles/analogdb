@@ -243,6 +243,7 @@ export function Landing({ t, lang, metrics }: { t: LandingCopy; lang: AccessLang
           <a href="/privacy">{t.footer.privacy}</a>
           <a href="/terms">{t.footer.terms}</a>
           <a href="/cookies">{t.footer.cookies}</a>
+          <a href="/credits">{t.footer.credits}</a>
           <a href="/contact">{t.footer.contact}</a>
           <a href="mailto:hello@analog-archive.com">hello@analog-archive.com</a>
           <a href="https://instagram.com/analog.archive.app" target="_blank" rel="noopener noreferrer">

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 /// Footer global con los links legales requeridos (ANA-30): privacidad,
-/// términos, cookies, contacto, email de soporte e Instagram.
+/// términos, cookies, créditos, contacto, email de soporte e Instagram.
 export function LegalFooter() {
   const year = new Date().getFullYear();
 
@@ -18,6 +18,7 @@ export function LegalFooter() {
           <Link href="/privacy">Privacidad</Link>
           <Link href="/terms">Términos</Link>
           <Link href="/cookies">Cookies</Link>
+          <Link href="/credits">Créditos</Link>
           <Link href="/contact">Contacto</Link>
           <a href="mailto:hello@analog-archive.com">hello@analog-archive.com</a>
           <a

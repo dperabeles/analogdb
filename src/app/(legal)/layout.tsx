@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { LegalFooter } from "@/features/legal/legal-footer";
 
-/// Layout compartido para /privacy, /terms, /cookies y /contact (ANA-29):
+/// Layout compartido para /privacy, /terms, /cookies, /credits y /contact (ANA-29):
 /// header simple + tipografía editorial coherente con el site + footer global.
 /// Contenido en español → `lang="es"` para accesibilidad (root es `lang="en"`).
 export default function LegalLayout({

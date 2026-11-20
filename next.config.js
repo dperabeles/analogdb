@@ -7,6 +7,7 @@ const nextConfig = {
     "/privacy": ["./src/content/legal/**"],
     "/terms": ["./src/content/legal/**"],
     "/cookies": ["./src/content/legal/**"],
+    "/credits": ["./src/content/legal/**"],
   },
 };
 

@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
-export type LegalSlug = "privacy" | "terms" | "cookies";
+export type LegalSlug = "privacy" | "terms" | "cookies" | "credits";
 
 export interface LegalDoc {
   slug: LegalSlug;
@@ -17,6 +17,7 @@ const FILE: Record<LegalSlug, string> = {
   privacy: "privacy.md",
   terms: "terms.md",
   cookies: "cookies.md",
+  credits: "credits.md",
 };
 
 /// Reescribe los links internos entre documentos (`./privacy-policy.md`) a las
