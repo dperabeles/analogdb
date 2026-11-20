@@ -10,7 +10,8 @@ begin
   assert (select count(*) from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where mf.name = 'Olympus' and c.status = 'approved' and c.source in ('olympus', 'curada')) = 65, 'Olympus';
   assert (select count(*) from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
-           where mf.name = 'Minolta' and c.status = 'approved' and c.source in ('curada', 'wikidata')) = 63, 'Minolta';
+           where mf.name = 'Minolta' and c.status = 'approved' and c.source in ('curada', 'wikidata')
+             and c.type is distinct from 'Cine') = 63, 'Minolta';
   assert (select count(*) from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where mf.name = 'Minolta' and c.name in ('α-7000', 'Maxxum 7000', '7000')) = 3, 'each regional name is its own model';
   assert (select type = 'SLR' and format = '35mm' and year_from = 1976 and mount_id = (select id from public.lens_mounts where name = 'Pentax K' and status = 'approved')
