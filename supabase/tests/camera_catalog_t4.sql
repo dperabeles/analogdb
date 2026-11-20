@@ -1,6 +1,7 @@
 -- Camera catalog, batch 4 (20261121150000): 374 models of 19 other
 -- brands Diego approved. Run after the migration (twice in the rehearsal, to
--- show it never duplicates), inside BEGIN / ROLLBACK.
+-- show it never duplicates), inside BEGIN / ROLLBACK. Since 20261121180000 the
+-- 27 instant cameras (13 Fujifilm Instax, 14 Polaroid) are out of the catalogue.
 do $$
 begin
   assert (select count(*) from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
@@ -11,7 +12,7 @@ begin
              and c.status = 'approved' and c.source in ('curada', 'wikidata')) = 23, 'Hasselblad';
   assert (select count(*) from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Fujifilm')
-             and c.status = 'approved' and c.source in ('curada', 'wikidata')) = 36, 'Fujifilm';
+             and c.status = 'approved' and c.source in ('curada', 'wikidata')) = 23, 'Fujifilm';
   assert (select count(*) from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Mamiya')
              and c.status = 'approved' and c.source in ('curada', 'wikidata')) = 31, 'Mamiya';
@@ -53,7 +54,7 @@ begin
              and c.status = 'approved' and c.source in ('curada', 'wikidata')) = 21, 'Kodak';
   assert (select count(*) from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Polaroid')
-             and c.status = 'approved' and c.source in ('curada', 'wikidata')) = 14, 'Polaroid';
+             and c.status = 'approved' and c.source in ('curada', 'wikidata')) = 0, 'Polaroid';
   assert (select count(*) from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Lomography')
              and c.status = 'approved' and c.source in ('curada', 'wikidata')) = 5, 'Lomography';
@@ -69,21 +70,12 @@ begin
   assert (select type = 'SLR' and format = '120' and year_from is null and mount_id = (select id from public.lens_mounts where name = 'Mamiya RB67' and status = 'approved') and frame_sizes = '{6x4.5,6x7,6x8}'::text[]
             from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Mamiya') and c.name = 'RB67 Pro S'), 'Mamiya RB67 Pro S';
-  assert (select type = 'Instantánea' and format = 'Instax Mini' and year_from is null and mount_id = (select id from public.lens_mounts where name = 'Lente integrado' and status = 'approved')
-            from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
-           where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Fujifilm') and c.name = 'Instax Mini 11'), 'Fujifilm Instax Mini 11';
   assert (select type = 'SLR' and format = '35mm' and year_from is null and mount_id = (select id from public.lens_mounts where name = 'M42' and status = 'approved')
             from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Zenit') and c.name = 'E'), 'Zenit E';
   assert (select type = 'Rangefinder' and format = '35mm' and year_from = 1956 and mount_id = (select id from public.lens_mounts where name = 'Leica LTM (L39)' and status = 'approved')
             from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Zorki') and c.name = '4'), 'Zorki 4';
-  assert (select type = 'Instantánea' and format = 'Polaroid SX-70' and year_from is null and mount_id = (select id from public.lens_mounts where name = 'Lente integrado' and status = 'approved')
-            from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
-           where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Polaroid') and c.name = 'SX-70'), 'Polaroid SX-70';
-  assert (select type = 'Instantánea' and format is null and year_from is null and mount_id = (select id from public.lens_mounts where name = 'Lente integrado' and status = 'approved')
-            from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
-           where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Polaroid') and c.name = 'Go'), 'Polaroid Go';
   assert (select type = 'Rangefinder' and format = '35mm' and year_from is null and mount_id = (select id from public.lens_mounts where name = 'Leica M' and status = 'approved')
             from public.camera_models c join public.manufacturers mf on mf.id = c.manufacturer_id
            where app_private.manufacturer_key(mf.name) = app_private.manufacturer_key('Voigtländer') and c.name = 'Bessa R2A'), 'Voigtländer Bessa R2A';
