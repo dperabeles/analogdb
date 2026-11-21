@@ -34,11 +34,16 @@ begin
   insert into public.camera_models (manufacturer_id, name, type, format, status, source)
   values (nik, 'Prueba Y', 'Rangefinder', '35mm', 'approved', 'curada') returning id into y;
 
+  -- Cameras from before the catalogue: saved as written (20261122090000
+  -- would link the exact ones on saving).
+  perform set_config('app.camera_keep_text', 'on', true);
   insert into public.cameras (owner_user_id, maker, model, type) values (a, 'Prueba Nikon', 'prueba-x', 'Otro') returning id into cam1;
   insert into public.cameras (owner_user_id, maker, model) values (a, 'Prueba Nikon', 'Prueba Nikon Prueba Y') returning id into cam2;
   insert into public.cameras (owner_user_id, maker, model) values (b, 'Prueba Nikon', 'Prueba X') returning id into cam3;
   insert into public.cameras (owner_user_id, maker, model, format) values (a, 'Prueba Nikon', 'Prueba Y de mi papá', '120') returning id into cam4;
   insert into public.cameras (owner_user_id, maker, model, format) values (b, 'Prueba Nikon', 'Prueba Y de mi papá', '120') returning id into cam5;
+
+  perform set_config('app.camera_keep_text', '', true);
 
   -- ── By key ──
   assert app_private.camera_text_model('Prueba Nikon', 'prueba-x') = x, 'another spelling is the model';
