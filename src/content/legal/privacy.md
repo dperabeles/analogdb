@@ -56,7 +56,7 @@ Los datos que ingresas voluntariamente al catalogar tus rollos de fotografía:
 
 ### 2.5 · Datos de uso y errores
 
-- **Reportes de errores anonimizados** vía Sentry — stack traces, versión de la app y de qué compilación viene, modelo de dispositivo, idioma. No incluyen tu contenido ni identificadores personales.
+- **Reportes de errores anonimizados** vía Sentry — stack traces, versión de la app y de qué compilación viene, modelo de dispositivo, idioma. Pueden llevar un identificador aleatorio de la instalación, pero no el de tu cuenta: la app no envía tu correo, tu nombre, tu IP ni tu contenido.
 - **Logs de autenticación** (intentos de login fallidos, IP de origen) para protección contra ataques de fuerza bruta. Se guardan por un máximo de 30 días.
 - **Identificadores de transacción** (cuando el servicio sea de pago en el futuro: Apple App Store IAP transaction ID, Google Play Order ID. **Nunca recibimos información de tarjeta de crédito** — Apple/Google la manejan internamente.)
 
@@ -366,7 +366,6 @@ Implementamos múltiples capas de seguridad para proteger tu información:
 - **Row Level Security (RLS):** a nivel de base de datos — solo puedes leer/escribir tus propios datos
 - **Auth gating:** JWT tokens con expiración automática
 - **Anti brute-force:** rate limiting + IP logging por 30 días
-- **Aprobación manual de signups** durante beta
 - **Secrets management:** service role keys solo en server-side, nunca expuestas al cliente
 - **Backups automáticos:** diarios (30 días) + mensuales (12 meses)
 
