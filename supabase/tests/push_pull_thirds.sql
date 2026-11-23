@@ -24,6 +24,13 @@ begin
   assert app_private.iso_at_thirds(64, 3) = 125, '64 +1';
   assert app_private.iso_at_thirds(150, 0) = 150, 'zero leaves it';
   assert app_private.iso_at_thirds(150, 3) = 320, 'off the scale starts from the nearest';
+  -- Ten stops either way (20261122200000): past 102400 it keeps doubling;
+  -- under 3 it stops at ISO 1.
+  assert app_private.iso_at_thirds(400, 30) = 409600, '400 ten stops up';
+  assert app_private.iso_at_thirds(3200, 30) = 3276800, '3200 ten stops up';
+  assert app_private.iso_at_thirds(25, -30) = 1, '25 ten stops down';
+  assert app_private.iso_at_thirds(3, -1) = 2, '3 a third down';
+  assert app_private.push_pull_thirds('-10') = -30, '-10';
 
   a := pg_temp.inv_user('ppthirds');
   insert into public.film_stocks (manufacturer, name, iso, type, in_catalog, status)
