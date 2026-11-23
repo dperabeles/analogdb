@@ -4,8 +4,6 @@
 -- @buzon.invalid so a leftover is easy to count.
 
 -- New profiles would queue signup/approval e-mails through pg_net.
-alter table public.profiles disable trigger profiles_notify_approved;
-alter table public.profiles disable trigger profiles_notify_pending_signup;
 
 create function pg_temp.buzon_user(p_tag text, p_status text default 'approved',
                                    p_tz text default null)

@@ -5,8 +5,6 @@
 -- synthetic accounts (@equipo.invalid); everything is undone with the
 -- transaction. The final RAISE reports success and also rolls back.
 
-alter table public.profiles disable trigger profiles_notify_approved;
-alter table public.profiles disable trigger profiles_notify_pending_signup;
 
 create or replace function pg_temp.eq_user(p_tag text)
 returns uuid language plpgsql as $$

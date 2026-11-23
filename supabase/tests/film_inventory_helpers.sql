@@ -11,8 +11,6 @@ update app_private.feature_flags set enabled_for_everyone = false
  where feature in ('film_inventory', 'costs');
 
 -- New profiles would queue signup/approval e-mails through pg_net.
-alter table public.profiles disable trigger profiles_notify_approved;
-alter table public.profiles disable trigger profiles_notify_pending_signup;
 
 create function pg_temp.inv_user(p_tag text, p_status text default 'approved')
 returns uuid language plpgsql as $$

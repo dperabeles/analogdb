@@ -6,8 +6,6 @@
 -- accepted). Only synthetic accounts (@dueno.invalid); everything is undone
 -- with the transaction.
 
-alter table public.profiles disable trigger profiles_notify_approved;
-alter table public.profiles disable trigger profiles_notify_pending_signup;
 
 create or replace function pg_temp.own_user(p_tag text)
 returns uuid language plpgsql as $$
