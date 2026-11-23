@@ -123,7 +123,7 @@ export function StatsPanel({ overview }: StatsPanelProps) {
         </div>
       </section>
       <section className="analytics-section">
-        <SectionHead num="II" title="Formatos" subtitle="Películas por tamaño físico" />
+        <SectionHead num="II" title="Formatos" subtitle="Films por tamaño físico" />
         <div className="ed-format-boxes analytics-format-grid">
           {overview.formatCounts.length ? (
             overview.formatCounts.map((format) => (
@@ -143,7 +143,7 @@ export function StatsPanel({ overview }: StatsPanelProps) {
       <Leaderboard
         num="III"
         title="Stocks favoritos"
-        subtitle="Top 10 de películas más usadas"
+        subtitle="Top 10 de films más usados"
         leaders={overview.stockLeaders}
         total={overview.total}
         sub={(label) => (label.split(" ")[0] || "").toUpperCase()}

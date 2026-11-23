@@ -1,6 +1,6 @@
 # Términos de Servicio — Analog Archive
 
-**Última actualización:** 20 de noviembre de 2026 · en vigor desde el 20 de noviembre de 2026
+**Última actualización:** 23 de noviembre de 2026 · en vigor desde el 23 de noviembre de 2026
 **Idioma de referencia:** Español (México) — versión en inglés disponible bajo petición.
 
 ---
@@ -17,9 +17,9 @@ Estos Términos constituyen un acuerdo legal vinculante entre tú y el operador.
 
 ## 2 · Descripción del servicio
 
-Analog Archive es una bitácora digital privada para fotógrafos de película analógica. El servicio te permite catalogar, organizar y referenciar tus registros de fotografía analógica, incluyendo rollos de película, cámaras, lentes, configuraciones de exposición por fotograma, laboratorios fotográficos utilizados y metadatos relacionados como notas, etiquetas, calificaciones y locaciones.
+Analog Archive es una bitácora digital privada para fotógrafos que usan film. El servicio te permite catalogar, organizar y referenciar tus registros de fotografía analógica, incluyendo rollos de film, cámaras, lentes, configuraciones de exposición por fotograma, laboratorios fotográficos utilizados y metadatos relacionados como notas, etiquetas, calificaciones y locaciones.
 
-También puedes llevar, si quieres, tu **inventario de película** (el film que compraste y aún no usas) y lo que **gastas** en película, revelado, escaneo y equipo. Esos importes son un registro personal: los capturas tú, no los verificamos ni convertimos entre monedas, y no sirven como comprobante contable ni fiscal.
+También puedes llevar, si quieres, tu **inventario de film** (el film que compraste y aún no usas) y lo que **gastas** en film, revelado, escaneo y equipo. Esos importes son un registro personal: los capturas tú, no los verificamos ni convertimos entre monedas, y no sirven como comprobante contable ni fiscal.
 
 El servicio se ofrece como aplicación web accesible en `https://analog-archive.com` y como aplicaciones móviles para iOS y Android. **El servicio NO facilita la venta, compra ni intercambio de bienes físicos o digitales entre usuarios**.
 
@@ -29,13 +29,12 @@ El servicio está disponible para uso personal y para uso profesional limitado (
 
 ## 3 · Estado del servicio
 
-Analog Archive se encuentra actualmente en **fase de beta privada** con acceso por aprobación manual. Esto significa:
+Analog Archive se encuentra actualmente en **fase de beta**. Esto significa:
 
 - El servicio puede sufrir cambios significativos sin previo aviso
 - Las funciones pueden modificarse, agregarse o eliminarse
 - Pueden ocurrir interrupciones planeadas y no planeadas
 - No garantizamos compatibilidad retroactiva entre versiones durante esta fase
-- El acceso al servicio se otorga mediante invitación o aprobación manual del operador
 
 Te recomendamos **exportar tus datos regularmente** desde `Cuenta → Exportar` como respaldo personal mientras estamos en beta.
 
@@ -52,14 +51,12 @@ Para usar el servicio debes:
 - No estar prohibido legalmente de usar el servicio bajo las leyes aplicables
 - Proporcionar información veraz y mantenerla actualizada durante el uso del servicio
 
-### 4.2 · Aprobación manual
+### 4.2 · Suspensión de cuentas
 
-Durante la fase actual de beta, las cuentas requieren aprobación manual del operador. Nos reservamos el derecho de:
+Una cuenta queda activa en cuanto te registras. Nos reservamos el derecho de:
 
-- Rechazar solicitudes de registro sin proporcionar justificación
-- Revocar el acceso aprobado en cualquier momento si se viola estos Términos
-- Mantener una lista de espera de duración indefinida
-- Reactivar cuentas previamente rechazadas a nuestra discreción
+- Suspender una cuenta que viole estos Términos
+- Reactivar una cuenta suspendida a nuestra discreción
 
 ### 4.3 · Una cuenta por persona
 
@@ -67,7 +64,7 @@ Cada cuenta es **individual e intransferible**. No puedes:
 
 - Compartir tus credenciales con terceros
 - Vender, transferir, ceder o alquilar tu cuenta
-- Crear múltiples cuentas para evadir restricciones, suspensiones o el proceso de aprobación manual
+- Crear múltiples cuentas para evadir restricciones o suspensiones
 - Fragmentar tu actividad a través de múltiples identidades
 
 ### 4.4 · Métodos de acceso
@@ -123,18 +120,18 @@ Aunque la mayoría de tu contenido es privado, esperamos que mantengas estándar
 
 ## 6 · Catálogos comunitarios compartidos
 
-El servicio mantiene catálogos comunitarios que cualquier usuario aprobado puede expandir, incluyendo (sin limitarse a):
+El servicio mantiene catálogos comunitarios que cualquier usuario puede expandir, incluyendo (sin limitarse a):
 
-- **Stocks de película** (`film_stocks catalog`)
+- **Films** (`film_stocks catalog`)
 - **Laboratorios fotográficos** (`labs catalog`)
 
-Estos catálogos son **recursos compartidos accesibles a todos los usuarios aprobados** del servicio.
+Estos catálogos son **recursos compartidos accesibles a todos los usuarios** del servicio.
 
 ### 6.1 · Licencia de contribución
 
 Al contribuir entradas a cualquier catálogo comunitario, otorgas al operador una licencia **no exclusiva, perpetua, mundial, libre de regalías y sublicenciable** para:
 
-- Mostrar tu contribución a otros usuarios aprobados del servicio
+- Mostrar tu contribución a otros usuarios del servicio
 - Modificar o normalizar la contribución por calidad del catálogo (corregir typos, deduplicar entradas, estandarizar nomenclatura)
 - Preservar la contribución en el catálogo compartido incluso después de eliminar tu cuenta, sujeto a la disposición de anonimización a continuación
 
@@ -228,7 +225,7 @@ Te comprometes a NO:
 - Usar el servicio para anunciar u ofrecer la venta de bienes y servicios de terceros
 - Vender, transferir o ceder tu perfil de usuario
 - Contaminar o manipular catálogos comunitarios con entradas falsas, duplicadas, engañosas o comercialmente motivadas
-- Crear múltiples cuentas para evadir el proceso de aprobación manual, suspensiones o fragmentar tu actividad
+- Crear múltiples cuentas para evadir suspensiones o fragmentar tu actividad
 - Publicar información personal identificable de terceros (nombres reales, direcciones, teléfonos, datos financieros o cualquier dato privado) en notas, tags, locaciones u otro contenido sin su consentimiento explícito
 - Distribuir malware, phishing, código malicioso o cualquier elemento que pueda dañar el servicio o a otros usuarios
 
@@ -401,7 +398,7 @@ Cuando el servicio sea de pago:
 
 Aceptas recibir comunicaciones electrónicas relacionadas con el servicio:
 
-- **Notificaciones operacionales** (aprobación de cuenta, cambios de status, password resets)
+- **Notificaciones operacionales** (confirmación de correo, cambios en tu cuenta, cambios de contraseña)
 - **Avisos de seguridad** o cambios materiales a estos Términos
 - **Recordatorios funcionales** (rollos sin revelar por más de 30 días, etc.) — opcionales y desactivables
 - **Solicitudes de feedback** durante la fase beta — opcionales

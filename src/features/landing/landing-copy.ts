@@ -47,7 +47,7 @@ const es = {
     section: "Cifras",
     title: "Lo que dice\ntu archivo.",
     rolls: "Rollos registrados",
-    top: "Película más usada",
+    top: "Film más usado",
     topSuffix: "rollos",
     places: "Lugares en el archivo",
     formats: "Formatos",
