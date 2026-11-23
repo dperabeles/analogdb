@@ -10,8 +10,6 @@ do $$
 declare z record;
 begin
   select * into z from zz_ids;
-  alter table public.profiles disable trigger profiles_notify_approved;
-  alter table public.profiles disable trigger profiles_notify_pending_signup;
   insert into auth.users (id, email, raw_user_meta_data, aud, role)
   select u, 'zz-'||u||'@example.invalid', jsonb_build_object('username','zz'||substr(replace(u::text,'-',''),1,12)), 'authenticated','authenticated'
     from unnest(array[z.adm, z.a, z.b]) u;

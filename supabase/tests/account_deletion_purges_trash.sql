@@ -3,8 +3,6 @@
 -- person deleted rows the usual way. Privacy policy 5 promises the purge.
 -- Run inside BEGIN / ROLLBACK, also immediately after applying the migration.
 -- Synthetic accounts only (@trash.invalid).
-alter table public.profiles disable trigger profiles_notify_approved;
-alter table public.profiles disable trigger profiles_notify_pending_signup;
 do $$
 declare
   a uuid := gen_random_uuid(); b uuid := gen_random_uuid(); c uuid := gen_random_uuid();
