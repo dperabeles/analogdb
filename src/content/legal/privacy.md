@@ -1,6 +1,6 @@
 # Aviso de Privacidad — Analog Archive
 
-**Última actualización:** 20 de noviembre de 2026 · en vigor desde el 20 de noviembre de 2026
+**Última actualización:** 23 de noviembre de 2026 · en vigor desde el 23 de noviembre de 2026
 **Idioma de referencia:** Español (México) — versión en inglés disponible bajo petición.
 
 ---
@@ -28,7 +28,7 @@ Si tienes preguntas sobre este aviso o sobre cómo manejamos tus datos, puedes e
 
 ### 2.2 · Datos de perfil
 
-- **Estado de aprobación** (`pendiente`, `aprobado`, `rechazado`) — Analog Archive opera bajo beta privada con aprobación manual durante la fase actual del producto.
+- **Estado de la cuenta** (activa o suspendida). Una cuenta queda activa en cuanto te registras; solo se suspende si incumple los Términos de Servicio.
 - **Rol** (usuario regular, administrador, founder)
 - **Fecha de registro y última actividad**
 - **Preferencias de notificaciones** (push, email reminders, etc.)
@@ -37,12 +37,12 @@ Si tienes preguntas sobre este aviso o sobre cómo manejamos tus datos, puedes e
 
 Los datos que ingresas voluntariamente al catalogar tus rollos de fotografía:
 
-- **Rollos:** stock de película, formato físico (35mm, 120, Super 8, 16mm, 110, Large Format), ISO, fechas (cargado, expuesto, enviado a revelar, revelado), push/pull, rating, notas, locaciones (texto libre, no GPS), tipos de fotografía, tags, y la cuenta de fotogramas que llevas
+- **Rollos:** film, formato físico (35mm, 120, Super 8, 16mm, 110, Large Format), ISO, fechas (cargado, expuesto, enviado a revelar, revelado), push/pull, rating, notas, locaciones (texto libre, no GPS), tipos de fotografía, tags, y la cuenta de fotogramas que llevas
 - **Cámaras:** fabricante, modelo, formato soportado y, en cámaras de 120, el tamaño del negativo; tipo, montura, si la sigues teniendo, fecha de adquisición y, si quieres, su número de serie
 - **Lentes:** montura, distancia focal, apertura máxima y, si quieres, su número de serie
-- **Inventario y costos (opcional):** si decides usarlos, guardamos el film que compras y aún no usas (película, formato, cantidad y caducidad impresa), el precio por unidad, la moneda y la fecha de cada compra; lo que pagaste por revelar y escanear cada rollo (importe, moneda, fecha y laboratorio); el precio y la fecha de compra de tus cámaras y lentes; y tu moneda predeterminada. Son datos que capturas tú, solo los ves tú y no los compartimos con nadie
+- **Inventario y costos (opcional):** si decides usarlos, guardamos el film que compras y aún no usas (film, formato, cantidad y caducidad impresa), el precio por unidad, la moneda y la fecha de cada compra; lo que pagaste por revelar y escanear cada rollo (importe, moneda, fecha y laboratorio); el precio y la fecha de compra de tus cámaras y lentes; y tu moneda predeterminada. Son datos que capturas tú, solo los ves tú y no los compartimos con nadie
 - **Ajustes por fotograma:** apertura, velocidad, indicadores de flash/blanco-y-negro/trípode, notas por frame (hasta 100 por rollo)
-- **Contribuciones a catálogos comunitarios:** entradas que agregues a los catálogos compartidos de stocks de película y laboratorios (`film_stocks`, `labs`). Un film que no está en el catálogo queda **privado**: solo tú lo ves y lo usas hasta que un administrador lo revisa. Si lo aprueba, pasa al catálogo compartido y se une con las copias del mismo nombre que hayan creado otras cuentas; tus rollos siguen apuntando a él. Si lo rechaza, sigue siendo solo tuyo
+- **Contribuciones a catálogos comunitarios:** entradas que agregues a los catálogos compartidos de films y laboratorios (`film_stocks`, `labs`). Un film que no está en el catálogo queda **privado**: solo tú lo ves y lo usas hasta que un administrador lo revisa. Si lo aprueba, pasa al catálogo compartido y se une con las copias del mismo nombre que hayan creado otras cuentas; tus rollos siguen apuntando a él. Si lo rechaza, sigue siendo solo tuyo
 - **Avisos del buzón:** una vez al día, a partir de las 08:00 de tu zona horaria, el servidor revisa tu archivo para dejarte recordatorios en el buzón de la app, por ejemplo rollos por revelar o datos que le faltan a un rollo o a un equipo. Solo lo hace si ya abriste el buzón alguna vez. Guardamos qué avisos te mostramos y cuáles ya viste. La revisión ocurre dentro de nuestra base de datos y no se envía a nadie
 
 ### 2.4 · Datos del dispositivo (solo app móvil)
@@ -82,7 +82,7 @@ Los datos que ingresas voluntariamente al catalogar tus rollos de fotografía:
 | **Vercel** | Hosting del sitio web `analog-archive.com` | Red global con caché regional, primary US |
 | **Firebase Cloud Messaging** (Google) | Entrega de notificaciones push a tu dispositivo | Infraestructura global de Google |
 | **Apple Push Notification Service** | Entrega de push a iOS (vía FCM) | Infraestructura de Apple |
-| **Resend** | Envío de correos transaccionales (aprobación, password reset) | Estados Unidos |
+| **Resend** | Envío de correos transaccionales (confirmación de correo, cambio de contraseña) | Estados Unidos |
 
 Todos los servicios usan cifrado **TLS 1.2+** en tránsito y **cifrado AES-256 en reposo**. Tus contraseñas se almacenan con hashing **bcrypt** irreversible.
 
@@ -96,7 +96,7 @@ Compartimos datos limitados con los siguientes **proveedores de servicio** (proc
 - **Sentry** — recibe reportes de error anonimizados, sin tu contenido
 - **Firebase Cloud Messaging (Google)** — recibe tu token FCM y el payload de las notificaciones push
 - **Apple Push Notification Service** — recibe payloads de push para entrega en iOS (vía FCM)
-- **Resend** — provider de correo transaccional. Recibe tu email y el contenido del correo (aprobación, password reset)
+- **Resend** — provider de correo transaccional. Recibe tu email y el contenido del correo (confirmación de correo, cambio de contraseña)
 - **Vercel** — hosting del sitio web. Recibe requests HTTP de tu navegador
 - **Apple** — solo cuando usas Sign in with Apple. Apple recibe que abriste sesión en Analog Archive y nos devuelve un identificador anónimo. Nosotros no compartimos tu contenido con Apple
 - **Google** — solo cuando usas Sign in with Google. Aplican las mismas restricciones
@@ -200,7 +200,7 @@ Bajo el **Reglamento General de Protección de Datos (GDPR)** y leyes equivalent
 **Base legal para el tratamiento:**
 
 - **Performance of contract (Art. 6(1)(b)):** procesar tus datos para entregar el servicio que aceptaste al registrarte
-- **Legitimate interest (Art. 6(1)(f)):** seguridad anti-fraude, debugging vía Sentry, moderación de catálogos comunitarios, gestión de aprobación beta
+- **Legitimate interest (Art. 6(1)(f)):** seguridad anti-fraude, debugging vía Sentry, moderación de catálogos comunitarios
 - **Consent (Art. 6(1)(a)):** vinculación opcional con Apple/Google, suscripción a comunicaciones de feedback
 
 ### 9.2 · California (CCPA / CPRA)
@@ -400,7 +400,7 @@ Los datos personales que recolectamos se utilizan para:
 
 1. Prestar y mantener el servicio de bitácora privada de fotografía analógica
 2. Autenticar tu acceso y proteger tu cuenta
-3. Enviarte comunicaciones operacionales relacionadas con el servicio (aprobación de cuenta, recordatorios funcionales, notificaciones de cambios)
+3. Enviarte comunicaciones operacionales relacionadas con el servicio (confirmación de correo, recordatorios funcionales, notificaciones de cambios)
 4. Responder a tus solicitudes y consultas
 5. Prevenir fraude, abuso y mantener la seguridad del servicio
 6. Cumplir con obligaciones legales aplicables
